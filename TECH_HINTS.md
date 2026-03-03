@@ -138,3 +138,10 @@ Backend functionality that needs to be available from client-side code or as an 
 *To be expanded*
 
 </details>
+
+## React-three-fiber
+
+React-three-fiber is an alternative renderer for React that adds Three.js graphics primitives as basic component types, and therefore allows using React to describe and update our 3D graphical scene.
+It also allows clean integration of the Three.js canvas into the top level React app without having to manually manage its lifecycle.
+
+*To be expanded*
