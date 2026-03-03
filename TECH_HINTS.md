@@ -35,6 +35,44 @@ Functions specified with the arrow syntax (`(args) => expression` or `(args) => 
 
 </details>
 
+## Async programming
+
+When writing code that runs in a web browser or Node.js server, we need to get used to asynchronous programming.
+
+<details>
+
+JavaScript code running on a web page or in Node.js can't just stop to wait for something to happen, because that would freeze the entire browser tab or the entire server process.
+Instead we work with callback functions, or their alternatives, promises and async-await.
+Any code that runs must return quickly, but may set up event handlers to be triggered externally or start asynchronous operations that trigger a callback when complete.
+
+The classic model is callbacks.
+Asynchronous operations, like background requests in the browser, and almost everything interacting with the external world in Node.js, take a callback function as a parameter.
+If and when the operation completes successfully, the callback is called with `null` for the first parameter (indicating no error), and actual data in subsequent parameters, if applicable.
+If and when the operation fails, the callback is called with an error object as the first parameter.
+
+An alternative to direct callback functions is promises.
+Promise is an object that represents some asynchronous operation that will eventually complete successfully or fail.
+Promise objects can be stored in variables or returned from functions like any object.
+The code that cares about the result can assign success and failure callbacks on the promise object instead of needing to pass a callback function through other code to the actual asynchronous operation.
+We probably don't use promises much directly, but they are a key detail of async-await.
+
+Async-await allows a more linear programming style, avoiding the readability issues of splitting your code into multiple nested callbacks.
+A function marked with the `async` keyword may use `await` keyword on a promise value to suspend the code until the promise completes and return control to its caller.
+The await operation either returns the value of the promise if it succeeds, or throws an exception if the promise fails.
+The async function itself returns a promise, which eventually succeeds if the async function returns, or fails, if the async function throws an exception.
+
+Event mechanisms are a variation of callbacks, where the callback function is not necessarily tied to a single operation.
+The registered event handler is called whenever the event is triggered, for example the user clicks a particular button on the page.
+When the handler function runs, it can do whatever it sees fit, like send a request to a server, or modify the page.
+If we don't want to do the exact same actions on subsequent clicks, it needs to unregister itself or set some state that alters its behavior.
+
+We should generally use async-await where possible.
+When waiting for multiple operations at the same time, it may be necessary to interact with the promises directly.
+Plain callbacks may be used on one-off basis if no awaitable version is provided, but if we end up writing nested callbacks we should probably write our own promise wrapper for it.
+Event handlers don't directly map to promises or async-await, but the event handling function can be async as long as it doesn't let exceptions escape.
+
+</details>
+
 ## How React works
 
 React tutorials often go straight to practical examples, and may neglect to explain key terms like element and component, or to describe how React actually works.
