@@ -71,3 +71,32 @@ To preserve state of component instances during updates, React attempts to reuse
 To prevent reuse of unrelated component instances, you can specify the `key` prop, which must match the previous value to allow reuse.
 
 </details>
+
+## Next.js
+
+Next.js is an opinionated framework for full stack React apps. It comes with its own learning curve, but here are some quick notes to get started.
+
+<details>
+
+Next.js comes with many features and tools configured out of the box, including some which we might not care about.
+We'll figure these out as we work on the project.
+
+Next.js is its own backend server.
+It can be run in development mode, which allows dynamic updates, showing changes in web browser as soon as you save files in your editor.
+For deploying the completed project (and testing along the way), we'll want to instead build the app and then start it.
+
+`src/app/` directory is where Next.js-managed parts of the application live.
+Subdirectories of `src/app/` create subdirectories visible in the URL, while special filenames like `route.ts` or `page.tsx` within those directories create backend API routes or frontend pages and views.
+We will also need to create React components which are not pages by themselves, and backend functions or modules which are not API endpoints themselves.
+Such code *can* be written in any file not handled by Next.js, but for clarity, they should be organized either in directories prefixed with underscore (`_utility`), or entirely outside `src/app/` (but inside `src/`).
+
+Next.js does server side rendering by default, which means React code can't directly handle user interaction or use browser APIs.
+We consider all React code to be "frontend" in our project, even if it runs on the server.
+When we do need direct interaction or browser API access, we need to specify components as client-side components (triggered with `'use client';`, see `src/app/client-component/page.tsx`).
+
+Backend functionality is directly available during server-side rendering.
+Backend functionality that needs to be available from client-side code or as an external API must be exposed as an API route (see `src/app/api/health/route.ts`).
+
+*To be expanded*
+
+</details>

@@ -24,6 +24,8 @@ Pong game with 3D graphics, as a web app with user profiles.
 
 * Run `npm install` to install dependencies as specified in `package.json`.
 
+* For frontend development, you might want React Developer Tools extension in your browser.
+
 ## Tech choices
 
 * Node.js - JavaScript runtime for development tools and server-side code
