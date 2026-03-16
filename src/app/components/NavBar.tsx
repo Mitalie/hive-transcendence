@@ -10,6 +10,7 @@ export default function NavBar() {
       <Link href="/profile">Profile</Link>
       <Link href="/leaderboard">Leaderboard</Link>
       <Link href="/game">Game</Link>
+      <Link href="/matches">Matches</Link>
     </nav>
   );
 }
