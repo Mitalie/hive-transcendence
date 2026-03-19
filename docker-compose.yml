@@ -1,0 +1,62 @@
+services:
+  nextjs:
+    # Builds the Next.js container using the Dockerfile inside our root folder
+    build:
+      context: .
+    container_name: transcendence_frontend
+    
+    # Maps <Host Port>:<Container Port>. Allows us to view the app at http://localhost:3000
+    ports:
+      - "3000:3000"
+      
+    volumes:
+      # 1. BIND MOUNT: Syncs our local source code into the container. 
+      # This enables hot-reloading so changes in VS Code show up instantly.
+      - .:/app
+      
+      # 2. ANONYMOUS VOLUME: Isolates the container's node_modules.
+      # Prevents our host OS dependencies from clashing with the container's internal dependencies.
+      - /app/node_modules
+      
+      # 3. ANONYMOUS VOLUME: Isolates the Next.js build cache.
+      # Prevents file permission conflicts between the host and the container.
+      - /app/.next
+      
+    environment:
+      # Ensures Docker reliably detects file saves for hot-reloading
+      - WATCHPACK_POLLING=true 
+      
+      # Pulls the constructed URL directly from the .env file automatically!
+      - DATABASE_URL
+      
+    # Ensures the database is up and running before Next.js tries to start
+    depends_on:
+      - mariadb
+
+  mariadb:
+    # Uses the official MariaDB image from Docker Hub
+    image: mariadb:latest
+    container_name: transcendence_db
+    
+    # Automatically restarts the database if it crashes
+    restart: always
+    
+    # Exposes the default DB port so we can connect external database viewers if needed
+    ports:
+      - "3306:3306"
+      
+    environment:
+      # Pulls our secure database credentials from the hidden .env file automatically!
+      - MARIADB_ROOT_PASSWORD
+      - MARIADB_DATABASE
+      - MARIADB_USER
+      - MARIADB_PASSWORD
+      
+    volumes:
+      # NAMED VOLUME: Saves database data permanently to the host machine.
+      # Without this, all users and stats would be wiped every time Docker shuts down.
+      - mariadb_data:/var/lib/mysql
+
+# Declares the named volume used by MariaDB
+volumes:
+  mariadb_data:
