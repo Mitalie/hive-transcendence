@@ -26,6 +26,8 @@ export const GameConfig = {
     radius: 0.3,
     startVelocityX: 0.1,
     startVelocityZ: 0.08,
+    deflectionBoost: 0.05, // How much spin/angle the paddle edge adds to existing momentum
+    maxZVelocity: 0.18, // Speed limit so the ball never bounces purely vertically
   },
 
   // --- CAMERA SETTINGS ---

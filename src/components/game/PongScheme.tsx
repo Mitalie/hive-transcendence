@@ -92,8 +92,21 @@ export default function PongScheme({
         bz >= p2z - hitBoxDepth &&
         bz <= p2z + hitBoxDepth
       ) {
-        ballVelocity.current.x *= -1;
+        // MATH.ABS SAFETY: We force the velocity to be negative (moving left) to prevent
+        // a bug where the ball gets stuck inside the paddle geometry vibrating back and forth.
+        ballVelocity.current.x = -Math.abs(ballVelocity.current.x);
         ballRef.current.position.x = GameConfig.player2.xPos - 0.6;
+
+        // DYNAMIC BOUNCE ANGLE (Additive Momentum)
+        // 1. Find hit point (-1 to 1).
+        const hitPoint = (bz - p2z) / (GameConfig.paddle.depth / 2);
+        // 2. Preserve incoming angle, but ADD spin/deflection based on where it hit.
+        ballVelocity.current.z += hitPoint * GameConfig.ball.deflectionBoost;
+        // 3. CLAMP the Z velocity so players can't create an infinitely vertical bouncing ball.
+        if (ballVelocity.current.z > GameConfig.ball.maxZVelocity)
+          ballVelocity.current.z = GameConfig.ball.maxZVelocity;
+        if (ballVelocity.current.z < -GameConfig.ball.maxZVelocity)
+          ballVelocity.current.z = -GameConfig.ball.maxZVelocity;
       }
 
       // 6. LEFT PADDLE COLLISION
@@ -104,8 +117,20 @@ export default function PongScheme({
         bz >= p1z - hitBoxDepth &&
         bz <= p1z + hitBoxDepth
       ) {
-        ballVelocity.current.x *= -1;
+        // MATH.ABS SAFETY: Force velocity positive (moving right) to push it out of the paddle.
+        ballVelocity.current.x = Math.abs(ballVelocity.current.x);
         ballRef.current.position.x = GameConfig.player1.xPos + 0.6;
+
+        // DYNAMIC BOUNCE ANGLE (Additive Momentum)
+        // 1. Find hit point (-1 to 1).
+        const hitPoint = (bz - p1z) / (GameConfig.paddle.depth / 2);
+        // 2. Preserve incoming angle, but ADD spin/deflection based on where it hit.
+        ballVelocity.current.z += hitPoint * GameConfig.ball.deflectionBoost;
+        // 3. CLAMP the Z velocity so players can't create an infinitely vertical bouncing ball.
+        if (ballVelocity.current.z > GameConfig.ball.maxZVelocity)
+          ballVelocity.current.z = GameConfig.ball.maxZVelocity;
+        if (ballVelocity.current.z < -GameConfig.ball.maxZVelocity)
+          ballVelocity.current.z = -GameConfig.ball.maxZVelocity;
       }
 
       // 7. GOAL / SCORING LOGIC
