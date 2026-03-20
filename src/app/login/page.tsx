@@ -10,6 +10,6 @@ const Login = () => {
       <GitSignInButton />
     </div>
   );
-}
- 
+};
+
 export default Login;

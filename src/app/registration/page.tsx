@@ -1,5 +1,3 @@
-
-
 export default function RegisterPage() {
   return (
     <div className="h-screen w-screen flex justify-center items-center bg-slate-100">
@@ -7,5 +5,5 @@ export default function RegisterPage() {
         <h1>Register</h1>
       </div>
     </div>
-  )
+  );
 }

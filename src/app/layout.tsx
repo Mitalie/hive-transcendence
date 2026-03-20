@@ -30,25 +30,20 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
-        <div className="app">
-          
-          {/* header */}
-          <div style={{ padding: "20px 20px 0 20px" }}>
-            <Header />
+          <div className="app">
+            {/* header */}
+            <div style={{ padding: "20px 20px 0 20px" }}>
+              <Header />
+            </div>
+
+            {/* middle content */}
+            <div className="main">{children}</div>
+
+            {/* footer */}
+            <div style={{ padding: "0 20px 20px 20px" }}>
+              <Footer />
+            </div>
           </div>
-
-          {/* middle content */}
-          <div className="main">
-            {children}
-          </div>
-
-
-          {/* footer */}
-          <div style={{ padding: "0 20px 20px 20px" }}>
-            <Footer />
-          </div>
-
-        </div>
         </Providers>
       </body>
     </html>

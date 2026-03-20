@@ -22,13 +22,16 @@ export default function Footer() {
   }, [dark]);
 
   return (
-    <div className="header" style={{
-      display: "flex",
-      justifyContent: "flex-end",
-      gap: "10px",
-      padding: "10px 20px",
-      borderRadius: "12px"
-    }}>
+    <div
+      className="header"
+      style={{
+        display: "flex",
+        justifyContent: "flex-end",
+        gap: "10px",
+        padding: "10px 20px",
+        borderRadius: "12px",
+      }}
+    >
       <button className="button">EN</button>
       <button className="button" onClick={() => setDark(!dark)}>
         {dark ? "Light" : "Dark"}

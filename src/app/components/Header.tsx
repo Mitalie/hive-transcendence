@@ -5,7 +5,7 @@
  * 1-CSS
  * 2-the logo is a placeholder, need to be updated by our own logo
  * 3-the three right links should be replaced by icon
- */ 
+ */
 
 "use client";
 
@@ -15,7 +15,6 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { GitSignInButton } from "./buttons/github-signin";
 import { SignOutButton } from "./buttons/sign-out-button";
-
 
 export default function Header() {
   const pathname = usePathname();
@@ -48,14 +47,11 @@ export default function Header() {
         justifyContent: "space-between",
         padding: "10px 20px",
         borderRadius: "12px",
-        alignItems: "center"
+        alignItems: "center",
       }}
     >
       {/* website logo and name */}
-      <Link
-        href="/"
-        className="logo"
-      >
+      <Link href="/" className="logo">
         {/* Website Name */}
         <Image
           src="/images/website_logo.png"
@@ -71,22 +67,32 @@ export default function Header() {
 
       {/* buttons */}
       <div style={{ display: "flex", gap: "10px" }}>
-        <Link href="/game" className={`button ${pathname === "/game" ? "active" : ""}`}>
+        <Link
+          href="/game"
+          className={`button ${pathname === "/game" ? "active" : ""}`}
+        >
           Play
         </Link>
-        <Link href="/friends" className={`button ${pathname === "/friends" ? "active" : ""}`}>
+        <Link
+          href="/friends"
+          className={`button ${pathname === "/friends" ? "active" : ""}`}
+        >
           Friends
         </Link>
-        <Link href="/profile" className={`button ${pathname === "/profile" ? "active" : ""}`}>
+        <Link
+          href="/profile"
+          className={`button ${pathname === "/profile" ? "active" : ""}`}
+        >
           Profile
         </Link>
         {session?.user?.image && (
-        <Image
-        src={session.user.image}
-        width={32} height={32}
-        alt="avatar"
-        style={{ borderRadius: "50%" }}
-        />
+          <Image
+            src={session.user.image}
+            width={32}
+            height={32}
+            alt="avatar"
+            style={{ borderRadius: "50%" }}
+          />
         )}
         {/* Signin/out button depending if logged in */}
         {session ? <SignOutButton /> : <GitSignInButton />}

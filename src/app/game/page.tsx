@@ -16,12 +16,14 @@ export default function GamePage() {
 
   return (
     <div>
-      <div style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "20px"
-      }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "20px",
+        }}
+      >
         <Controls
           playing={playing}
           onStart={() => setPlaying(true)}
@@ -41,11 +43,13 @@ export default function GamePage() {
         <GameCanvas />
 
         {showSettings && (
-          <div style={{
-            position: "absolute",
-            right: "20px",
-            top: "20px"
-          }}>
+          <div
+            style={{
+              position: "absolute",
+              right: "20px",
+              top: "20px",
+            }}
+          >
             <GameSettings onClose={() => setShowSettings(false)} />
           </div>
         )}
