@@ -4,7 +4,7 @@ This document outlines the boundaries between the Game Logic (Engine), the 3D Fr
 
 ## 🏗️ The Architecture
 
-We use a "Dumb Engine" pattern. The engine (PongScheme.tsx) handles math and physics in a 60fps loop using useRef. It does not handle 3D textures or API calls.
+We use a "State-Driven" pattern. The engine (PongScheme.tsx) is a "dumb" physics loop. The rules and scoring live in a custom hook (useGameState.ts).
 
 ---
 
@@ -33,60 +33,58 @@ Your 3D Model:
 
 ## 💾 2. For Dimi (Database & Scoring)
 
-Location: The Next.js parent page (e.g., src/app/sandbox/page.tsx).
+Location: src/hooks/useGameState.ts
 
-The engine is decoupled from the database. It simply accepts a function called onScore as a prop. It calls this function whenever the ball passes a paddle.
+The scoring and win logic is now centralized in the hook. Dimi, you should hook into the handleScore function inside this file to trigger database saves.
+
+NOTE: Ensure your payload matches the API Contract (v1.0) for Match History.
 
 ### How to Hook into the Database:
 
-In the parent page, use the onScore callback to check if a player has reached the winning total. When they win, trigger your Prisma/API logic to save the result to MariaDB.
+Inside useGameState.ts, when a player wins (p1Win or p2Win is true), trigger your Prisma/API logic.
 
-const handleScore = async (player: 1 | 2) =>
-{
-const newScore = player === 1 ? score.p1 + 1 : score.p2 + 1;
-
-    if (newScore >= 5)
+    if (p1Win || p2Win)
     {
+        setGameState("WON");
         // DIMI: Trigger Database Save Here
-        // await saveMatchToDB({ winner: player, finalScore: score });
+        // Payload should match API Contract: player1, player2, score1, score2, winner
+        // await saveMatchToDB({ winner: player, finalScore: nextScore });
     }
-
-};
-
----
 
 ## ⚙️ 3. Global Configuration
 
 File: src/components/game/GameConfig.ts
 
-All game constants (speed, paddle size, wall limits) live here.
+All game constants and match rules live here.
 
 - Anssi: Use these values to scale your 3D models so they match the hitboxes.
-- Logic: The engine math updates automatically when these values change.
+- Dimi: The winLimit (11) and deuce rules are controlled here.
 
-export const GameConfig =
-{
-paddle:
-{
-width: 0.5,
-height: 0.5,
-depth: 2,
-speed: 0.15,
-zLimit: 4
-},
-court:
-{
-width: 22,
-depth: 11,
-zLimit: 5,
-xLimit: 11
-},
-player1: { xPos: -8 },
-player2: { xPos: 8 },
-ball:
-{
-radius: 0.3,
-startVelocityX: 0.1,
-startVelocityZ: 0.08
-}
-};
+  export const GameConfig =
+  {
+  paddle:
+  {
+  width: 0.5,
+  height: 0.5,
+  depth: 2,
+  speed: 0.15,
+  zLimit: 4
+  },
+  court:
+  {
+  width: 22,
+  depth: 11,
+  zLimit: 5,
+  xLimit: 11
+  },
+  rules:
+  {
+  winLimit: 11,
+  winByTwo: true
+  }
+  };
+
+## ⌨️ 4. Game Controls
+
+- SPACEBAR: The universal toggle. Cycles through START -> PLAYING -> PAUSED -> PLAYING.
+- WIN RESET: If the state is WON, pressing SPACEBAR resets the score and restarts the match.
