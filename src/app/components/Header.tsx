@@ -12,9 +12,14 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
+import { GitSignInButton } from "./buttons/github-signin";
+import { SignOutButton } from "./buttons/sign-out-button";
+
 
 export default function Header() {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const getTitle = () => {
     switch (pathname) {
@@ -26,6 +31,10 @@ export default function Header() {
         return "Friends";
       case "/profile":
         return "Profile";
+      case "/login":
+        return "Login";
+      case "/registration":
+        return "Registration";
       default:
         return "Default Page Title";
     }
@@ -71,6 +80,16 @@ export default function Header() {
         <Link href="/profile" className={`button ${pathname === "/profile" ? "active" : ""}`}>
           Profile
         </Link>
+        {session?.user?.image && (
+        <Image
+        src={session.user.image}
+        width={32} height={32}
+        alt="avatar"
+        style={{ borderRadius: "50%" }}
+        />
+        )}
+        {/* Signin/out button depending if logged in */}
+        {session ? <SignOutButton /> : <GitSignInButton />}
       </div>
     </div>
   );

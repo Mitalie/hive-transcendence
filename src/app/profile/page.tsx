@@ -1,6 +1,15 @@
 // user profile page
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/lib/auth";
 
-export default function Profile() {
+export default async function Profile() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect("/login");
+  }
+
   return (
     <div>
       <h1 style={{ marginTop: "40px" }}>Profile Page</h1>
