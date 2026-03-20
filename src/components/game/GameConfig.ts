@@ -26,4 +26,10 @@ export const GameConfig = {
     startVelocityX: 0.1,
     startVelocityZ: 0.08,
   },
+
+  // Camera settings (High-Angle Stadium View)
+  camera: {
+    position: [0, 20, 20],
+    fov: 55, // Lower FOV acts like a "Zoom Lens" to keep the court large
+  },
 };

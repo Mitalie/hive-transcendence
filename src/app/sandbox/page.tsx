@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import PongScheme from "../../components/game/PongScheme";
+import { GameConfig } from "../../components/game/GameConfig";
 
 export default function SandboxPage() {
   // --- SCORE STATE ---
@@ -45,7 +46,13 @@ export default function SandboxPage() {
         <span style={{ color: "red" }}>{score.p2}</span>
       </div>
 
-      <Canvas camera={{ position: [0, 25, 0], fov: 50 }}>
+      <Canvas
+        camera={{
+          position: GameConfig.camera.position,
+          fov: GameConfig.camera.fov
+        }}
+      >
+        <color attach="background" args={["#050505"]} />
         {/* We pass the handleScore function INTO the 3D engine as a prop */}
         <PongScheme onScore={handleScore} />
       </Canvas>
