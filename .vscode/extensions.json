@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    // Enforce basic editor options with an .editorconfig file.
+    "EditorConfig.EditorConfig",
+    // Use Prettier to enforce basic style and formatting.
+    // Prettier can be run separately, but the extension works with VS Code
+    // format commands, including format on save if enabled in VS Code settings.
+    "esbenp.prettier-vscode",
+    // Use ESLint to enforce style and code quality rules.
+    // ESLint can be run separatly, but the extension monitors files as they are
+    // edited and reports issues with squiggles and in the problems pane.
+    "dbaeumer.vscode-eslint",
+  ],
+}
