@@ -1,8 +1,6 @@
 @import "tailwindcss";
 
 :root {
-  /* --background: #ffffff;
-  --foreground: #171717; */
   --bg: #f3f3f3;
   --text: #000;
   --card: #dddddd;
@@ -24,8 +22,6 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* --background: #0a0a0a;
-    --foreground: #ffffff; */
     --bg: #f3f3f3;
     --text: #000;
     --card: #e6e6e6;
@@ -68,8 +64,6 @@ a {
   }
 }
 
-
-/* test */
 /* overall layout */
 .app {
   min-height: 100vh;
@@ -83,7 +77,6 @@ a {
   display: flex;
   justify-content: center;
   margin: 10px 20px;
-  /* background: #ddd; */
   background: var(--card);
   flex-direction: column;
   border-radius: 12px;
@@ -92,7 +85,6 @@ a {
 
 /* components */
 .card {
-  /* background: #bababa; */
   background: var(--card);
   border-radius: 16px;
 }
@@ -101,7 +93,6 @@ a {
   padding: 8px 16px;
   border-radius: 12px;
   border: none;
-  /* background: #a2a2a2; */
   background: var(--button);
   color: var(--text);
   cursor: pointer;

@@ -3,11 +3,11 @@
 "use client";
 
 import { useState } from "react";
-import Controls from "../components/game/Controls";
-import ScoreBoard from "../components/game/ScoreBoard";
-import GameCanvas from "../components/game/GameCanvas";
-import GameSettings from "../components/game/GameSettings";
-import ConfirmModal from "../components/game/ConfirmModal";
+import Controls from "@/components/game/Controls";
+import ScoreBoard from "@/components/game/ScoreBoard";
+import GameCanvas from "@/components/game/GameCanvas";
+import GameSettings from "@/components/game/GameSettings";
+import ConfirmModal from "@/components/game/ConfirmModal";
 
 export default function GamePage() {
   const [playing, setPlaying] = useState(false);

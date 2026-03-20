@@ -1,4 +1,4 @@
-import { GitSignInButton } from "../components/buttons/github-signin";
+import { GitSignInButton } from "@/components/buttons/github-signin";
 
 const Login = () => {
   return (
