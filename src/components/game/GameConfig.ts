@@ -43,5 +43,6 @@ export const GameConfig = {
   rules: {
     winLimit: 11, // Points required to win (Ping Pong standard)
     winByTwo: true, // Enable deuce/overtime rules
+    serveDelay: 420, // Milliseconds the ball waits in the center before serving
   },
 };

@@ -5,6 +5,17 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { GameConfig } from "./GameConfig";
 
+// Helper to randomize the initial serve direction
+const getRandomServe = () => {
+  const dirX = Math.random() > 0.5 ? 1 : -1;
+  const dirZ = Math.random() > 0.5 ? 1 : -1;
+  return new THREE.Vector3(
+    GameConfig.ball.startVelocityX * dirX,
+    0,
+    GameConfig.ball.startVelocityZ * dirZ,
+  );
+};
+
 export default function PongScheme({
   onScore,
   gameState,
@@ -17,13 +28,8 @@ export default function PongScheme({
   const paddle1Ref = useRef<THREE.Mesh>(null!);
   const paddle2Ref = useRef<THREE.Mesh>(null!);
 
-  const ballVelocity = useRef(
-    new THREE.Vector3(
-      GameConfig.ball.startVelocityX,
-      0,
-      GameConfig.ball.startVelocityZ,
-    ),
-  );
+  // Initialize the very first serve randomly
+  const ballVelocity = useRef(getRandomServe());
 
   // Tracks currently pressed keys for smooth continuous movement
   const keys = useRef<{ [key: string]: boolean }>({});
@@ -136,20 +142,40 @@ export default function PongScheme({
       // 7. GOAL / SCORING LOGIC
       if (bx > GameConfig.court.xLimit) {
         onScore(1); // Tell the React Hook that P1 scored
-        ballRef.current.position.set(0, 0, 0); // Reset Ball
-        ballVelocity.current.set(
-          GameConfig.ball.startVelocityX,
-          0,
-          GameConfig.ball.startVelocityZ,
-        );
+
+        // FREEZE BALL IN CENTER
+        ballRef.current.position.set(0, 0, 0);
+        ballVelocity.current.set(0, 0, 0);
+
+        // SERVE DELAY: Wait, then serve to P2 (the loser)
+        setTimeout(() => {
+          if (ballVelocity.current) {
+            const randomZ = Math.random() > 0.5 ? 1 : -1;
+            ballVelocity.current.set(
+              GameConfig.ball.startVelocityX,
+              0,
+              GameConfig.ball.startVelocityZ * randomZ, // Randomize Z angle slightly so it's not perfectly identical every time
+            );
+          }
+        }, GameConfig.rules.serveDelay);
       } else if (bx < -GameConfig.court.xLimit) {
         onScore(2); // Tell the React Hook that P2 scored
-        ballRef.current.position.set(0, 0, 0); // Reset Ball
-        ballVelocity.current.set(
-          -GameConfig.ball.startVelocityX,
-          0,
-          -GameConfig.ball.startVelocityZ,
-        );
+
+        // FREEZE BALL IN CENTER
+        ballRef.current.position.set(0, 0, 0);
+        ballVelocity.current.set(0, 0, 0);
+
+        // SERVE DELAY: Wait, then serve to P1 (the loser)
+        setTimeout(() => {
+          if (ballVelocity.current) {
+            const randomZ = Math.random() > 0.5 ? 1 : -1;
+            ballVelocity.current.set(
+              -GameConfig.ball.startVelocityX,
+              0,
+              GameConfig.ball.startVelocityZ * randomZ, // Randomize Z angle
+            );
+          }
+        }, GameConfig.rules.serveDelay);
       }
     }
   });
