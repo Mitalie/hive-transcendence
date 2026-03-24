@@ -2,13 +2,14 @@
 
 /**
  * TODO
- * 1-Language change
+ * 1-Language change button will changed later, so didn't make a component now
  * 2-light mode control need to be changed to a toggle button or more clear display
  */
 
 "use client";
 
 import { useState, useEffect } from "react";
+import Bar from "@/components/Bar";
 
 export default function Footer() {
   const [dark, setDark] = useState(false);
@@ -22,20 +23,17 @@ export default function Footer() {
   }, [dark]);
 
   return (
-    <div
-      className="header"
-      style={{
-        display: "flex",
-        justifyContent: "flex-end",
-        gap: "10px",
-        padding: "10px 20px",
-        borderRadius: "12px",
-      }}
-    >
-      <button className="button">EN</button>
-      <button className="button" onClick={() => setDark(!dark)}>
+    <Bar className="justify-end gap-2.5">
+      <button className="px-4 py-2 rounded-xl bg-button text-text hover:bg-button-hover transition-colors">
+        EN
+      </button>
+
+      <button
+        onClick={() => setDark(!dark)}
+        className="px-4 py-2 rounded-xl bg-button text-text hover:bg-button-hover transition-colors"
+      >
         {dark ? "Light" : "Dark"}
       </button>
-    </div>
+    </Bar>
   );
 }

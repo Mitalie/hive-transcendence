@@ -16,14 +16,7 @@ export default function GamePage() {
 
   return (
     <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-        }}
-      >
+      <div className="flex justify-between items-center mb-5">
         <Controls
           playing={playing}
           onStart={() => setPlaying(true)}
@@ -31,25 +24,22 @@ export default function GamePage() {
           onEnd={() => setShowEndModal(true)}
         />
 
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+        <div className="flex gap-2.5 items-center">
           <ScoreBoard />
-          <button className="button" onClick={() => setShowSettings(true)}>
+          <button
+            className="px-4 py-2 rounded-xl bg-button text-text hover:bg-button-hover transition-colors"
+            onClick={() => setShowSettings(true)}
+          >
             ⚙
           </button>
         </div>
       </div>
 
-      <div style={{ position: "relative" }}>
+      <div className="relative">
         <GameCanvas />
 
         {showSettings && (
-          <div
-            style={{
-              position: "absolute",
-              right: "20px",
-              top: "20px",
-            }}
-          >
+          <div className="absolute right-5 top-5">
             <GameSettings onClose={() => setShowSettings(false)} />
           </div>
         )}
