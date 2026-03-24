@@ -13,7 +13,7 @@ export const GameConfig = {
     width: 0.5,
     height: 0.5,
     depth: 2, // The "length" of the paddle
-    speed: 0.15,
+    speed: 9,
     zLimit: 4, // Clamps the paddle so it can't move through the side walls
   },
 
@@ -24,10 +24,10 @@ export const GameConfig = {
   // --- BALL SETTINGS ---
   ball: {
     radius: 0.3,
-    startVelocityX: 0.1,
-    startVelocityZ: 0.08,
-    deflectionBoost: 0.05, // How much spin/angle the paddle edge adds to existing momentum
-    maxZVelocity: 0.18, // Speed limit so the ball never bounces purely vertically
+    startVelocityX: 6,
+    startVelocityZ: 5,
+    deflectionBoost: 3, // Additive spin per second
+    maxZVelocity: 11, // Max Z speed per second
   },
 
   // --- CAMERA SETTINGS ---

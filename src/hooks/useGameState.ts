@@ -54,7 +54,8 @@ export const useGameState = (winLimit: number = GameConfig.rules.winLimit) => {
    */
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === "Space") {
+      // Prevent rapid toggling if the user holds the key down
+      if (e.code === "Space" && !e.repeat) {
         setGameState((current) => {
           // START or RESTART: Move into active play from a menu or victory screen.
           if (current === "START" || current === "WON") {

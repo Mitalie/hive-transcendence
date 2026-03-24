@@ -34,6 +34,11 @@ export default function PongScheme({
   // Tracks currently pressed keys for smooth continuous movement
   const keys = useRef<{ [key: string]: boolean }>({});
 
+  // Game-Loop Safe Timers
+  // We use refs here so they persist across frames without causing React re-renders.
+  const serveTimer = useRef(0);
+  const nextServeDirection = useRef<1 | 2>(1);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       keys.current[e.key] = true;
@@ -52,40 +57,70 @@ export default function PongScheme({
   }, []);
 
   // --- THE PHYSICS LOOP (Runs 60 FPS) ---
-  useFrame(() => {
+  // We extract 'delta' (time in seconds since the last frame) to power our timer and physics.
+  useFrame((state, delta) => {
     // GUARD CLAUSE: Instantly freeze all math if the game isn't actively playing.
     if (gameState !== "PLAYING") return;
+
+    // Prevent physics tunneling if the browser tab is backgrounded or lags.
+    // Capping at 0.1 seconds ensures the ball never teleports through the paddle.
+    const safeDelta = Math.min(delta, 0.1);
+
+    // --- SERVE DELAY LOGIC ---
+    // Because this sits below the PAUSED guard clause, the timer automatically
+    // freezes when the player hits the Spacebar!
+    if (serveTimer.current > 0) {
+      serveTimer.current -= safeDelta * 1000; // Convert delta seconds to milliseconds
+
+      if (serveTimer.current <= 0) {
+        // Timer finished! Fire the ball!
+        const randomZ = Math.random() > 0.5 ? 1 : -1;
+        ballVelocity.current.set(
+          nextServeDirection.current === 1
+            ? GameConfig.ball.startVelocityX
+            : -GameConfig.ball.startVelocityX,
+          0,
+          GameConfig.ball.startVelocityZ * randomZ,
+        );
+      }
+      return; // Skip all other physics math while the ball is waiting to serve!
+    }
 
     if (ballRef.current && paddle1Ref.current && paddle2Ref.current) {
       const speed = GameConfig.paddle.speed;
       const limit = GameConfig.paddle.zLimit;
 
       // 1. PLAYER 1 MOVEMENT (W/S) & CLAMPING
-      if (keys.current["w"]) paddle1Ref.current.position.z -= speed;
-      if (keys.current["s"]) paddle1Ref.current.position.z += speed;
+      if (keys.current["w"]) paddle1Ref.current.position.z -= speed * safeDelta;
+      if (keys.current["s"]) paddle1Ref.current.position.z += speed * safeDelta;
       if (paddle1Ref.current.position.z < -limit)
         paddle1Ref.current.position.z = -limit;
       if (paddle1Ref.current.position.z > limit)
         paddle1Ref.current.position.z = limit;
 
       // 2. PLAYER 2 MOVEMENT (Arrows) & CLAMPING
-      if (keys.current["ArrowUp"]) paddle2Ref.current.position.z -= speed;
-      if (keys.current["ArrowDown"]) paddle2Ref.current.position.z += speed;
+      if (keys.current["ArrowUp"])
+        paddle2Ref.current.position.z -= speed * safeDelta;
+      if (keys.current["ArrowDown"])
+        paddle2Ref.current.position.z += speed * safeDelta;
       if (paddle2Ref.current.position.z < -limit)
         paddle2Ref.current.position.z = -limit;
       if (paddle2Ref.current.position.z > limit)
         paddle2Ref.current.position.z = limit;
 
       // 3. APPLY BALL VELOCITY
-      ballRef.current.position.x += ballVelocity.current.x;
-      ballRef.current.position.z += ballVelocity.current.z;
+      ballRef.current.position.x += ballVelocity.current.x * safeDelta;
+      ballRef.current.position.z += ballVelocity.current.z * safeDelta;
 
       const bx = ballRef.current.position.x;
       const bz = ballRef.current.position.z;
 
       // 4. WALL COLLISIONS (Top / Bottom)
-      if (bz >= GameConfig.court.zLimit || bz <= -GameConfig.court.zLimit) {
-        ballVelocity.current.z *= -1;
+      // MATH.ABS SAFETY: Prevents the ball from getting stuck inside the wall geometry during lag spikes.
+      if (bz >= GameConfig.court.zLimit) {
+        ballVelocity.current.z = -Math.abs(ballVelocity.current.z);
+      } else if (bz <= -GameConfig.court.zLimit) {
+        ballVelocity.current.z = Math.abs(ballVelocity.current.z);
       }
 
       // 5. RIGHT PADDLE COLLISION (AABB Logic + Push Out to prevent clipping)
@@ -147,17 +182,9 @@ export default function PongScheme({
         ballRef.current.position.set(0, 0, 0);
         ballVelocity.current.set(0, 0, 0);
 
-        // SERVE DELAY: Wait, then serve to P2 (the loser)
-        setTimeout(() => {
-          if (ballVelocity.current) {
-            const randomZ = Math.random() > 0.5 ? 1 : -1;
-            ballVelocity.current.set(
-              GameConfig.ball.startVelocityX,
-              0,
-              GameConfig.ball.startVelocityZ * randomZ, // Randomize Z angle slightly so it's not perfectly identical every time
-            );
-          }
-        }, GameConfig.rules.serveDelay);
+        // SERVE DELAY: Start the internal game loop timer
+        serveTimer.current = GameConfig.rules.serveDelay;
+        nextServeDirection.current = 1; // 1 means fire Right
       } else if (bx < -GameConfig.court.xLimit) {
         onScore(2); // Tell the React Hook that P2 scored
 
@@ -165,17 +192,9 @@ export default function PongScheme({
         ballRef.current.position.set(0, 0, 0);
         ballVelocity.current.set(0, 0, 0);
 
-        // SERVE DELAY: Wait, then serve to P1 (the loser)
-        setTimeout(() => {
-          if (ballVelocity.current) {
-            const randomZ = Math.random() > 0.5 ? 1 : -1;
-            ballVelocity.current.set(
-              -GameConfig.ball.startVelocityX,
-              0,
-              GameConfig.ball.startVelocityZ * randomZ, // Randomize Z angle
-            );
-          }
-        }, GameConfig.rules.serveDelay);
+        // SERVE DELAY: Start the internal game loop timer
+        serveTimer.current = GameConfig.rules.serveDelay;
+        nextServeDirection.current = 2; // 2 means fire Left
       }
     }
   });
