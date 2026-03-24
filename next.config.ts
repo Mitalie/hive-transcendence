@@ -1,10 +1,17 @@
-const path = require('path');
+import path from "path";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  distDir: '.next', // default is fine
   turbopack: {
-    root: path.resolve(__dirname), // ABSOLUTE path to project
+    root: path.resolve(__dirname),
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+      },
+    ],
   },
 };
 
