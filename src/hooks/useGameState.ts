@@ -76,5 +76,5 @@ export const useGameState = (winLimit: number = GameConfig.rules.winLimit) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  return { score, gameState, handleScore };
+  return { score, gameState, handleScore, setGameState };
 };

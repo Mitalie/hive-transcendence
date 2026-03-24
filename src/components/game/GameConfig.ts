@@ -34,8 +34,8 @@ export const GameConfig = {
   // The 'as [number, number, number]' tells TypeScript this array will
   // ALWAYS have exactly 3 elements, satisfying React Three Fiber's strict types.
   camera: {
-    position: [0, 20, 20] as [number, number, number],
-    fov: 55,
+    position: [0, 17, 13] as [number, number, number],
+    fov: 35,
   },
 
   // --- MATCH RULES ---

@@ -1,13 +1,11 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
-import PongScheme from "../../components/game/PongScheme";
-import { GameConfig } from "../../components/game/GameConfig";
 import { useGameState } from "../../hooks/useGameState";
+import { GameConfig } from "../../components/game/GameConfig";
+import GameCanvas from "../../components/game/GameCanvas";
 
 export default function SandboxPage() {
-  // THE BRAIN: We pull the game state and scoring logic from our custom hook.
-  // We feed it the winLimit directly from our central GameConfig.
+  // THE BRAIN: Pure game state, no frontend UI fluff needed here.
   const { score, gameState, handleScore } = useGameState(
     GameConfig.rules.winLimit,
   );
@@ -15,17 +13,14 @@ export default function SandboxPage() {
   return (
     <main
       style={{
-        width: "100vw",
-        height: "100vh",
-        backgroundColor: "#111",
-        position: "relative", // Required so the absolute-positioned scoreboard floats on top
+        width: "100%",
+        backgroundColor: "#111", // Shrink-wraps perfectly around the game
+        marginBottom: "auto", // Pushes the entire block to the top of the screen
+        position: "relative",
       }}
     >
-      {/* --- THE UI OVERLAY ---
-        This div sits ON TOP of the 3D canvas. Because it's standard React,
-        the frontend team can easily replace these inline styles with Tailwind
-        or custom CSS later without breaking the 3D game underneath.
-        'pointerEvents: "none"' ensures clicks pass through to the 3D canvas if needed.
+      {/* --- RAW DEBUG OVERLAY ---
+        This floats over the canvas to give you instant engine feedback.
       */}
       <div
         style={{
@@ -34,21 +29,19 @@ export default function SandboxPage() {
           width: "100%",
           textAlign: "center",
           color: "white",
-          fontSize: "5rem",
+          fontSize: "3rem",
           fontWeight: "bold",
           fontFamily: "monospace",
           zIndex: 10,
           pointerEvents: "none",
         }}
       >
-        {/* Player Scores */}
+        {/* Raw Scores */}
         <span style={{ color: "blue" }}>{score.p1}</span> -{" "}
         <span style={{ color: "red" }}>{score.p2}</span>
-        {/* Dynamic Game State Messages (Reacts to the Spacebar toggles) */}
+        {/* Engine State Flags */}
         {gameState === "START" && (
-          <div
-            style={{ fontSize: "1.5rem", color: "white", marginTop: "10px" }}
-          >
+          <div style={{ fontSize: "1.5rem", marginTop: "10px" }}>
             PRESS SPACE TO START
           </div>
         )}
@@ -61,9 +54,6 @@ export default function SandboxPage() {
         )}
         {gameState === "WON" && (
           <div style={{ fontSize: "2rem", color: "gold", marginTop: "10px" }}>
-            {/* FRONTEND/DIMI NOTE: "Player 1/2" will eventually be replaced
-              with real usernames pulled from the Auth session.
-            */}
             PLAYER {score.p1 > score.p2 ? "1" : "2"} WINS!
             <div style={{ fontSize: "1rem", color: "white" }}>
               PRESS SPACE TO RESTART
@@ -72,24 +62,13 @@ export default function SandboxPage() {
         )}
       </div>
 
-      {/* --- THE 3D WORLD ---
-        The Canvas acts as the window into the Three.js environment.
-        Everything inside here runs on the GPU and the 60fps useFrame loop.
+      {/* --- THE ENGINE TEST BED ---
+        Uses the exact GameCanvas wrapper from the main site to ensure
+        1:1 camera and aspect ratio parity with production.
       */}
-      <Canvas
-        camera={{
-          position: GameConfig.camera.position,
-          fov: GameConfig.camera.fov,
-        }}
-      >
-        <color attach="background" args={["#050505"]} />
-
-        {/* THE ENGINE: We pass the handleScore function so the physics loop
-          can tell React when a goal happens. We pass gameState so the engine
-          knows when to freeze the physics (e.g., during PAUSED or WON states).
-        */}
-        <PongScheme onScore={handleScore} gameState={gameState} />
-      </Canvas>
+      <div style={{ width: "100%", position: "relative" }}>
+        <GameCanvas onScore={handleScore} gameState={gameState} />
+      </div>
     </main>
   );
 }
