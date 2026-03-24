@@ -17,33 +17,42 @@ model User {
   losses   Int     @default(0)
   githubId String? @unique
 
-  // <-- Add these opposite relations for NextAuth
+  // NextAuth
   accounts Account[]
   sessions Session[]
+
+  // ✅ ADD THIS
+  matches Match[]
 }
 
 model Match {
-  id      Int    @id @default(autoincrement())
-  player1 String
-  player2 String
-  score1  Int
-  score2  Int
-  winner  String
+  id Int @id @default(autoincrement())
+
+  player1Id Int
+  player1   User @relation(fields: [player1Id], references: [id])
+
+  opponentType String // "guest" | "ai"
+  opponentName String // "Guest" | "AI"
+
+  score1 Int
+  score2 Int
+
+  createdAt DateTime @default(now())
 }
 
 model Account {
-  id                 Int       @id @default(autoincrement())
-  userId             Int
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?
-  access_token       String?
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?
-  session_state      String?
+  id                Int     @id @default(autoincrement())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id])
 

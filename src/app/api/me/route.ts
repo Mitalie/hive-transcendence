@@ -1,14 +1,23 @@
-// src/app/api/me/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { getUserFromRequest } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  try {
+    const user = await getUserFromRequest(req);
 
-  if (!session) {
-    return NextResponse.json({ success: false, message: "Not logged in" }, { status: 401 });
+    if (!user) {
+      return NextResponse.json({ loggedIn: false });
+    }
+
+    return NextResponse.json({
+      loggedIn: true,
+      user: {
+        id: user.id,
+        username: user.username,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ loggedIn: false }, { status: 500 });
   }
-
-  return NextResponse.json({ success: true, user: session.user });
 }

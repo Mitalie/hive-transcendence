@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import styles from "../page.module.css";
@@ -20,9 +20,23 @@ export default function Home() {
         />
         <div className={styles.intro}>
           <h1>To get started, edit the page.tsx file.</h1>
-          <a onClick={() => { setClickCount(prev => prev + 1) }}>Click Me!</a>
+          <a
+            onClick={() => {
+              setClickCount((prev) => prev + 1);
+            }}
+          >
+            Click Me!
+          </a>
           <p>You clicked {clickCount} times</p>
-          <a onClick={() => alert("Don't use alert() with React please, it freezes all the JavaScript.")}>Click Me Too!</a>
+          <a
+            onClick={() =>
+              alert(
+                "Don't use alert() with React please, it freezes all the JavaScript.",
+              )
+            }
+          >
+            Click Me Too!
+          </a>
           <p>
             Looking for a starting point or more instructions? Head over to{" "}
             <a

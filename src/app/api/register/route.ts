@@ -9,7 +9,10 @@ export async function POST(req: NextRequest) {
   const { username, email, password } = await req.json();
 
   if (!username || !email || !password) {
-    return NextResponse.json({ success: false, message: "Missing fields" }, { status: 400 });
+    return NextResponse.json(
+      { success: false, message: "Missing fields" },
+      { status: 400 },
+    );
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -18,8 +21,14 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.create({
       data: { username, email, password: hashedPassword },
     });
-    return NextResponse.json({ success: true, user: { id: user.id, username: user.username, email: user.email } });
+    return NextResponse.json({
+      success: true,
+      user: { id: user.id, username: user.username, email: user.email },
+    });
   } catch (err: any) {
-    return NextResponse.json({ success: false, message: err.message }, { status: 400 });
+    return NextResponse.json(
+      { success: false, message: err.message },
+      { status: 400 },
+    );
   }
 }

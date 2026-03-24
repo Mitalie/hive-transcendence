@@ -1,6 +1,6 @@
 "use client";
 
-import PongScene from "../components/PongScene";
+import PongScene from "../../components/PongScene";
 
 export default function GamePage() {
   return (
