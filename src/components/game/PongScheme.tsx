@@ -41,8 +41,17 @@ export default function PongScheme({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // List of keys used in the game that should NOT scroll the browser
+      // We check both .key (for W/S) and .code (for Space/Arrows) to be safe
+      const gameKeys = ["w", "s", "ArrowUp", "ArrowDown", " ", "Space"];
+
+      if (gameKeys.includes(e.key) || gameKeys.includes(e.code)) {
+        e.preventDefault();
+      }
+
       keys.current[e.key] = true;
     };
+
     const handleKeyUp = (e: KeyboardEvent) => {
       keys.current[e.key] = false;
     };
