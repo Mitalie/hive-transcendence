@@ -11,7 +11,7 @@ export default async function Friends() {
   }
   return (
     <div>
-      <h1 style={{ marginTop: "40px" }}>Friends Page</h1>
+      <h1>Friends Page</h1>
     </div>
   );
 }

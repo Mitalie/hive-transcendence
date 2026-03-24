@@ -1,3 +1,5 @@
+import Button from '@/components/Button';
+
 type Props = {
   onClose?: () => void;
 };
@@ -5,23 +7,11 @@ type Props = {
 export default function GameSettings({ onClose }: Props) {
   return (
     <div
-      className="card"
-      style={{
-        width: "250px",
-        padding: "20px",
-        position: "relative",
-      }}
+      className="bg-card text-text w-[250px] p-5 relative rounded-xl shadow-lg"
     >
-      <button
-        style={{
-          position: "absolute",
-          top: "10px",
-          right: "10px",
-        }}
-        onClick={onClose}
-      >
+      <Button onClick={onClose}>
         X
-      </button>
+      </Button>
 
       <p>Game Setting</p>
     </div>

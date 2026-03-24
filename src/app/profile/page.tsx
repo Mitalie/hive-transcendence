@@ -12,7 +12,7 @@ export default async function Profile() {
 
   return (
     <div>
-      <h1 style={{ marginTop: "40px" }}>Profile Page</h1>
+      <h1>Profile Page</h1>
     </div>
   );
 }
