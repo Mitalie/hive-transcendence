@@ -1,9 +1,6 @@
-// src/app/api/register/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-
-const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   const { username, email, password } = await req.json();
@@ -21,10 +18,12 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.create({
       data: { username, email, password: hashedPassword },
     });
+
     return NextResponse.json({
       success: true,
       user: { id: user.id, username: user.username, email: user.email },
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     return NextResponse.json(
       { success: false, message: err.message },

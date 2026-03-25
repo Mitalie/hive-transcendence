@@ -15,7 +15,7 @@ import { useSession } from "next-auth/react";
 import Bar from "@/components/Bar";
 import NavButton from "@/components/NavButton";
 import { GitSignInButton } from "@/components/buttons/github-signin";
-import { SignOutButton } from "@/components/buttons/sign-out-button";
+import SignOutButton from "@/components/buttons/sign-out-button";
 
 export default function Header() {
   const pathname = usePathname();
@@ -43,7 +43,10 @@ export default function Header() {
   return (
     <Bar className="justify-between">
       {/* website logo and name */}
-      <Link href="/" className="flex items-center gap-3 no-underline text-inherit">
+      <Link
+        href="/"
+        className="flex items-center gap-3 no-underline text-inherit"
+      >
         {/* Website Name */}
         <Image
           src="/images/website_logo.png"

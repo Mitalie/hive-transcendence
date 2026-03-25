@@ -11,8 +11,9 @@ type Match = {
   createdAt: string;
   player1: {
     id: number;
-    username: string;
-    email: string;
+    username: string | null;
+    name?: string | null;
+    email: string | null;
     wins: number;
     losses: number;
     score: number;
@@ -22,6 +23,15 @@ type Match = {
 export default function MatchesPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [error, setError] = useState("");
+
+  function getPlayerName(match: Match) {
+    return (
+      match.player1.username ??
+      match.player1.name ??
+      match.player1.email?.split("@")[0] ??
+      "User"
+    );
+  }
 
   async function fetchMatches() {
     try {
@@ -41,7 +51,11 @@ export default function MatchesPage() {
   }
 
   useEffect(() => {
-    fetchMatches();
+    async function loadMatches() {
+      await fetchMatches();
+    }
+
+    void loadMatches();
   }, []);
 
   async function createMatch() {
@@ -69,15 +83,17 @@ export default function MatchesPage() {
     fetchMatches();
   }
 
-function getWinnerText(match: any) {
-  if (match.score1 > match.score2) {
-    return `${match.player1.username} won`;
+  function getWinnerText(match: Match) {
+    const playerName = getPlayerName(match);
+
+    if (match.score1 > match.score2) {
+      return `${playerName} won`;
+    }
+    if (match.score2 > match.score1) {
+      return `${match.opponentName} won`;
+    }
+    return "draw";
   }
-  if (match.score2 > match.score1) {
-    return `${match.opponentName} won`;
-  }
-  return "draw";
-}
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
@@ -88,11 +104,16 @@ function getWinnerText(match: any) {
       {error && <p>{error}</p>}
 
       <ul>
-        {matches.map((match) => (
-          <li key={match.id}>
-            {match.player1.username} {match.score1} - {match.score2} {match.opponentName} ({getWinnerText(match)})
-          </li>
-        ))}
+        {matches.map((match) => {
+          const playerName = getPlayerName(match);
+
+          return (
+            <li key={match.id}>
+              {playerName} {match.score1} - {match.score2} {match.opponentName}{" "}
+              ({getWinnerText(match)})
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

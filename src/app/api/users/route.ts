@@ -7,10 +7,19 @@ export async function GET() {
     select: {
       id: true,
       username: true,
+      name: true,
+      email: true,
       wins: true,
       losses: true,
     },
   });
 
-  return NextResponse.json(users);
+  const response = users.map((u) => ({
+    id: u.id,
+    username: u.username ?? u.name ?? u.email?.split("@")[0] ?? "User",
+    wins: u.wins,
+    losses: u.losses,
+  }));
+
+  return NextResponse.json(response);
 }

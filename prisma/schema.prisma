@@ -8,21 +8,21 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  username String  @unique
-  email    String  @unique
-  password String
-  score    Int     @default(0)
-  wins     Int     @default(0)
-  losses   Int     @default(0)
-  githubId String? @unique
+  id            Int       @id @default(autoincrement())
+  username      String?   @unique
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  score         Int       @default(0)
+  wins          Int       @default(0)
+  losses        Int       @default(0)
+  githubId      String?   @unique
 
-  // NextAuth
-  accounts Account[]
-  sessions Session[]
-
-  // ✅ ADD THIS
-  matches Match[]
+  accounts      Account[]
+  sessions      Session[]
+  matches       Match[]
 }
 
 model Match {
