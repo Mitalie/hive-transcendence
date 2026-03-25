@@ -2,9 +2,8 @@
 
 /**
  * TODO
- * 1-CSS
- * 2-the logo is a placeholder, need to be updated by our own logo
- * 3-the three right links should be replaced by icon
+ * 1-the logo is a placeholder, need to be updated by our own logo
+ * 2-the three right links counld be replaced by icon
  */
 
 "use client";
@@ -13,8 +12,10 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { GitSignInButton } from "./buttons/github-signin";
-import { SignOutButton } from "./buttons/sign-out-button";
+import Bar from "@/components/Bar";
+import NavButton from "@/components/NavButton";
+import { GitSignInButton } from "@/components/buttons/github-signin";
+import { SignOutButton } from "@/components/buttons/sign-out-button";
 
 export default function Header() {
   const pathname = usePathname();
@@ -40,18 +41,9 @@ export default function Header() {
   };
 
   return (
-    <div
-      className="header"
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        padding: "10px 20px",
-        borderRadius: "12px",
-        alignItems: "center",
-      }}
-    >
+    <Bar className="justify-between">
       {/* website logo and name */}
-      <Link href="/" className="logo">
+      <Link href="/" className="flex items-center gap-3 no-underline text-inherit">
         {/* Website Name */}
         <Image
           src="/images/website_logo.png"
@@ -59,44 +51,38 @@ export default function Header() {
           width={32}
           height={32}
         />
-        <span className="logo-text">Website Name</span>
+        <span className="text-2xl text-text font-extrabold leading-none">Website Name</span>
       </Link>
 
       {/* page name */}
-      <div className="page-title">{getTitle()}</div>
+      <div className="text-xl leading-none">{getTitle()}</div>
 
       {/* buttons */}
-      <div style={{ display: "flex", gap: "10px" }}>
-        <Link
-          href="/game"
-          className={`button ${pathname === "/game" ? "active" : ""}`}
-        >
+      <div className="flex items-center gap-2.5">
+        <NavButton href="/game" active={pathname === "/game"}>
           Play
-        </Link>
-        <Link
-          href="/friends"
-          className={`button ${pathname === "/friends" ? "active" : ""}`}
-        >
+        </NavButton>
+
+        <NavButton href="/friends" active={pathname === "/friends"}>
           Friends
-        </Link>
-        <Link
-          href="/profile"
-          className={`button ${pathname === "/profile" ? "active" : ""}`}
-        >
+        </NavButton>
+
+        <NavButton href="/profile" active={pathname === "/profile"}>
           Profile
-        </Link>
+        </NavButton>
+
         {session?.user?.image && (
           <Image
             src={session.user.image}
             width={32}
             height={32}
             alt="avatar"
-            style={{ borderRadius: "50%" }}
+            className="rounded-full"
           />
         )}
         {/* Signin/out button depending if logged in */}
         {session ? <SignOutButton /> : <GitSignInButton />}
       </div>
-    </div>
+    </Bar>
   );
 }

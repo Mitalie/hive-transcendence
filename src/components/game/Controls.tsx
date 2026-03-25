@@ -1,3 +1,5 @@
+import Button from '@/components/Button';
+
 type Props = {
   playing: boolean;
   onStart: () => void;
@@ -7,19 +9,19 @@ type Props = {
 
 export default function Controls({ playing, onStart, onStop, onEnd }: Props) {
   return (
-    <div style={{ display: "flex", gap: "10px" }}>
+    <div className="flex gap-2.5">
       {!playing ? (
-        <button className="button" onClick={onStart}>
+        <Button onClick={onStart}>
           Start
-        </button>
+        </Button>
       ) : (
         <>
-          <button className="button" onClick={onStop}>
+          <Button onClick={onStop}>
             Stop
-          </button>
-          <button className="button" onClick={onEnd}>
+          </Button>
+          <Button onClick={onEnd}>
             End
-          </button>
+          </Button>
         </>
       )}
     </div>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "@/app/globals.css";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -28,19 +28,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`bg-bg ${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
-          <div className="app">
+          <div className="min-h-screen flex flex-col">
             {/* header */}
-            <div style={{ padding: "20px 20px 0 20px" }}>
+            <div className="pt-5 px-5">
               <Header />
             </div>
 
             {/* middle content */}
-            <div className="main">{children}</div>
+            <div className="text-text text-3xl flex-1 flex flex-col justify-center mx-5 my-2.5 bg-card rounded-xl text-center">
+              {children}
+            </div>
 
             {/* footer */}
-            <div style={{ padding: "0 20px 20px 20px" }}>
+            <div className="pb-5 px-5">
               <Footer />
             </div>
           </div>

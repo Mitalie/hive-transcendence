@@ -1,14 +1,7 @@
 export default function GameCanvas() {
   return (
     <div
-      className="card"
-      style={{
-        height: "400px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        fontSize: "28px",
-      }}
+      className="bg-card text-text h-[400px] flex justify-center items-center text-[28px] rounded-xl"
     >
       Game Canvas
     </div>
