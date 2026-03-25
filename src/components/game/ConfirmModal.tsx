@@ -1,3 +1,5 @@
+import Button from "@/components/Button";
+
 type Props = {
   visible: boolean;
   onCancel: () => void;
@@ -8,35 +10,12 @@ export default function ConfirmModal({ visible, onCancel, onConfirm }: Props) {
   if (!visible) return null;
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <div
-        className="card"
-        style={{
-          padding: "30px",
-          textAlign: "center",
-        }}
-      >
-        <p style={{ marginBottom: "20px" }}>
-          Are you sure you want to end the game?
-        </p>
-        <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
-          <button className="button" onClick={onCancel}>
-            Return to Game
-          </button>
-          <button className="button" onClick={onConfirm}>
-            End Game
-          </button>
+    <div className="absolute inset-0 flex justify-center items-center bg-black/50">
+      <div className="bg-card text-text p-[30px] text-center rounded-xl shadow-lg">
+        <p className="mb-5 text-lg">Are you sure you want to end the game?</p>
+        <div className="flex gap-2.5 justify-center">
+          <Button onClick={onCancel}>Return to Game</Button>
+          <Button onClick={onConfirm}>End Game</Button>
         </div>
       </div>
     </div>

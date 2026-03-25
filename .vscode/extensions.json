@@ -9,6 +9,6 @@
     // Use ESLint to enforce style and code quality rules.
     // ESLint can be run separatly, but the extension monitors files as they are
     // edited and reports issues with squiggles and in the problems pane.
-    "dbaeumer.vscode-eslint",
-  ],
+    "dbaeumer.vscode-eslint"
+  ]
 }
