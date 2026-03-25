@@ -14,14 +14,26 @@ export default function Paddle({
   color: string;
 }) {
   const meshRef = useRef<THREE.Mesh>(null!);
-  const xPos = player === 1 ? GameConfig.player1.xPos : GameConfig.player2.xPos;
+
+  // Keep the initial position calculation to prevent 1-frame flickering
+  const initialX =
+    player === 1 ? GameConfig.player1.xPos : GameConfig.player2.xPos;
 
   useFrame(() => {
-    meshRef.current.position.z = player === 1 ? engine.p1.z : engine.p2.z;
+    const pData = player === 1 ? engine.p1 : engine.p2;
+
+    // Map 3D Position
+    meshRef.current.position.x = pData.x;
+    meshRef.current.position.z = pData.z;
+
+    // Visual Juice: Lean into the direction of movement (Pitch & Roll)
+    meshRef.current.rotation.x = pData.vz * -0.02; // Leans side to side
+    meshRef.current.rotation.z = pData.vx * -0.02; // Leans forward/backward!
   });
 
   return (
-    <mesh ref={meshRef} position={[xPos, 0, 0]}>
+    // Pass the initial position so it spawns in the right place
+    <mesh ref={meshRef} position={[initialX, 0, 0]}>
       <boxGeometry
         args={[
           GameConfig.paddle.width,

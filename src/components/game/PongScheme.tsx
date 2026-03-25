@@ -21,7 +21,19 @@ export default function PongScheme({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.repeat) return;
 
-      const gameKeys = ["w", "s", "ArrowUp", "ArrowDown", " ", "Space"];
+      const gameKeys = [
+        "w",
+        "s",
+        "a",
+        "d",
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+        " ",
+        "Space",
+      ];
+
       if (gameKeys.includes(e.key) || gameKeys.includes(e.code)) {
         e.preventDefault();
       }
@@ -42,7 +54,6 @@ export default function PongScheme({
     };
   }, []);
 
-  // Main logic tick
   useFrame((_, delta) => {
     engine.update(delta, keys.current, gameState);
   });
@@ -61,19 +72,34 @@ export default function PongScheme({
       </mesh>
 
       {/* TOP WALL */}
-      <mesh position={[0, 0, -(GameConfig.court.zLimit + 0.25)]}>
-        <boxGeometry args={[GameConfig.court.width, 0.5, 0.5]} />
+      <mesh
+        position={[
+          0,
+          GameConfig.court.wallHeight / 2,
+          -(GameConfig.court.zLimit + 0.25),
+        ]}
+      >
+        <boxGeometry
+          args={[GameConfig.court.width, GameConfig.court.wallHeight, 0.5]}
+        />
         <meshStandardMaterial color="white" />
       </mesh>
 
       {/* BOTTOM WALL */}
-      <mesh position={[0, 0, GameConfig.court.zLimit + 0.25]}>
-        <boxGeometry args={[GameConfig.court.width, 0.5, 0.5]} />
+      <mesh
+        position={[
+          0,
+          GameConfig.court.wallHeight / 2,
+          GameConfig.court.zLimit + 0.25,
+        ]}
+      >
+        <boxGeometry
+          args={[GameConfig.court.width, GameConfig.court.wallHeight, 0.5]}
+        />
         <meshStandardMaterial color="white" />
       </mesh>
 
       {/* DECENTRALIZED ENTITIES */}
-      {/* These handle their own useFrame updates by pulling from the engine */}
       <Ball engine={engine} />
       <Paddle engine={engine} player={1} color="blue" />
       <Paddle engine={engine} player={2} color="red" />

@@ -4,17 +4,21 @@ export const GameConfig = {
   court: {
     width: 22,
     depth: 11,
-    zLimit: 5, // Top and bottom invisible walls
+    zLimit: 5, // Top and bottom walls
     xLimit: 11, // The score lines behind the paddles
+    wallHeight: 2.0,
   },
 
   // --- PADDLE SETTINGS ---
   paddle: {
     width: 0.5,
-    height: 0.5,
-    depth: 2, // The "length" of the paddle
-    speed: 9,
-    zLimit: 4, // Clamps the paddle so it can't move through the side walls
+    height: 2.0,
+    depth: 2,
+    zLimit: 4,
+    // --- PADDLE MOMENTUM ---
+    acceleration: 60, // How fast the paddle speeds up when holding W/S
+    friction: 10, // How fast it slides to a stop when you let go
+    maxVelocity: 15, // The absolute top speed of a "full wind-up" swipe
   },
 
   // --- PLAYER STARTING POSITIONS ---
@@ -26,8 +30,18 @@ export const GameConfig = {
     radius: 0.3,
     startVelocityX: 6,
     startVelocityZ: 5,
-    deflectionBoost: 3, // Additive spin per second
-    maxZVelocity: 11, // Max Z speed per second
+    deflectionBoost: 3,
+    maxZVelocity: 11,
+
+    // --- THE MAGNUS EFFECT ---
+    swipeSpinFactor: 0.6, // Acceleration
+    spinFriction: 0.1, // Spin airtime
+
+    // --- 3D GRAVITY ---
+    gravity: 18, // Downward pull on the Y-axis
+    serveHeight: 2.5, // Height the ball drops from on a serve
+    paddleHitForceY: 6, // The upward "pop" when the paddle hits the ball
+    bounceFriction: 0.8, // Retains % of its bounce height when hitting the table
   },
 
   // --- CAMERA SETTINGS ---
