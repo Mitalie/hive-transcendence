@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useGameState } from "../../hooks/useGameState";
 import { GameConfig } from "../../components/game/GameConfig";
 import GameCanvas from "../../components/game/GameCanvas";
@@ -10,18 +11,58 @@ export default function SandboxPage() {
     GameConfig.rules.winLimit,
   );
 
+  // The toggle state! Defaults to our new awesome physics.
+  const [gameMode, setGameMode] = useState<"classic" | "advanced">("advanced");
+
   return (
     <main
       style={{
         width: "100%",
-        backgroundColor: "#111", // Shrink-wraps perfectly around the game
-        marginBottom: "auto", // Pushes the entire block to the top of the screen
+        backgroundColor: "#111",
+        marginBottom: "auto",
         position: "relative",
       }}
     >
-      {/* --- RAW DEBUG OVERLAY ---
-        This floats over the canvas to give you instant engine feedback.
-      */}
+      {/* --- DEBUG TOGGLE MENU --- */}
+      <div
+        style={{
+          position: "absolute",
+          top: 10,
+          left: 10,
+          zIndex: 20,
+          display: "flex",
+          gap: "10px",
+        }}
+      >
+        <button
+          onClick={() => setGameMode("classic")}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: gameMode === "classic" ? "white" : "#333",
+            color: gameMode === "classic" ? "black" : "white",
+            border: "1px solid white",
+            cursor: "pointer",
+            fontFamily: "monospace",
+          }}
+        >
+          CLASSIC
+        </button>
+        <button
+          onClick={() => setGameMode("advanced")}
+          style={{
+            padding: "8px 16px",
+            backgroundColor: gameMode === "advanced" ? "red" : "#333",
+            color: gameMode === "advanced" ? "white" : "white",
+            border: "1px solid red",
+            cursor: "pointer",
+            fontFamily: "monospace",
+          }}
+        >
+          CYBER PADEL
+        </button>
+      </div>
+
+      {/* --- RAW DEBUG OVERLAY --- */}
       <div
         style={{
           position: "absolute",
@@ -62,12 +103,14 @@ export default function SandboxPage() {
         )}
       </div>
 
-      {/* --- THE ENGINE TEST BED ---
-        Uses the exact GameCanvas wrapper from the main site to ensure
-        1:1 camera and aspect ratio parity with production.
-      */}
+      {/* --- THE ENGINE TEST BED --- */}
       <div style={{ width: "100%", position: "relative" }}>
-        <GameCanvas onScore={handleScore} gameState={gameState} />
+        {/* Pass the gameMode prop into your Canvas! */}
+        <GameCanvas
+          onScore={handleScore}
+          gameState={gameState}
+          mode={gameMode}
+        />
       </div>
     </main>
   );

@@ -1,5 +1,7 @@
 import { GameConfig } from "./GameConfig";
 
+export type GameMode = "classic" | "advanced";
+
 export class PongEngine {
   public ball = { x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, spin: 0 };
 
@@ -9,9 +11,11 @@ export class PongEngine {
   public serveTimer = 0;
   private nextServeDirection: 1 | 2 = 1;
   private onScore: (player: 1 | 2) => void;
+  public mode: GameMode;
 
-  constructor(onScore: (player: 1 | 2) => void) {
+  constructor(onScore: (player: 1 | 2) => void, mode: GameMode = "advanced") {
     this.onScore = onScore;
+    this.mode = mode;
     this.resetBall(1);
   }
 
@@ -26,10 +30,76 @@ export class PongEngine {
 
     if (this.serveTimer > 0) {
       this.serveTimer -= safeDelta * 1000;
-      this.ball.y = GameConfig.ball.serveHeight;
+      // Serve from the floor in classic, sky in advanced
+      this.ball.y = this.mode === "classic" ? 0 : GameConfig.ball.serveHeight;
       return;
     }
 
+    // --- MODE ROUTING ---
+    if (this.mode === "classic") {
+      this.updateClassicPhysics(safeDelta, keys);
+    } else {
+      this.updateAdvancedPhysics(safeDelta, keys);
+    }
+
+    // --- SHARED SCORING LOGIC ---
+    if (this.ball.x > GameConfig.court.xLimit) {
+      this.onScore(1);
+      this.resetBall(2);
+    } else if (this.ball.x < -GameConfig.court.xLimit) {
+      this.onScore(2);
+      this.resetBall(1);
+    }
+  }
+
+  private updateClassicPhysics(
+    safeDelta: number,
+    keys: Record<string, boolean>,
+  ) {
+    const speed = GameConfig.paddle.maxVelocity; // Use max speed as flat speed
+    const zLimit = GameConfig.paddle.zLimit;
+
+    // Lock X positions, Reset velocities (No net-rushing or tilting in classic)
+    this.p1.x = GameConfig.player1.xPos;
+    this.p2.x = GameConfig.player2.xPos;
+    this.p1.vx = 0;
+    this.p1.vz = 0;
+    this.p2.vx = 0;
+    this.p2.vz = 0;
+
+    // Binary Z-Axis Movement
+    if (keys["w"]) this.p1.z -= speed * safeDelta;
+    else if (keys["s"]) this.p1.z += speed * safeDelta;
+
+    if (keys["arrowup"]) this.p2.z -= speed * safeDelta;
+    else if (keys["arrowdown"]) this.p2.z += speed * safeDelta;
+
+    this.p1.z = Math.max(Math.min(this.p1.z, zLimit), -zLimit);
+    this.p2.z = Math.max(Math.min(this.p2.z, zLimit), -zLimit);
+
+    // Flat 2D Ball Movement
+    this.ball.x += this.ball.vx * safeDelta;
+    this.ball.z += this.ball.vz * safeDelta;
+    this.ball.y = 0;
+    this.ball.vy = 0;
+    this.ball.spin = 0;
+
+    // Flat 2D Wall Collisions
+    if (this.ball.z >= GameConfig.court.zLimit) {
+      this.ball.vz = -Math.abs(this.ball.vz);
+    } else if (this.ball.z <= -GameConfig.court.zLimit) {
+      this.ball.vz = Math.abs(this.ball.vz);
+    }
+
+    // Check Paddles (Pass 0s so smashes and curve calculations are ignored)
+    this.checkPaddle(this.p1.z, this.p1.x, 1, 0, 0);
+    this.checkPaddle(this.p2.z, this.p2.x, 2, 0, 0);
+  }
+
+  private updateAdvancedPhysics(
+    safeDelta: number,
+    keys: Record<string, boolean>,
+  ) {
     const accel = GameConfig.paddle.acceleration;
     const fric = GameConfig.paddle.friction;
     const maxVel = GameConfig.paddle.maxVelocity;
@@ -37,7 +107,7 @@ export class PongEngine {
     const xLimitBack = GameConfig.court.xLimit - 1;
     const netLimit = 1;
 
-    // --- P1 Momentum Physics (WASD) ---
+    // P1 Momentum
     if (keys["w"]) this.p1.vz -= accel * safeDelta;
     else if (keys["s"]) this.p1.vz += accel * safeDelta;
     else this.p1.vz *= 1 - fric * safeDelta;
@@ -68,7 +138,7 @@ export class PongEngine {
       this.p1.vx = 0;
     }
 
-    // --- P2 Momentum Physics (Arrows) ---
+    // P2 Momentum
     if (keys["arrowup"]) this.p2.vz -= accel * safeDelta;
     else if (keys["arrowdown"]) this.p2.vz += accel * safeDelta;
     else this.p2.vz *= 1 - fric * safeDelta;
@@ -99,7 +169,7 @@ export class PongEngine {
       this.p2.vx = 0;
     }
 
-    // --- Ball Movement ---
+    // Ball Movement
     this.ball.x += this.ball.vx * safeDelta;
     this.ball.z += this.ball.vz * safeDelta;
 
@@ -114,7 +184,6 @@ export class PongEngine {
     // Magnus Curve
     this.ball.vz += this.ball.spin * safeDelta;
     this.ball.spin *= 1 - GameConfig.ball.spinFriction * safeDelta;
-
     const maxZBall = GameConfig.ball.maxZVelocity;
     this.ball.vz = Math.max(Math.min(this.ball.vz, maxZBall), -maxZBall);
 
@@ -134,18 +203,8 @@ export class PongEngine {
       this.ball.spin *= 0.9;
     }
 
-    // Pass dynamic X positions and X velocities into collision checks
     this.checkPaddle(this.p1.z, this.p1.x, 1, this.p1.vz, this.p1.vx);
     this.checkPaddle(this.p2.z, this.p2.x, 2, this.p2.vz, this.p2.vx);
-
-    // Scoring
-    if (this.ball.x > GameConfig.court.xLimit) {
-      this.onScore(1);
-      this.resetBall(2);
-    } else if (this.ball.x < -GameConfig.court.xLimit) {
-      this.onScore(2);
-      this.resetBall(1);
-    }
   }
 
   private checkPaddle(
@@ -194,14 +253,24 @@ export class PongEngine {
 
   private applyDeflection(paddleZ: number, paddleVelocityZ: number) {
     const hitPoint = (this.ball.z - paddleZ) / (GameConfig.paddle.depth / 2);
-    const spinBite = this.ball.spin * 0.5;
 
-    this.ball.vz += hitPoint * GameConfig.ball.deflectionBoost + spinBite;
-    this.ball.spin =
-      this.ball.spin * -0.5 +
-      paddleVelocityZ * GameConfig.ball.swipeSpinFactor * -1;
+    // 1. BASE BOUNCE (Applies to both modes)
+    this.ball.vz += hitPoint * GameConfig.ball.deflectionBoost;
 
-    this.ball.vy = GameConfig.ball.paddleHitForceY;
+    if (this.mode === "advanced") {
+      // 2. CYBER PADEL ONLY (Spin bite, Pop-up)
+      const spinBite = this.ball.spin * 0.5;
+      this.ball.vz += spinBite;
+
+      this.ball.spin =
+        this.ball.spin * -0.5 +
+        paddleVelocityZ * GameConfig.ball.swipeSpinFactor * -1;
+      this.ball.vy = GameConfig.ball.paddleHitForceY;
+    } else {
+      // 3. CLASSIC ONLY (Clean state)
+      this.ball.spin = 0;
+      this.ball.vy = 0;
+    }
 
     const maxZ = GameConfig.ball.maxZVelocity;
     this.ball.vz = Math.max(Math.min(this.ball.vz, maxZ), -maxZ);
@@ -209,21 +278,25 @@ export class PongEngine {
 
   private resetBall(targetPlayer: 1 | 2) {
     this.ball.x = 0;
-    this.ball.y = GameConfig.ball.serveHeight;
     this.ball.z = 0;
     this.ball.vx = 0;
     this.ball.vy = 0;
     this.ball.vz = 0;
     this.ball.spin = 0;
+
+    // Drop height depends on mode
+    this.ball.y = this.mode === "classic" ? 0 : GameConfig.ball.serveHeight;
     this.serveTimer = GameConfig.rules.serveDelay;
 
     this.nextServeDirection = targetPlayer;
+
+    const speedMultiplier = this.mode === "classic" ? 2 : 0.5;
 
     const randomZ = Math.random() > 0.5 ? 1 : -1;
     this.ball.vx =
       this.nextServeDirection === 1
         ? -GameConfig.ball.startVelocityX
-        : GameConfig.ball.startVelocityX;
-    this.ball.vz = GameConfig.ball.startVelocityZ * randomZ;
+        : GameConfig.ball.startVelocityX * speedMultiplier;
+    this.ball.vz = GameConfig.ball.startVelocityZ * randomZ * speedMultiplier;
   }
 }

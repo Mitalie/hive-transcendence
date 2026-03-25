@@ -10,11 +10,13 @@ import Paddle from "./Paddle";
 export default function PongScheme({
   onScore,
   gameState,
+  mode,
 }: {
   onScore: (player: 1 | 2) => void;
   gameState: "START" | "PLAYING" | "PAUSED" | "WON";
+  mode: "classic" | "advanced";
 }) {
-  const engine = useMemo(() => new PongEngine(onScore), [onScore]);
+  const engine = useMemo(() => new PongEngine(onScore, mode), [onScore, mode]);
   const keys = useRef<Record<string, boolean>>({});
 
   useEffect(() => {
