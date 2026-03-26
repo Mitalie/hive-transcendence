@@ -1,0 +1,21 @@
+{
+  "footer": {
+    "language": "Kieli",
+    "dark": "Tumma",
+    "light": "Vaalea"
+  },
+  "header": {
+    "websitename": "Verkkosivuston Nimi",
+    "home": "Etusivu",
+    "game": "Peli",
+    "friends": "Ystävät",
+    "profile": "Profiili",
+    "login": "Kirjaudu",
+    "registration": "Rekisteröidy",
+    "default": "Oletussivu",
+    "play": "Pelaa"
+  },
+  "home": {
+    "title": "Etusivu"
+  }
+}
