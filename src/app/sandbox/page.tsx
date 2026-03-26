@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useGameState } from "../../hooks/useGameState";
-import { GameConfig } from "../../components/game/GameConfig";
-import GameCanvas from "../../components/game/GameCanvas";
+import { useGameState } from "@/hooks/useGameState";
+import { GameConfig } from "@/game/GameConfig";
+import GameCanvas from "@/components/game/GameCanvas";
 
 export default function SandboxPage() {
   // THE BRAIN: Pure game state, no frontend UI fluff needed here.

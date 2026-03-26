@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { GameConfig } from "../components/game/GameConfig";
+import { GameConfig } from "@/game/GameConfig";
 
 export const useGameState = (winLimit: number = GameConfig.rules.winLimit) => {
   // Atomic score state for Player 1 (Blue) and Player 2 (Red)

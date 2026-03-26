@@ -2,12 +2,12 @@
 
 import { Canvas } from "@react-three/fiber";
 import PongScheme from "./PongScheme";
-import { GameConfig } from "./GameConfig";
+import { GameConfig } from "@/game/GameConfig";
 
 interface GameCanvasProps {
   onScore: (player: 1 | 2) => void;
   gameState: "START" | "PLAYING" | "PAUSED" | "WON";
-  mode: "classic" | "advanced";
+  mode?: "classic" | "advanced";
 }
 
 export default function GameCanvas({

@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Controls from "@/components/game/Controls";
 import ScoreBoard from "@/components/game/ScoreBoard";
 import GameCanvas from "@/components/game/GameCanvas";
@@ -10,8 +10,8 @@ import GameSettings from "@/components/game/GameSettings";
 import ConfirmModal from "@/components/game/ConfirmModal";
 
 // HOOKS/CONFIG
-import { useGameState } from "../../hooks/useGameState";
-import { GameConfig } from "../../components/game/GameConfig";
+import { useGameState } from "@/hooks/useGameState";
+import { GameConfig } from "@/game/GameConfig";
 
 export default function GamePage() {
   const [showEndModal, setShowEndModal] = useState(false);

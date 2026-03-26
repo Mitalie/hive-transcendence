@@ -2,8 +2,8 @@
 
 import { useRef, useEffect, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import { GameConfig } from "./GameConfig";
-import { PongEngine } from "./PongEngine";
+import { GameConfig } from "@/game/GameConfig";
+import { PongEngine } from "@/game/PongEngine";
 import Ball from "./Ball";
 import Paddle from "./Paddle";
 
@@ -14,7 +14,7 @@ export default function PongScheme({
 }: {
   onScore: (player: 1 | 2) => void;
   gameState: "START" | "PLAYING" | "PAUSED" | "WON";
-  mode: "classic" | "advanced";
+  mode?: "classic" | "advanced";
 }) {
   const engine = useMemo(() => new PongEngine(onScore, mode), [onScore, mode]);
   const keys = useRef<Record<string, boolean>>({});

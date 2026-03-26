@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { PongEngine } from "./PongEngine";
-import { GameConfig } from "./GameConfig";
+import { PongEngine } from "@/game/PongEngine";
+import { GameConfig } from "@/game/GameConfig";
 
 export default function Paddle({
   engine,
