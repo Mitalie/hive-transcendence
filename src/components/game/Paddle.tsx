@@ -1,34 +1,28 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { PongEngine } from "@/game/PongEngine";
+import { PaddleData } from "@/game/PongEngine";
 import { GameConfig } from "@/game/GameConfig";
 
 export default function Paddle({
-  engine,
-  player,
+  paddleData,
+  initialX,
   color,
 }: {
-  engine: PongEngine;
-  player: 1 | 2;
+  paddleData: PaddleData;
+  initialX: number;
   color: string;
 }) {
   const meshRef = useRef<THREE.Mesh>(null!);
 
-  // Keep the initial position calculation to prevent 1-frame flickering
-  const initialX =
-    player === 1 ? GameConfig.player1.xPos : GameConfig.player2.xPos;
-
   useFrame(() => {
-    const pData = player === 1 ? engine.p1 : engine.p2;
-
     // Map 3D Position
-    meshRef.current.position.x = pData.x;
-    meshRef.current.position.z = pData.z;
+    meshRef.current.position.x = paddleData.x;
+    meshRef.current.position.z = paddleData.z;
 
     // Visual Juice: Lean into the direction of movement (Pitch & Roll)
-    meshRef.current.rotation.x = pData.vz * -0.02; // Leans side to side
-    meshRef.current.rotation.z = pData.vx * -0.02; // Leans forward/backward!
+    meshRef.current.rotation.x = paddleData.vz * -0.02; // Leans side to side
+    meshRef.current.rotation.z = paddleData.vx * -0.02; // Leans forward/backward!
   });
 
   return (

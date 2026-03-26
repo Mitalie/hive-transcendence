@@ -300,3 +300,6 @@ export class PongEngine {
     this.ball.vz = GameConfig.ball.startVelocityZ * randomZ * speedMultiplier;
   }
 }
+
+export type BallData = PongEngine["ball"];
+export type PaddleData = PongEngine["p1"];

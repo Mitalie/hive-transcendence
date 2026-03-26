@@ -1,20 +1,20 @@
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { PongEngine } from "@/game/PongEngine";
+import { BallData } from "@/game/PongEngine";
 import { GameConfig } from "@/game/GameConfig";
 
-export default function Ball({ engine }: { engine: PongEngine }) {
+export default function Ball({ ballData }: { ballData: BallData }) {
   const meshRef = useRef<THREE.Mesh>(null!);
 
   useFrame(() => {
     // 3D Position mapping
-    meshRef.current.position.x = engine.ball.x;
-    meshRef.current.position.y = engine.ball.y; // The gravity bounce!
-    meshRef.current.position.z = engine.ball.z;
+    meshRef.current.position.x = ballData.x;
+    meshRef.current.position.y = ballData.y; // The gravity bounce!
+    meshRef.current.position.z = ballData.z;
 
     // Visual Magnus Spin (Ball physically rolls in the air)
-    meshRef.current.rotation.x += engine.ball.spin * 0.05;
+    meshRef.current.rotation.x += ballData.spin * 0.05;
   });
 
   return (

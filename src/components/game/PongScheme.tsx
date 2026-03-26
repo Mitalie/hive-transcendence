@@ -6,6 +6,7 @@ import { GameConfig } from "@/game/GameConfig";
 import { PongEngine } from "@/game/PongEngine";
 import Ball from "./Ball";
 import Paddle from "./Paddle";
+import Arena from "./Arena";
 
 export default function PongScheme({
   onScore,
@@ -65,46 +66,21 @@ export default function PongScheme({
       <ambientLight intensity={0.5} />
       <directionalLight position={[0, 10, 5]} intensity={1} />
 
-      {/* FLOOR */}
-      <mesh position={[0, -0.5, 0]}>
-        <boxGeometry
-          args={[GameConfig.court.width, 0.1, GameConfig.court.depth]}
-        />
-        <meshStandardMaterial color="#222222" />
-      </mesh>
-
-      {/* TOP WALL */}
-      <mesh
-        position={[
-          0,
-          GameConfig.court.wallHeight / 2,
-          -(GameConfig.court.zLimit + 0.25),
-        ]}
-      >
-        <boxGeometry
-          args={[GameConfig.court.width, GameConfig.court.wallHeight, 0.5]}
-        />
-        <meshStandardMaterial color="white" />
-      </mesh>
-
-      {/* BOTTOM WALL */}
-      <mesh
-        position={[
-          0,
-          GameConfig.court.wallHeight / 2,
-          GameConfig.court.zLimit + 0.25,
-        ]}
-      >
-        <boxGeometry
-          args={[GameConfig.court.width, GameConfig.court.wallHeight, 0.5]}
-        />
-        <meshStandardMaterial color="white" />
-      </mesh>
+      {/* STATIC ENVIRONMENT */}
+      <Arena />
 
       {/* DECENTRALIZED ENTITIES */}
-      <Ball engine={engine} />
-      <Paddle engine={engine} player={1} color="blue" />
-      <Paddle engine={engine} player={2} color="red" />
+      <Ball ballData={engine.ball} />
+      <Paddle
+        paddleData={engine.p1}
+        initialX={GameConfig.player1.xPos}
+        color="blue"
+      />
+      <Paddle
+        paddleData={engine.p2}
+        initialX={GameConfig.player2.xPos}
+        color="red"
+      />
     </>
   );
 }
