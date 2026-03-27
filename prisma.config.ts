@@ -3,12 +3,19 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
+const {
+  MARIADB_USER: user,
+  MARIADB_PASSWORD: password,
+  MARIADB_HOST: host,
+  MARIADB_DATABASE: database,
+} = process.env;
+
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    url: `mysql://${user}:${password}@${host}:3306/${database}`,
   },
 });
