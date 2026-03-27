@@ -4,7 +4,7 @@
   "name": "Transcendence Devcontainer",
   "dockerComposeFile": ["./docker-compose.yml"],
   "service": "devcontainer",
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "workspaceFolder": "/workspaces/transcendence",
   "customizations": {
     "vscode": {
       "extensions": [
