@@ -7,27 +7,27 @@ DC := docker compose
 
 all: $(NAME)
 
-$(NAME): up
+$(NAME): dev
 
-# Builds and starts the containers in the background
+# Starts the database container and then runs Next.js dev server
+dev: up
+	@echo "Starting $(NAME) Next.js dev server"
+	@npm run dev
+
+# Builds and starts the database container in the background.
 # up --build : Forces fresh image compilation from Dockerfiles before starting.
 # -d         : Runs the stack in the background (detached mode).
 up:
-	@echo "Starting $(NAME) containers in the background..."
+	@echo "Starting $(NAME) database container in the background..."
 	@$(DC) up --build -d
 
-# Starts the containers attached to the terminal (good for seeing live logs)
-dev:
-	@echo "Starting $(NAME) in development mode..."
-	@$(DC) up --build
-
-# Gracefully stops containers and the bridge network.
+# Stop the database container.
 # Leaves volumes intact.
 down:
 	@echo "Stopping $(NAME) containers..."
 	@$(DC) down
 
-# Shows the live logs of the containers
+# Shows the live logs of the database container
 # -f         : Follows the log output continuously.
 logs:
 	@$(DC) logs -f
