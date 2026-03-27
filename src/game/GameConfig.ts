@@ -28,8 +28,8 @@ export const GameConfig = {
   // --- BALL SETTINGS ---
   ball: {
     radius: 0.3,
-    startVelocityX: 6,
-    startVelocityZ: 5,
+    startVelocityX: 20, 
+    startVelocityZ: 25,
     deflectionBoost: 3,
     maxZVelocity: 11,
 

@@ -27,6 +27,16 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
+model Match {
+  id        String   @id @default(cuid())
+  player1   String
+  player2   String
+  score1    Int
+  score2    Int
+  winner    String
+  createdAt DateTime @default(now())
+}
+
 model Account {
   id                       String  @id @default(cuid())
   userId                   String  @unique
