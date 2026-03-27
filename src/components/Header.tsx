@@ -16,27 +16,29 @@ import Bar from "@/components/Bar";
 import NavButton from "@/components/NavButton";
 import { GitSignInButton } from "@/components/buttons/github-signin";
 import { SignOutButton } from "@/components/buttons/sign-out-button";
+import { useTranslation } from "react-i18next";
 
 export default function Header() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { t } = useTranslation();
 
   const getTitle = () => {
     switch (pathname) {
       case "/":
-        return "Home";
+        return t("header.home");
       case "/game":
-        return "Game";
+        return t("header.game");
       case "/friends":
-        return "Friends";
+        return t("header.friends");
       case "/profile":
-        return "Profile";
+        return t("header.profile");
       case "/login":
-        return "Login";
+        return t("header.login");
       case "/registration":
-        return "Registration";
+        return t("header.registration");
       default:
-        return "Default Page Title";
+        return t("header.default");
     }
   };
 
@@ -55,7 +57,7 @@ export default function Header() {
           height={32}
         />
         <span className="text-2xl text-text font-extrabold leading-none">
-          Website Name
+          {t("header.websitename")}
         </span>
       </Link>
 
@@ -65,15 +67,15 @@ export default function Header() {
       {/* buttons */}
       <div className="flex items-center gap-2.5">
         <NavButton href="/game" active={pathname === "/game"}>
-          Play
+          {t("header.play")}
         </NavButton>
 
         <NavButton href="/friends" active={pathname === "/friends"}>
-          Friends
+          {t("header.friends")}
         </NavButton>
 
         <NavButton href="/profile" active={pathname === "/profile"}>
-          Profile
+          {t("header.profile")}
         </NavButton>
 
         {session?.user?.image && (

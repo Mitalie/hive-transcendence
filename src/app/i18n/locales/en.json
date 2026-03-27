@@ -1,0 +1,26 @@
+{
+  "footer": {
+    "language": "Language",
+    "dark": "Dark",
+    "light": "Light",
+    "languageLabel": {
+      "en": "English",
+      "fi": "Suomi",
+      "zh": "中文"
+    }
+  },
+  "header": {
+    "websitename": "Website Name",
+    "home": "Home",
+    "game": "Game",
+    "friends": "Friends",
+    "profile": "Profile",
+    "login": "Login",
+    "registration": "Registration",
+    "default": "Default Page Title",
+    "play": "Play"
+  },
+  "home": {
+    "title": "Home Page"
+  }
+}

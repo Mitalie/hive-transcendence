@@ -13,11 +13,14 @@
     "@prisma/adapter-mariadb": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "@react-three/fiber": "^9.5.0",
+    "i18next": "^25.10.9",
+    "i18next-browser-languagedetector": "^8.2.1",
     "next": "16.2.0",
     "next-auth": "^4.24.13",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "three": "^0.183.2"
+    "three": "^0.183.2",
+    "react-i18next": "^16.6.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

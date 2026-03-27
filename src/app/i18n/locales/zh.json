@@ -1,0 +1,21 @@
+{
+  "footer": {
+    "language": "语言",
+    "dark": "暗色",
+    "light": "亮色"
+  },
+  "header": {
+    "websitename": "网站名称",
+    "home": "主页",
+    "game": "游戏",
+    "friends": "好友",
+    "profile": "个人资料",
+    "login": "登录",
+    "registration": "注册",
+    "default": "默认页面",
+    "play": "开始"
+  },
+  "home": {
+    "title": "首页"
+  }
+}
