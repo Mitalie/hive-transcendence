@@ -1,0 +1,16 @@
+# docker-compose fragment to be extended by either standalone or devcontainer config
+services:
+  mariadb:
+    image: mariadb:latest
+    restart: on-failure
+
+    environment:
+      - MARIADB_ROOT_PASSWORD
+      - MARIADB_DATABASE
+      - MARIADB_USER
+      - MARIADB_PASSWORD
+
+    volumes:
+      # NAMED VOLUME: Saves database data permanently to the host machine.
+      # Without this, all users and stats would be wiped every time Docker shuts down.
+      - transcendence_mariadb_data:/var/lib/mysql

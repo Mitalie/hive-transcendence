@@ -9,6 +9,9 @@
     // Use ESLint to enforce style and code quality rules.
     // ESLint can be run separatly, but the extension monitors files as they are
     // edited and reports issues with squiggles and in the problems pane.
-    "dbaeumer.vscode-eslint"
+    "dbaeumer.vscode-eslint",
+    // While the project can be developed without devcontainers, recommend the
+    // extension so that VS Code will prompt to use the container setup.
+    "ms-vscode-remote.remote-containers"
   ]
 }
