@@ -1,16 +1,20 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { GameConfig } from "@/game/GameConfig";
+import { useSession } from "next-auth/react";
 
 export const useGameState = (winLimit: number = GameConfig.rules.winLimit) => {
   // Atomic score state for Player 1 (Blue) and Player 2 (Red)
+  const { data: session } = useSession();
   const [score, setScore] = useState({ p1: 0, p2: 0 });
 
   // The global status of the game engine
   const [gameState, setGameState] = useState<
     "START" | "PLAYING" | "PAUSED" | "WON"
   >("START");
+
+  const hasHandledWin = useRef(false);
 
   /**
    * handleScore
@@ -34,19 +38,60 @@ export const useGameState = (winLimit: number = GameConfig.rules.winLimit) => {
         const p2Win =
           nextScore.p2 >= winLimit && nextScore.p2 - nextScore.p1 >= 2;
 
-        if (p1Win || p2Win) {
-          setGameState("WON");
-          // ------------------------------------------------------------------
-          // DIMI (DATABASE LAYER): Trigger your Prisma save logic here!
-          // Payload format: player1, player2, score1, score2, winner
-          // ------------------------------------------------------------------
-        }
+        if (p1Win || p2Win) setGameState("WON");
+
 
         return nextScore;
       });
     },
-    [winLimit],
+    [winLimit, gameState],
   );
+
+  useEffect(() => {
+    const saveMatch = async () => {
+      const player1 = session?.user?.email;
+      const player2 = "local-player-2";
+
+      if (!player1) {
+        console.error("No authenticated user found");
+        return;
+      }
+      
+      const payload = {
+        player1,
+        player2,
+        score1: score.p1,
+        score2: score.p2,
+        winner: score.p1 > score.p2 ? player1 : player2,
+      };
+
+      console.log("SAVING MATCH:", payload);
+
+      const res = await fetch("/api/matches", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Failed to save match");
+      }
+
+      const data = await res.json();
+      console.log("MATCH SAVED:", data);
+    };
+
+    if (gameState !== "WON" || hasHandledWin.current) return;
+
+    hasHandledWin.current = true;
+    saveMatch().catch((error) => {
+      console.error("Failed to save match:", error);
+      hasHandledWin.current = false;
+    });
+  }, [gameState, score, session]);
 
   /**
    * Keyboard Logic - Game Controller
@@ -59,7 +104,10 @@ export const useGameState = (winLimit: number = GameConfig.rules.winLimit) => {
         setGameState((current) => {
           // START or RESTART: Move into active play from a menu or victory screen.
           if (current === "START" || current === "WON") {
-            if (current === "WON") setScore({ p1: 0, p2: 0 }); // Reset score
+            if (current === "WON") {
+              setScore({ p1: 0, p2: 0 });
+              hasHandledWin.current = false;
+            }
             return "PLAYING";
           }
 
