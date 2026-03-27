@@ -14,7 +14,7 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import Bar from "@/components/Bar";
 import NavButton from "@/components/NavButton";
-import { GitSignInButton } from "@/components/buttons/github-signin";
+import { SignInButton } from "./buttons/general-signin";
 import { SignOutButton } from "@/components/buttons/sign-out-button";
 import { useTranslation } from "react-i18next";
 
@@ -88,7 +88,7 @@ export default function Header() {
           />
         )}
         {/* Signin/out button depending if logged in */}
-        {session ? <SignOutButton /> : <GitSignInButton />}
+        {session ? <SignOutButton /> : <SignInButton />}
       </div>
     </Bar>
   );
