@@ -2,9 +2,7 @@
 
 import { SessionProvider } from "next-auth/react";
 import { I18nextProvider } from "react-i18next";
-import i18n, { initI18n } from "@/app/i18n/i18n";
-
-initI18n();
+import i18n from "@/i18n/i18n";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
