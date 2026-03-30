@@ -2,7 +2,9 @@
   "footer": {
     "language": "Kieli",
     "dark": "Tumma",
-    "light": "Vaalea"
+    "light": "Vaalea",
+    "termsLink": "Käyttöehdot",
+    "privacyLink": "Tietosuojakäytäntö"
   },
   "header": {
     "websitename": "Verkkosivuston Nimi",
@@ -12,10 +14,90 @@
     "profile": "Profiili",
     "login": "Kirjaudu",
     "registration": "Rekisteröidy",
+    "terms_of_service": "Käyttöehdot",
+    "privacy": "Tietosuojakäytäntö",
     "default": "Oletussivu",
     "play": "Pelaa"
   },
   "home": {
     "title": "Etusivu"
+  },
+  "terms": {
+    "title": "Käyttöehdot",
+    "lastUpdated": "Viimeksi päivitetty: 30. maaliskuuta 2026",
+    "intro": "Tervetuloa Transcendenceen. Käyttämällä tätä sovellusta hyväksyt nämä käyttöehdot. Lue ne huolellisesti.",
+    "sections": {
+      "acceptance": {
+        "title": "Ehtojen hyväksyminen",
+        "content": "Luomalla tilin tai käyttämällä Transcendencea vahvistat, että olet lukenut, ymmärtänyt ja hyväksynyt nämä ehdot. Jos et hyväksy ehtoja, älä käytä sovellusta."
+      },
+      "use": {
+        "title": "Palvelun käyttö",
+        "content": "Transcendence on selainpohjainen Pong-pelialusta, joka on kehitetty osana 42-koulun opetussuunnitelmaa. Sitoudut käyttämään palvelua vain sen tarkoituksen mukaisesti ja kunnioittavasti muita käyttäjiä kohtaan."
+      },
+      "accounts": {
+        "title": "Käyttäjätilit",
+        "content": "Olet vastuussa tilisi tunnistetietojen luottamuksellisuuden säilyttämisestä riippumatta siitä, oletko rekisteröitynyt sähköpostilla tai GitHub OAuthin kautta. Sitoudut olemaan jakamatta tiliäsi, käyttämättä toisen henkilön tunnuksia tai esiintymättä toisena käyttäjänä."
+      },
+      "github": {
+        "title": "GitHub OAuth",
+        "content": "Kirjautuessasi GitHubin kautta saamme perusprofiilitietoja (käyttäjänimi, sähköposti ja profiilikuva) GitHubin OAuth-käyttöoikeuksien mukaisesti. Emme pääse käsiksi arkistoihisi, yksityisiin tietoihisi tai muihin tietoihin, joita ei tarvita tilisi luomiseen ja tunnistamiseen."
+      },
+      "behavior": {
+        "title": "Hyväksyttävä käytös",
+        "content": "Sitoudut olemaan huijaamatta, hyödyntämättä virheitä, häiritsemättä muita pelaajia tai yrittämättä häiritä palvelun toimintaa millään tavalla. Reilu peli on odotettua kaikilta käyttäjiltä."
+      },
+      "ip": {
+        "title": "Immateriaalioikeudet",
+        "content": "Tämä projekti on kehitetty opetustarkoituksiin osana 42-koulun opetussuunnitelmaa. Kaikki koodi ja materiaalit kuuluvat niiden tekijöille tämän projektin puitteissa."
+      },
+      "termination": {
+        "title": "Tilin sulkeminen",
+        "content": "Pidätämme oikeuden keskeyttää tai poistaa tilejä, jotka rikkovat näitä ehtoja, ilman ennakkoilmoitusta."
+      },
+      "changes": {
+        "title": "Ehtojen muutokset",
+        "content": "Näitä ehtoja voidaan päivittää milloin tahansa. Palvelun käytön jatkaminen muutosten jälkeen tarkoittaa päivitettyjen ehtojen hyväksymistä."
+      }
+    }
+  },
+  "privacy": {
+    "title": "Tietosuojakäytäntö",
+    "lastUpdated": "Viimeksi päivitetty: 30. maaliskuuta 2026",
+    "intro": "Yksityisyytesi on meille tärkeää. Tämä käytäntö selittää, mitä tietoja keräämme, miten käytämme niitä ja mitä oikeuksia sinulla on tietoihisi liittyen.",
+    "sections": {
+      "dataCollected": {
+        "title": "Kerättävät tiedot",
+        "content": "Rekisteröityessäsi keräämme käyttäjänimesi, sähköpostiosoitteesi ja turvallisesti hajautetun salasanan. Jos kirjaudut GitHub OAuthin kautta, saamme GitHub-käyttäjänimesi, julkisen sähköpostisi ja profiilikuvasi. Tallennamme myös pelihistorian ja tulokset, jotka liittyvät tiliisi."
+      },
+      "githubOAuth": {
+        "title": "GitHub OAuth -tiedot",
+        "content": "Kirjautuminen GitHubin kautta antaa meille lukuoikeuden julkiseen profiiliisi ja sähköpostiisi. Emme pääse käsiksi arkistoihisi, organisaatioihisi, seuraajiisi tai mihinkään yksityisiin GitHub-tietoihin. Tallennamme vain vähimmäismäärän tietoja, jotka tarvitaan tilisi tunnistamiseen ja luomiseen."
+      },
+      "dataUse": {
+        "title": "Tietojen käyttö",
+        "content": "Tietojasi käytetään ainoastaan sovelluksen toiminnan mahdollistamiseen — kirjautumiseen, pelitulosten seuraamiseen sekä profiilien ja tulostaulujen näyttämiseen alustalla. Emme käytä tietojasi mainontaan, analytiikkaan tai mihinkään muuhun tarkoitukseen."
+      },
+      "dataStorage": {
+        "title": "Tietojen säilytys",
+        "content": "Kaikki tiedot tallennetaan MariaDB-tietokantaan, jota hallinnoidaan projektin infrastruktuurissa. Salasanoja ei koskaan tallenneta selväkielisinä — ne hajautetaan turvallisella algoritmilla ennen tallennusta."
+      },
+      "dataSharing": {
+        "title": "Tietojen jakaminen",
+        "content": "Emme myy, jaa tai luovuta henkilötietojasi kolmansille osapuolille. Tämä on kouluprojekti ilman kaupallista tarkoitusta tai ulkoisia integraatioita GitHub OAuthia lukuun ottamatta."
+      },
+      "cookies": {
+        "title": "Evästeet ja istunnot",
+        "content": "Käytämme istuntotunnisteita tai evästeitä ainoastaan pitääksemme sinut kirjautuneena vierailusi ajan. Emme käytä seuranta-, mainos- tai analytiikkaevästeitä."
+      },
+      "rights": {
+        "title": "Oikeutesi",
+        "content": "Voit pyytää tilisi ja kaikkien siihen liittyvien henkilötietojen poistamista milloin tahansa ottamalla yhteyttä projektin ylläpitäjiin. Pyynnöstäsi tietosi poistetaan pysyvästi tietokannastamme."
+      },
+      "contact": {
+        "title": "Yhteystiedot",
+        "content": "Jos sinulla on tietosuojaan liittyviä kysymyksiä tai haluat pyytää tietojen poistamista, ota yhteyttä projektitiimiin suoraan 42-koulun alustan tai projektin repositorion kautta."
+      }
+    }
   }
 }

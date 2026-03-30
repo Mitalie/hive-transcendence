@@ -3,6 +3,9 @@
     "language": "Language",
     "dark": "Dark",
     "light": "Light",
+    "label": "© 2026 Transcendence",
+    "privacyLink": "Privacy Policy",
+    "termsLink": "Terms of Service",
     "languageLabel": {
       "en": "English",
       "fi": "Suomi",
@@ -17,10 +20,90 @@
     "profile": "Profile",
     "login": "Login",
     "registration": "Registration",
+    "terms_of_service": "Terms of Service",
+    "privacy": "Privacy",
     "default": "Default Page Title",
     "play": "Play"
   },
   "home": {
     "title": "Home Page"
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: March 30, 2026",
+    "intro": "Welcome to Transcendence. By accessing or using this application, you agree to be bound by these Terms of Service. Please read them carefully.",
+    "sections": {
+      "acceptance": {
+        "title": "Acceptance of Terms",
+        "content": "By creating an account or using Transcendence, you confirm that you have read, understood, and agree to these terms. If you do not agree, please do not use the application."
+      },
+      "use": {
+        "title": "Use of the Service",
+        "content": "Transcendence is a web-based Pong game platform developed as part of the 42 school curriculum. You agree to use it only for its intended purpose and in a respectful manner toward other users."
+      },
+      "accounts": {
+        "title": "User Accounts",
+        "content": "You are responsible for maintaining the confidentiality of your account credentials, whether registered via email or through GitHub OAuth. You agree not to share your account, use another person's credentials, or impersonate other users."
+      },
+      "github": {
+        "title": "GitHub OAuth",
+        "content": "When you sign in with GitHub, we receive basic profile information (username, email, and avatar) as permitted by GitHub's OAuth scope. We do not access your repositories, private data, or any information beyond what is needed to create and identify your account."
+      },
+      "behavior": {
+        "title": "Acceptable Behavior",
+        "content": "You agree not to cheat, exploit bugs, harass other players, or attempt to disrupt the service in any way. Fair play is expected from all participants."
+      },
+      "ip": {
+        "title": "Intellectual Property",
+        "content": "This project is developed for educational purposes as part of the 42 school curriculum. All code and assets belong to their respective creators within the scope of this project."
+      },
+      "termination": {
+        "title": "Termination",
+        "content": "We reserve the right to suspend or delete accounts that violate these terms, without prior notice."
+      },
+      "changes": {
+        "title": "Changes to Terms",
+        "content": "These terms may be updated at any time. Continued use of the service after changes are posted constitutes acceptance of the revised terms."
+      }
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: March 30, 2026",
+    "intro": "Your privacy matters to us. This policy explains what data we collect, how we use it, and what rights you have over your information.",
+    "sections": {
+      "dataCollected": {
+        "title": "Data We Collect",
+        "content": "When you register, we collect your username, email address, and a securely hashed password. If you sign in via GitHub OAuth, we receive your GitHub username, public email, and profile avatar. We also store game history and scores associated with your account."
+      },
+      "githubOAuth": {
+        "title": "GitHub OAuth Data",
+        "content": "Signing in with GitHub grants us read-only access to your public profile and email. We do not access your repositories, organizations, followers, or any private GitHub data. Only the minimum information required to identify and create your account is stored."
+      },
+      "dataUse": {
+        "title": "How We Use Your Data",
+        "content": "Your data is used solely to operate the application — to authenticate you, track your game results, and display profiles or leaderboards within the platform. We do not use your data for advertising, analytics services, or any purpose beyond running Transcendence."
+      },
+      "dataStorage": {
+        "title": "Data Storage",
+        "content": "All data is stored in a MariaDB database managed within the project infrastructure. Passwords are never stored in plain text — they are hashed using a secure algorithm before being saved."
+      },
+      "dataSharing": {
+        "title": "Data Sharing",
+        "content": "We do not sell, share, or disclose your personal data to any third parties. This is a school project with no commercial interest or external integrations beyond GitHub OAuth."
+      },
+      "cookies": {
+        "title": "Cookies & Sessions",
+        "content": "We use session tokens or cookies strictly to keep you authenticated during your visit. No tracking, advertising, or analytics cookies are used."
+      },
+      "rights": {
+        "title": "Your Rights",
+        "content": "You may request the deletion of your account and all associated personal data at any time by contacting the project administrators. Upon request, your data will be permanently removed from our database."
+      },
+      "contact": {
+        "title": "Contact",
+        "content": "For any privacy-related questions or data deletion requests, please reach out to the project team directly through the 42 school platform or the project repository."
+      }
+    }
   }
 }
