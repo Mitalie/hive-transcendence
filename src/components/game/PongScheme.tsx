@@ -4,6 +4,7 @@ import { useRef, useEffect, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { GameConfig } from "@/game/GameConfig";
 import { PongEngine } from "@/game/PongEngine";
+import { AIOpponent } from "@/game/AIOpponent";
 import Ball from "./Ball";
 import Paddle from "./Paddle";
 import Arena from "./Arena";
@@ -12,12 +13,25 @@ export default function PongScheme({
   onScore,
   gameState,
   mode,
+  playMode = "PvP",
+  aiDifficulty = "medium",
 }: {
   onScore: (player: 1 | 2) => void;
   gameState: "START" | "PLAYING" | "PAUSED" | "WON";
   mode?: "classic" | "advanced";
+  playMode?: "PvP" | "PvE";
+  aiDifficulty?: "easy" | "medium" | "hard";
 }) {
   const engine = useMemo(() => new PongEngine(onScore, mode), [onScore, mode]);
+
+  // Initialize AI and automatically toggle it based on the playMode prop
+  const aiOpponent = useMemo(() => {
+    const ai = new AIOpponent(engine);
+    ai.setEnabled(playMode === "PvE");
+    ai.setDifficulty(aiDifficulty);
+    return ai;
+  }, [engine, playMode, aiDifficulty]);
+
   const keys = useRef<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -58,7 +72,25 @@ export default function PongScheme({
   }, []);
 
   useFrame((_, delta) => {
-    engine.update(delta, keys.current, gameState);
+    // Start with the real human keyboard inputs
+    let activeInputs = { ...keys.current };
+
+    // If PvE is active, override Player 2's keys with the AI's logic
+    if (playMode === "PvE") {
+      const aiKeys = aiOpponent.getInputs();
+
+      // We lowercase them here to match your event listener's formatting
+      activeInputs = {
+        ...activeInputs,
+        arrowup: aiKeys.ArrowUp,
+        arrowdown: aiKeys.ArrowDown,
+        arrowleft: aiKeys.ArrowLeft,
+        arrowright: aiKeys.ArrowRight,
+      };
+    }
+
+    // Feed the final merged inputs to the engine
+    engine.update(delta, activeInputs, gameState);
   });
 
   return (
