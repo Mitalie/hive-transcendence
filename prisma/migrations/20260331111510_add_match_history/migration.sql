@@ -1,0 +1,14 @@
+-- CreateTable
+CREATE TABLE `Match` (
+    `id` VARCHAR(191) NOT NULL,
+    `player1Id` VARCHAR(191) NOT NULL,
+    `player2` VARCHAR(191) NOT NULL,
+    `score1` INTEGER NOT NULL,
+    `score2` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `Match` ADD CONSTRAINT `Match_player1Id_fkey` FOREIGN KEY (`player1Id`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { GameConfig } from "@/game/GameConfig";
+import { saveMatchAction } from "@/actions/matchHistory";
 
 export const useGameState = (winLimit: number = GameConfig.rules.winLimit) => {
   // Atomic score state for Player 1 (Blue) and Player 2 (Red)
@@ -34,19 +35,29 @@ export const useGameState = (winLimit: number = GameConfig.rules.winLimit) => {
         const p2Win =
           nextScore.p2 >= winLimit && nextScore.p2 - nextScore.p1 >= 2;
 
-        if (p1Win || p2Win) {
-          setGameState("WON");
-          // ------------------------------------------------------------------
-          // DIMI (DATABASE LAYER): Trigger your Prisma save logic here!
-          // Payload format: player1, player2, score1, score2, winner
-          // ------------------------------------------------------------------
-        }
+        if (p1Win || p2Win) setGameState("WON");
 
         return nextScore;
       });
     },
     [winLimit],
   );
+
+  // Prevent save from triggering twice
+  const saveTriggered = useRef(false);
+  useEffect(() => {
+    if (gameState !== "WON" || saveTriggered.current) return;
+
+    saveTriggered.current = true;
+    saveMatchAction({
+      player2: "local-player-2",
+      score1: score.p1,
+      score2: score.p2,
+    }).catch((error) => {
+      console.error("Failed to save match:", error);
+      saveTriggered.current = false;
+    });
+  }, [gameState, score]);
 
   /**
    * Keyboard Logic - Game Controller
@@ -59,7 +70,10 @@ export const useGameState = (winLimit: number = GameConfig.rules.winLimit) => {
         setGameState((current) => {
           // START or RESTART: Move into active play from a menu or victory screen.
           if (current === "START" || current === "WON") {
-            if (current === "WON") setScore({ p1: 0, p2: 0 }); // Reset score
+            if (current === "WON") {
+              setScore({ p1: 0, p2: 0 });
+              saveTriggered.current = false;
+            }
             return "PLAYING";
           }
 
