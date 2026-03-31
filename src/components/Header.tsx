@@ -37,6 +37,10 @@ export default function Header() {
         return t("header.login");
       case "/registration":
         return t("header.registration");
+      case "/terms":
+        return t("header.terms_of_service");
+      case "/privacy":
+        return t("header.privacy");
       default:
         return t("header.default");
     }
