@@ -30,14 +30,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={`bg-bg ${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
-          <div className="min-h-screen flex flex-col">
+          <div className="h-screen flex flex-col">
             {/* header */}
             <div className="pt-5 px-5">
               <Header />
             </div>
 
             {/* middle content */}
-            <div className="text-text text-3xl flex-1 flex flex-col justify-center mx-5 my-2.5 bg-card rounded-xl text-center">
+            <div className="text-text text-3xl flex-1 flex flex-col mx-5 my-2.5 bg-card rounded-xl text-center overflow-hidden">
               {children}
             </div>
 
