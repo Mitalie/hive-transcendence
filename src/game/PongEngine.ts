@@ -214,6 +214,7 @@ export class PongEngine {
     paddleVelocityZ: number,
     paddleVelocityX: number,
   ) {
+    // We define a thinner "Front Face" hit-box to prevent side-warping
     const hitBoxDepth = GameConfig.paddle.depth / 2 + GameConfig.ball.radius;
     const hitBoxWidth = GameConfig.paddle.width / 2 + GameConfig.ball.radius;
     const hitBoxHeight = GameConfig.paddle.height / 2 + GameConfig.ball.radius;
@@ -222,32 +223,55 @@ export class PongEngine {
     const by = this.ball.y;
     const bz = this.ball.z;
 
-    if (player === 1) {
-      if (
-        bx <= paddleX + hitBoxWidth &&
-        bx >= paddleX - hitBoxWidth &&
-        bz >= paddleZ - hitBoxDepth &&
-        bz <= paddleZ + hitBoxDepth &&
-        by <= hitBoxHeight
-      ) {
-        const smashPower = Math.abs(paddleVelocityX) * 0.5;
-        this.ball.vx = Math.abs(this.ball.vx) + smashPower;
-        this.ball.x = paddleX + hitBoxWidth + 0.1;
-        this.applyDeflection(paddleZ, paddleVelocityZ);
+    // 1. REGION CHECK: Is the ball even near the paddle?
+    const isInsideX =
+      bx <= paddleX + hitBoxWidth && bx >= paddleX - hitBoxWidth;
+    const isInsideZ =
+      bz >= paddleZ - hitBoxDepth && bz <= paddleZ + hitBoxDepth;
+    const isInsideY = by <= hitBoxHeight;
+
+    if (isInsideX && isInsideZ && isInsideY) {
+      // 2. FACE DIRECTION LOGIC:
+      // Player 1's "Front" is the Right side (+X). Player 2's "Front" is the Left side (-X).
+      const isBallInFront = player === 1 ? bx > paddleX : bx < paddleX;
+
+      if (this.mode === "advanced") {
+        // ADVANCED: Full Newtonian Physics
+
+        // Only "Bounce" if the ball is hitting the front face and moving towards it
+        const isApproaching =
+          (player === 1 && this.ball.vx < 0) ||
+          (player === 2 && this.ball.vx > 0);
+
+        if (isBallInFront && isApproaching) {
+          // Reflect the incoming speed and add momentum transfer
+          this.ball.vx = -this.ball.vx;
+          this.ball.vx += paddleVelocityX * 0.8;
+
+          // Push out to the front face to prevent stuck-loop
+          const pushDir = player === 1 ? 1 : -1;
+          this.ball.x = paddleX + hitBoxWidth * pushDir + 0.1 * pushDir;
+        } else if (!isBallInFront) {
+          // Body Hit: Ball is pushed by the paddle velocity instead of bouncing
+          this.ball.vx = paddleVelocityX * 1.2;
+
+          // Snap to the current side to prevent warping through middle
+          const sideDir = bx > paddleX ? 1 : -1;
+          this.ball.x = paddleX + hitBoxWidth * sideDir + 0.1 * sideDir;
+        }
+      } else {
+        // CLASSIC: Arcade Snapping (The "Cheat" Mode)
+        if (player === 1) {
+          this.ball.vx = Math.abs(this.ball.vx);
+          this.ball.x = paddleX + hitBoxWidth + 0.1;
+        } else {
+          this.ball.vx = -Math.abs(this.ball.vx);
+          this.ball.x = paddleX - hitBoxWidth - 0.1;
+        }
       }
-    } else {
-      if (
-        bx >= paddleX - hitBoxWidth &&
-        bx <= paddleX + hitBoxWidth &&
-        bz >= paddleZ - hitBoxDepth &&
-        bz <= paddleZ + hitBoxDepth &&
-        by <= hitBoxHeight
-      ) {
-        const smashPower = Math.abs(paddleVelocityX) * 0.5;
-        this.ball.vx = -Math.abs(this.ball.vx) - smashPower;
-        this.ball.x = paddleX - hitBoxWidth - 0.1;
-        this.applyDeflection(paddleZ, paddleVelocityZ);
-      }
+
+      // Apply vertical/spin deflection
+      this.applyDeflection(paddleZ, paddleVelocityZ);
     }
   }
 
@@ -291,7 +315,6 @@ export class PongEngine {
     this.nextServeDirection = targetPlayer;
 
     const speedMultiplier = this.mode === "classic" ? 2 : 0.5;
-
     const randomZ = Math.random() > 0.5 ? 1 : -1;
     this.ball.vx =
       this.nextServeDirection === 1

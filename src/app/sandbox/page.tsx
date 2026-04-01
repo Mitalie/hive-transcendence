@@ -11,8 +11,12 @@ export default function SandboxPage() {
     GameConfig.rules.winLimit,
   );
 
-  // The toggle state! Defaults to our new awesome physics.
+  // The toggle states!
   const [gameMode, setGameMode] = useState<"classic" | "advanced">("advanced");
+  const [playMode, setPlayMode] = useState<"PvP" | "PvE">("PvE");
+  const [aiDifficulty, setAiDifficulty] = useState<"easy" | "medium" | "hard">(
+    "medium",
+  );
 
   return (
     <main
@@ -31,42 +35,99 @@ export default function SandboxPage() {
           left: 10,
           zIndex: 20,
           display: "flex",
+          flexDirection: "column",
           gap: "10px",
         }}
       >
-        <button
-          onClick={() => setGameMode("classic")}
-          style={{
-            padding: "8px 16px",
-            backgroundColor: gameMode === "classic" ? "white" : "#333",
-            color: gameMode === "classic" ? "black" : "white",
-            border: "1px solid white",
-            cursor: "pointer",
-            fontFamily: "monospace",
-          }}
-        >
-          CLASSIC
-        </button>
-        <button
-          onClick={() => setGameMode("advanced")}
-          style={{
-            padding: "8px 16px",
-            backgroundColor: gameMode === "advanced" ? "red" : "#333",
-            color: gameMode === "advanced" ? "white" : "white",
-            border: "1px solid red",
-            cursor: "pointer",
-            fontFamily: "monospace",
-          }}
-        >
-          CYBER PADEL
-        </button>
+        {/* PHYSICS MODE TOGGLES */}
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button
+            onClick={() => setGameMode("classic")}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: gameMode === "classic" ? "white" : "#333",
+              color: gameMode === "classic" ? "black" : "white",
+              border: "1px solid white",
+              cursor: "pointer",
+              fontFamily: "monospace",
+            }}
+          >
+            CLASSIC PONG
+          </button>
+          <button
+            onClick={() => setGameMode("advanced")}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: gameMode === "advanced" ? "red" : "#333",
+              color: gameMode === "advanced" ? "white" : "white",
+              border: "1px solid red",
+              cursor: "pointer",
+              fontFamily: "monospace",
+            }}
+          >
+            CYBER PADEL
+          </button>
+        </div>
+
+        {/* PLAYER MODE TOGGLES */}
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button
+            onClick={() => setPlayMode("PvP")}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: playMode === "PvP" ? "#4CAF50" : "#333",
+              color: "white",
+              border: "1px solid #4CAF50",
+              cursor: "pointer",
+              fontFamily: "monospace",
+            }}
+          >
+            PvP (LOCAL)
+          </button>
+          <button
+            onClick={() => setPlayMode("PvE")}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: playMode === "PvE" ? "#2196F3" : "#333",
+              color: "white",
+              border: "1px solid #2196F3",
+              cursor: "pointer",
+              fontFamily: "monospace",
+            }}
+          >
+            PvE (VS AI)
+          </button>
+        </div>
+
+        {/* AI DIFFICULTY TOGGLES (Only visible in PvE) */}
+        {playMode === "PvE" && (
+          <div style={{ display: "flex", gap: "10px" }}>
+            {(["easy", "medium", "hard"] as const).map((diff) => (
+              <button
+                key={diff}
+                onClick={() => setAiDifficulty(diff)}
+                style={{
+                  padding: "8px 16px",
+                  backgroundColor: aiDifficulty === diff ? "orange" : "#333",
+                  color: "white",
+                  border: `1px solid ${aiDifficulty === diff ? "orange" : "#555"}`,
+                  cursor: "pointer",
+                  fontFamily: "monospace",
+                  textTransform: "uppercase",
+                }}
+              >
+                {diff}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* --- RAW DEBUG OVERLAY --- */}
       <div
         style={{
           position: "absolute",
-          top: 40,
+          top: 150,
           width: "100%",
           textAlign: "center",
           color: "white",
@@ -105,11 +166,12 @@ export default function SandboxPage() {
 
       {/* --- THE ENGINE TEST BED --- */}
       <div style={{ width: "100%", position: "relative" }}>
-        {/* Pass the gameMode prop into your Canvas! */}
         <GameCanvas
           onScore={handleScore}
           gameState={gameState}
           mode={gameMode}
+          playMode={playMode}
+          aiDifficulty={aiDifficulty}
         />
       </div>
     </main>
