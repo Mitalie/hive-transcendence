@@ -2,7 +2,6 @@
 services:
   mariadb:
     image: mariadb:latest
-    restart: on-failure
 
     environment:
       - MARIADB_ROOT_PASSWORD
