@@ -30,7 +30,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`bg-bg ${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
-          <div className="min-h-screen flex flex-col">
+          <div className="h-screen flex flex-col">
             {/* header */}
             <div className="pt-5 px-5">
               <Header />
