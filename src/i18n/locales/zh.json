@@ -99,5 +99,15 @@
         "content": "如有任何与隐私相关的问题或数据删除请求，请通过 42 学校平台或项目仓库直接联系项目团队。"
       }
     }
+  },
+  "gamecontrols": {
+    "start": "开始",
+    "pause": "暂停",
+    "end": "结束",
+    "continue": "继续"
+  },
+  "gamesetting": {
+    "settingbtn": "设置",
+    "title": "游戏设置"
   }
 }

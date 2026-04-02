@@ -1,7 +1,7 @@
 // components/Button.tsx
-import { ButtonHTMLAttributes, ReactNode } from "react";
+import { ComponentProps, ReactNode } from "react";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends ComponentProps<"button"> {
   children: ReactNode;
   className?: string;
 }

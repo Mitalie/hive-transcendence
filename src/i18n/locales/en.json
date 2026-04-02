@@ -105,5 +105,15 @@
         "content": "For any privacy-related questions or data deletion requests, please reach out to the project team directly through the 42 school platform or the project repository."
       }
     }
+  },
+  "gamecontrols": {
+    "start": "Start",
+    "pause": "Pause",
+    "end": "end",
+    "continue": "continue"
+  },
+  "gamesetting": {
+    "settingbtn": "Setting",
+    "title": "GameSetting"
   }
 }

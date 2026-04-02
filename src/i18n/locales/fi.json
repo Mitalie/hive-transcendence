@@ -99,5 +99,15 @@
         "content": "Jos sinulla on tietosuojaan liittyviä kysymyksiä tai haluat pyytää tietojen poistamista, ota yhteyttä projektitiimiin suoraan 42-koulun alustan tai projektin repositorion kautta."
       }
     }
+  },
+  "gamecontrols": {
+    "start": "Käynnistä",
+    "pause": "Keskeytä",
+    "end": "loppu",
+    "continue": "jatka"
+  },
+  "gamesetting": {
+    "settingbtn": "Asetus",
+    "title": "Peliasetukset"
   }
 }

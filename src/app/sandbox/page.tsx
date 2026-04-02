@@ -21,7 +21,7 @@ export default function SandboxPage() {
   return (
     <main
       style={{
-        width: "100%",
+        height: "100%",
         backgroundColor: "#111",
         marginBottom: "auto",
         position: "relative",
@@ -165,7 +165,7 @@ export default function SandboxPage() {
       </div>
 
       {/* --- THE ENGINE TEST BED --- */}
-      <div style={{ width: "100%", position: "relative" }}>
+      <div style={{ height: "100%", position: "relative" }}>
         <GameCanvas
           onScore={handleScore}
           gameState={gameState}
