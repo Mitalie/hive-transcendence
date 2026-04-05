@@ -5,9 +5,10 @@ import Link from "next/link";
 import { GitSignInButton } from "@/components/buttons/github-signin";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Button from "@/components/Button";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,7 @@ export default function LoginPage() {
     setLoading(true);
 
     const res = await signIn("credentials", {
-      username,
+      email,
       password,
       redirect: false,
     });
@@ -45,10 +46,10 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
             required
           />
@@ -60,13 +61,9 @@ export default function LoginPage() {
             className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
             required
           />
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition disabled:opacity-50"
-          >
+          <Button type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
-          </button>
+          </Button>
         </form>
 
         {/* Divider */}

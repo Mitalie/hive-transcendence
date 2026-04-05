@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import Button from "@/components/Button";
 import { signIn } from "next-auth/react";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,19 +22,29 @@ export default function RegisterPage() {
       const res = await fetch("/api/registration", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, username, password }),
+        body: JSON.stringify({ email, password }),
       });
+      const data = await res.json();
+
       if (!res.ok) {
-        const data = await res.json();
         throw new Error(data.error || "Registration failed");
       }
 
-      await signIn("credentials", {
-        username,
-        password,
-        redirect: true,
-        callbackUrl: "/",
-      });
+      sessionStorage.setItem(
+        "pendingAuth",
+        JSON.stringify({ email, password }),
+      );
+      if (data.needsProfile === false) {
+        sessionStorage.removeItem("pendingAuth");
+        await signIn("credentials", {
+          email,
+          password,
+          redirect: true,
+          callbackUrl: "/",
+        });
+      } else {
+        router.push(`/registration/profile?userId=${data.userId}`);
+      }
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -61,14 +73,6 @@ export default function RegisterPage() {
             required
           />
           <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-            required
-          />
-          <input
             type="password"
             placeholder="Password"
             value={password}
@@ -76,13 +80,9 @@ export default function RegisterPage() {
             className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
             required
           />
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-black text-white py-2 rounded-lg hover:bg-gray-800 transition disabled:opacity-50"
-          >
+          <Button type="submit" disabled={loading}>
             {loading ? "Registering..." : "Register"}
-          </button>
+          </Button>
         </form>
 
         {/* Divider */}
