@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
+import { setUserPassword } from "@/data/user";
 
 export async function POST(req: Request) {
   const { email, password } = await req.json();
@@ -21,11 +22,7 @@ export async function POST(req: Request) {
 
   if (User_exists) {
     if (!User_exists.password) {
-      const hashedPassword = await bcrypt.hash(password, 12);
-      await prisma.user.update({
-        where: { email },
-        data: { password: hashedPassword },
-      });
+      await setUserPassword(email, password);
       return NextResponse.json({
         userId: User_exists.id,
         email: User_exists.email,

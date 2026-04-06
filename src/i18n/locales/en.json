@@ -22,6 +22,8 @@
     "registration": "Registration",
     "terms_of_service": "Terms of Service",
     "privacy": "Privacy",
+    "settings": "Account Settings",
+    "SetProfile": "Profile Setup",
     "default": "Default Page Title",
     "play": "Play"
   },
@@ -104,6 +106,72 @@
         "title": "Contact",
         "content": "For any privacy-related questions or data deletion requests, please reach out to the project team directly through the 42 school platform or the project repository."
       }
+    }
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign out",
+    "signInWithGitHub": "Sign in with GitHub"
+  },
+  "login": {
+    "title": "Login",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Type your email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Type your password",
+    "submit": "LOGIN",
+    "loading": "Logging in...",
+    "error": "Invalid username or password",
+    "or": "Or",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign Up"
+  },
+  "registration": {
+    "title": "Register",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Type your email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Type your password",
+    "submit": "REGISTER",
+    "loading": "Registering...",
+    "errorFallback": "Registration failed",
+    "errorUnexpected": "An unexpected error occurred during Registration",
+    "or": "Or",
+    "hasAccount": "Already have an account?",
+    "signIn": "Login"
+  },
+  "profile": {
+    "title": "Set up your Profile",
+    "subtitle": "Choose how you'll appear to others",
+    "displayNameLabel": "Display name",
+    "displayNamePlaceholder": "Type your display name",
+    "submit": "CONTINUE",
+    "loading": "Saving...",
+    "errorFallback": "Profile setup failed",
+    "errorUnexpected": "An unexpected error occurred during registration"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account preferences",
+    "notSet": "Not set",
+    "badge": {
+      "connected": "Connected",
+      "notSet": "Not set"
+    },
+    "account": {
+      "title": "Account",
+      "displayName": "Display name",
+      "email": "Email"
+    },
+    "security": {
+      "title": "Security",
+      "passwordLogin": "Password login"
+    },
+    "connectedAccounts": {
+      "title": "Connected Accounts",
+      "github": "GitHub",
+      "emailMismatch": "Your GitHub email doesn't match your account email. Please use a GitHub account with the same email address.",
+      "githubHint": "To link GitHub, sign in with a GitHub account that uses the same email address as your account."
     }
   }
 }

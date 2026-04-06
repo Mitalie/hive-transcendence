@@ -2,12 +2,13 @@
 
 import { signOut } from "next-auth/react";
 import Button from "../Button";
+import { useTranslation } from "react-i18next";
 
 export const SignOutButton = () => {
+  const { t } = useTranslation();
   return (
-    // <button
-    //   className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-    <Button onClick={() => signOut({ callbackUrl: "/login" })}>Sign out</Button>
-    // </button>
+    <Button onClick={() => signOut({ callbackUrl: "/login" })}>
+      {t("auth.signOut")}
+    </Button>
   );
 };

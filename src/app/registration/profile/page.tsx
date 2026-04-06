@@ -1,9 +1,11 @@
 "use client";
+
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Button from "@/components/Button";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 export default function ProfileSetupPage() {
   const [displayName, setDisplayName] = useState("");
@@ -12,6 +14,7 @@ export default function ProfileSetupPage() {
   const params = useSearchParams();
   const userId = params.get("userId");
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +30,7 @@ export default function ProfileSetupPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Profile setup failed");
+        throw new Error(data.error || t("profile.errorFallback"));
       }
 
       const pending = sessionStorage.getItem("pendingAuth");
@@ -47,7 +50,7 @@ export default function ProfileSetupPage() {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("An unexpected error occurred during Registration");
+        setError(t("profile.errorUnexpected"));
       }
     } finally {
       setLoading(false);
@@ -55,23 +58,38 @@ export default function ProfileSetupPage() {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="bg-violet-300 p-8 rounded-2xl shadow-md w-full max-w-md flex flex-col gap-6">
-        <h1 className="text-2xl font-bold text-center">Set your Profile</h1>
+    <div className="flex-1 h-full flex items-center justify-center p-4 sm:p-8">
+      <div className="w-full max-w-sm sm:max-w-md bg-card rounded-2xl p-6 sm:p-10 flex flex-col gap-5 shadow-xl">
+        <div className="text-center">
+          <h1 className="text-2xl sm:text-3xl font-bold text-text">
+            {t("profile.title")}
+          </h1>
+          <p className="text-sm text-text/50 mt-1">{t("profile.subtitle")}</p>
+        </div>
 
-        {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+        {error && (
+          <p className="text-red-500 text-sm text-center bg-red-500/10 rounded-lg py-2 px-3">
+            {error}
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input
-            type="text"
-            placeholder="Display Name"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-            required
-          />
-          <Button type="submit" disabled={loading}>
-            {loading ? "Registering..." : "Register"}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-text/70">
+              {t("profile.displayNameLabel")}
+            </label>
+            <input
+              type="text"
+              placeholder={t("profile.displayNamePlaceholder")}
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-transparent placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-text/30 transition-all"
+              required
+            />
+          </div>
+
+          <Button type="submit" disabled={loading} className="mt-1">
+            {loading ? t("profile.loading") : t("profile.submit")}
           </Button>
         </form>
       </div>

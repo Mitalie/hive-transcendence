@@ -16,6 +16,8 @@
     "registration": "注册",
     "terms_of_service": "服务条款",
     "privacy": "隐私政策",
+    "settings": "账户设置",
+    "SetProfile": "资料设置",
     "default": "默认页面",
     "play": "开始"
   },
@@ -98,6 +100,72 @@
         "title": "联系我们",
         "content": "如有任何与隐私相关的问题或数据删除请求，请通过 42 学校平台或项目仓库直接联系项目团队。"
       }
+    }
+  },
+  "auth": {
+    "signIn": "登录",
+    "signOut": "退出登录",
+    "signInWithGitHub": "使用 GitHub 登录"
+  },
+  "login": {
+    "title": "登录",
+    "emailLabel": "电子邮件",
+    "emailPlaceholder": "请输入您的电子邮件",
+    "passwordLabel": "密码",
+    "passwordPlaceholder": "请输入您的密码",
+    "submit": "登录",
+    "loading": "登录中...",
+    "error": "用户名或密码无效",
+    "or": "或",
+    "noAccount": "还没有账户？",
+    "signUp": "注册"
+  },
+  "registration": {
+    "title": "注册",
+    "emailLabel": "电子邮件",
+    "emailPlaceholder": "请输入您的电子邮件",
+    "passwordLabel": "密码",
+    "passwordPlaceholder": "请输入您的密码",
+    "submit": "注册",
+    "loading": "注册中...",
+    "errorFallback": "注册失败",
+    "errorUnexpected": "注册过程中发生意外错误",
+    "or": "或",
+    "hasAccount": "已有账户？",
+    "signIn": "登录"
+  },
+  "profile": {
+    "title": "设置您的资料",
+    "subtitle": "选择您希望展示给他人的名称",
+    "displayNameLabel": "显示名称",
+    "displayNamePlaceholder": "请输入您的显示名称",
+    "submit": "继续",
+    "loading": "保存中...",
+    "errorFallback": "资料设置失败",
+    "errorUnexpected": "注册过程中发生意外错误"
+  },
+  "settings": {
+    "title": "设置",
+    "subtitle": "管理您的账户偏好",
+    "notSet": "未设置",
+    "badge": {
+      "connected": "已连接",
+      "notSet": "未设置"
+    },
+    "account": {
+      "title": "账户",
+      "displayName": "显示名称",
+      "email": "电子邮件"
+    },
+    "security": {
+      "title": "安全",
+      "passwordLogin": "密码登录"
+    },
+    "connectedAccounts": {
+      "title": "已连接账户",
+      "github": "GitHub",
+      "emailMismatch": "您的 GitHub 邮箱与账户邮箱不匹配，请使用与账户相同邮箱地址的 GitHub 账户。",
+      "githubHint": "要关联 GitHub,请使用与您账户相同邮箱地址的 GitHub 账户登录。"
     }
   }
 }

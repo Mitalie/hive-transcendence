@@ -1,8 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
+import { setUserPassword } from "@/data/user";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -15,12 +14,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Password too short" }, { status: 400 });
   }
 
-  const hashedPassword = await bcrypt.hash(password, 12);
-
-  await prisma.user.update({
-    where: { email: session.user.email },
-    data: { password: hashedPassword },
-  });
+  await setUserPassword(session.user.email, password);
 
   return NextResponse.json({ ok: true });
 }
