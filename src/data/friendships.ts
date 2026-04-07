@@ -1,5 +1,34 @@
 import { prisma } from "@/lib/prisma";
 
+export async function getFriendshipStatsByUserId(userId: string) {
+  const acceptedFriends = await prisma.friendship.count({
+    where: {
+      status: "ACCEPTED",
+      OR: [{ requesterId: userId }, { addresseeId: userId }],
+    },
+  });
+
+  const pendingSent = await prisma.friendship.count({
+    where: {
+      status: "PENDING",
+      requesterId: userId,
+    },
+  });
+
+  const pendingReceived = await prisma.friendship.count({
+    where: {
+      status: "PENDING",
+      addresseeId: userId,
+    },
+  });
+
+  return {
+    acceptedFriends,
+    pendingSent,
+    pendingReceived,
+  };
+}
+
 export async function getFriendshipBetweenUsers(
   userId1: string,
   userId2: string,
@@ -7,9 +36,89 @@ export async function getFriendshipBetweenUsers(
   return prisma.friendship.findFirst({
     where: {
       OR: [
-        { requesterId: userId1, addresseeId: userId2 },
-        { requesterId: userId2, addresseeId: userId1 },
+        {
+          requesterId: userId1,
+          addresseeId: userId2,
+        },
+        {
+          requesterId: userId2,
+          addresseeId: userId1,
+        },
       ],
+    },
+  });
+}
+
+export async function getPendingFriendRequestsByUserId(userId: string) {
+  return prisma.friendship.findMany({
+    where: {
+      status: "PENDING",
+      addresseeId: userId,
+    },
+    include: {
+      requester: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          image: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
+export async function getSentFriendRequestsByUserId(userId: string) {
+  return prisma.friendship.findMany({
+    where: {
+      status: "PENDING",
+      requesterId: userId,
+    },
+    include: {
+      addressee: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          image: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
+export async function getAcceptedFriendsByUserId(userId: string) {
+  return prisma.friendship.findMany({
+    where: {
+      status: "ACCEPTED",
+      OR: [{ requesterId: userId }, { addresseeId: userId }],
+    },
+    include: {
+      requester: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          image: true,
+        },
+      },
+      addressee: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          image: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 }
