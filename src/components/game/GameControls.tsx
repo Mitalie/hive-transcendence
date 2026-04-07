@@ -23,20 +23,45 @@ export default function GameControls({
   return (
     <div className="flex gap-2.5 items-center">
       {(gameState === "START" || gameState === "WON") && (
-        <Button onClick={onStart}>{t("gamecontrols.start")}</Button>
+        <Button
+          className="bg-btn-purple hover:bg-btn-purple-hover"
+          onClick={onStart}
+        >
+          {t("gamecontrols.start")}
+        </Button>
       )}
 
       {gameState === "PLAYING" && (
         <>
-          <Button onClick={onPause}>{t("gamecontrols.pause")}</Button>
-          <Button onClick={onEnd}>{t("gamecontrols.end")}</Button>
+          <Button
+            className="bg-btn-purple hover:bg-btn-purple-hover"
+            onClick={onPause}
+          >
+            {t("gamecontrols.pause")}
+          </Button>
+          <Button
+            className="bg-btn-purple hover:bg-btn-purple-hover"
+            onClick={onEnd}
+          >
+            {t("gamecontrols.end")}
+          </Button>
         </>
       )}
 
       {gameState === "PAUSED" && (
         <>
-          <Button onClick={onContinue}>{t("gamecontrols.continue")}</Button>
-          <Button onClick={onEnd}>{t("gamecontrols.end")}</Button>
+          <Button
+            className="bg-btn-purple hover:bg-btn-purple-hover"
+            onClick={onContinue}
+          >
+            {t("gamecontrols.continue")}
+          </Button>
+          <Button
+            className="bg-btn-purple hover:bg-btn-purple-hover"
+            onClick={onEnd}
+          >
+            {t("gamecontrols.end")}
+          </Button>
         </>
       )}
     </div>

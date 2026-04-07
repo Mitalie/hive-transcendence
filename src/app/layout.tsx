@@ -28,7 +28,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`bg-bg ${geistSans.variable} ${geistMono.variable}`}>
+      <body
+        className={`bg-gradient-to-br from-purple-light to-blue-light ${geistSans.variable} ${geistMono.variable}`}
+      >
         <Providers>
           <div className="h-screen flex flex-col">
             {/* header */}
@@ -36,8 +38,8 @@ export default function RootLayout({
               <Header />
             </div>
 
-            {/* middle content */}
-            <div className="text-text text-3xl flex-1 flex flex-col justify-center mx-5 my-2.5 bg-card rounded-xl text-center">
+            {/* middle content*/}
+            <div className="text-text text-3xl flex-1 flex flex-col justify-center mx-5 my-3 rounded-xl text-center">
               {children}
             </div>
 

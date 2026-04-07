@@ -46,16 +46,16 @@ export default function Footer() {
   }, []);
 
   return (
-    <Bar className="justify-between gap-2.5">
+    <Bar className="gap-2.5">
       {/* LEFT: label + links */}
-      <div className={`flex items-center gap-4 text-sm text-text font-sans`}>
+      <div className={`flex items-center gap-4 text-sm font-sans`}>
         <span>{t("footer.label")}</span>
 
-        <Link href="/terms" className="hover:underline text-text">
+        <Link href="/terms" className="hover:underline">
           {t("footer.termsLink")}
         </Link>
 
-        <Link href="/privacy" className="hover:underline text-text">
+        <Link href="/privacy" className="hover:underline">
           {t("footer.privacyLink")}
         </Link>
       </div>
@@ -64,13 +64,16 @@ export default function Footer() {
       <div className="flex gap-2.5">
         <div className="relative w-26" ref={ref}>
           {/*  button shows current languge */}
-          <Button className="w-26" onClick={() => setOpen(!open)}>
+          <Button
+            className="w-26 bg-btn-blue hover:bg-btn-blue-hover"
+            onClick={() => setOpen(!open)}
+          >
             {currentLang.label}
           </Button>
 
           {/* Drop-down menu for choosing language */}
           {open && (
-            <ul className="absolute z-10 w-full mb-1 bottom-full bg-button rounded-xl shadow-lg overflow-hidden">
+            <ul className="absolute z-10 w-full mb-1 bottom-full bg-card rounded-xl shadow-lg overflow-hidden">
               {languages.map((lang) => (
                 <li
                   key={lang.code}
@@ -80,8 +83,8 @@ export default function Footer() {
                   }}
                   className={`
                   px-4 py-2 cursor-pointer
-                  hover:bg-button-hover
-                  ${i18n.language === lang.code ? "bg-button-active text-white" : "text-text"}
+                  hover:bg-btn-blue-hover
+                  ${i18n.language === lang.code ? "bg-btn-blue" : ""}
                 `}
                 >
                   {lang.label}
@@ -91,12 +94,12 @@ export default function Footer() {
           )}
         </div>
 
-        <button
+        <Button
           onClick={() => setDark(!dark)}
-          className="w-26 px-4 py-2 rounded-xl bg-button text-text hover:bg-button-hover transition-colors"
+          className="w-26 bg-btn-blue hover:bg-btn-blue-hover"
         >
           {dark ? t("footer.light") : t("footer.dark")}
-        </button>
+        </Button>
       </div>
     </Bar>
   );

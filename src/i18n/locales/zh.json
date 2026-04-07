@@ -20,7 +20,9 @@
     "play": "开始"
   },
   "home": {
-    "title": "首页"
+    "welcome": "欢迎来到 <网站名称>",
+    "intro": "这里是网站简介。",
+    "startgame": "开始游戏"
   },
   "terms": {
     "title": "服务条款",

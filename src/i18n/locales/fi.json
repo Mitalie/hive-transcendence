@@ -20,7 +20,9 @@
     "play": "Pelaa"
   },
   "home": {
-    "title": "Etusivu"
+    "welcome": "Tervetuloa <Verkkosivuston nimi>",
+    "intro": "Tämä on lyhyt esittely verkkosivustosta.",
+    "startgame": "Aloita toisto"
   },
   "terms": {
     "title": "Käyttöehdot",

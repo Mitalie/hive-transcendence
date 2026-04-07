@@ -55,7 +55,14 @@ export default function GameSettingButton({ gameState, setGameState }: Props) {
 
   return (
     <div>
-      <Button ref={buttonRef} onClick={openSettingPanel}>
+      <Button
+        ref={buttonRef}
+        onClick={openSettingPanel}
+        className={`
+          ${open ? "bg-btn-purple-active" : "bg-btn-purple"}
+          hover:bg-btn-purple-hover
+        `}
+      >
         {t("gamesetting.settingbtn")}
       </Button>
       {open && (

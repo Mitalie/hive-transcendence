@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 
 type NavButtonProps = {
@@ -17,11 +15,11 @@ export default function NavButton({
     <Link
       href={href}
       className={`
-        px-4 py-2 rounded-xl
-        bg-button text-text
-        hover:bg-button-hover
+        rounded-full
+        text-text bg-btn-purple
+        hover:bg-btn-purple-hover
         transition-colors duration-200
-        ${active ? "bg-button-active pointer-events-none" : ""}
+        ${active ? "bg-btn-purple-active pointer-events-none" : ""}
       `}
     >
       {children}

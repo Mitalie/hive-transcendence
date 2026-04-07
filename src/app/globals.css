@@ -1,21 +1,31 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  --color-bg: #f3f3f3;
-  --color-text: #000000;
-  --color-card: #dddddd;
-  --color-header: #dddddd;
-  --color-button: #d1d1d1;
-  --color-button-hover: #adadad;
-  --color-button-active: #909090;
+  --color-text: #080808;
+  --color-purple-light: #ccb8ff; /* left top background */
+  --color-blue-light: #bee1ff; /* right bottom background */
+  --color-red-light: #ff6161; /* signout btn */
+  --color-purple-dark: #8037ff; /* left top background */
+  --color-blue-dark: #349dff; /* right bottom background */
+  --color-card: #ffffff; /* for bar and card */
+  --color-btn-purple: #c8c5ff; /* for button close in header */
+  --color-btn-purple-hover: #a19dff;
+  --color-btn-purple-active: #a19dff;
+  --color-btn-blue: #bee5ff; /* for button close in footer */
+  --color-btn-blue-hover: #90d3ff;
 }
 
 .dark {
-  --color-bg: #1a1a1a;
-  --color-text: #ffffff;
-  --color-card: #2a2a2a;
-  --color-header: #333333;
-  --color-button: #444444;
-  --color-button-hover: #5c5c5c;
-  --color-button-active: #909090;
+  --color-text: #f7f7f7;
+  --color-purple-light: #341f71;
+  --color-blue-light: #1f3571;
+  --color-red-light: #cf4646;
+  --color-card: #1b1b34;
+  --color-btn-purple: #3e3b96;
+  --color-btn-purple-hover: #6763e0;
+  --color-btn-purple-active: #6763e0;
+  --color-btn-blue: #284189;
+  --color-btn-blue-hover: #4264cd;
 }

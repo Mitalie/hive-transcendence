@@ -26,7 +26,9 @@
     "play": "Play"
   },
   "home": {
-    "title": "Home Page"
+    "welcome": "Welcome to <Website Name>",
+    "intro": "This is a brief introduction to the website.",
+    "startgame": "Start Play"
   },
   "terms": {
     "title": "Terms of Service",
