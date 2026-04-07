@@ -41,6 +41,10 @@ export default function Header() {
         return t("header.terms_of_service");
       case "/privacy":
         return t("header.privacy");
+      case "/settings":
+        return t("header.settings");
+      case "/registration/profile":
+        return t("header.SetProfile");
       default:
         return t("header.default");
     }

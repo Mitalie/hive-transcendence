@@ -11,21 +11,22 @@ export const authOptions: NextAuthOptions = {
     GitHubProvider({
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
+      allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
       name: "Credentials",
 
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        email: { label: "Email", type: "email", placeholder: "your@email.com" },
         password: { label: "Password", type: "password" },
       },
 
       async authorize(credentials) {
         if (!credentials) return null;
 
-        const { username, password } = credentials;
+        const { email, password } = credentials;
 
-        const user = await prisma.user.findUnique({ where: { username } });
+        const user = await prisma.user.findUnique({ where: { email } });
         if (!user || !user.password) return null;
 
         const valid_pass = await bcrypt.compare(password, user.password);
@@ -33,7 +34,6 @@ export const authOptions: NextAuthOptions = {
 
         return {
           id: user.id.toString(),
-          name: user.username,
           email: user.email,
         };
       },
@@ -43,6 +43,9 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
+    async signIn() {
+      return true;
+    },
     jwt: ({ token, user }) => {
       if (user) token.userId = user.id;
       return token;

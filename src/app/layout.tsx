@@ -39,7 +39,7 @@ export default function RootLayout({
             </div>
 
             {/* middle content*/}
-            <div className="text-text text-3xl flex-1 flex flex-col justify-center mx-5 my-3 rounded-xl text-center">
+            <div className="text-text text-3xl flex-1 flex flex-col justify-center mx-5 my-3 rounded-xl text-center overflow-hidden">
               {children}
             </div>
 
