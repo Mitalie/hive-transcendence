@@ -20,7 +20,7 @@ export default function GameCanvas({
   aiDifficulty,
 }: GameCanvasProps) {
   return (
-    <div className="bg-card text-text h-[400px] flex justify-center items-center text-[28px] rounded-xl">
+    <div className="w-full h-full rounded-xl overflow-hidden">
       <Canvas
         camera={{
           position: GameConfig.camera.position,

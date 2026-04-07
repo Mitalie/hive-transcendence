@@ -28,7 +28,9 @@
     "play": "Play"
   },
   "home": {
-    "title": "Home Page"
+    "welcome": "Welcome to <Website Name>",
+    "intro": "This is a brief introduction to the website.",
+    "startgame": "Start Play"
   },
   "terms": {
     "title": "Terms of Service",
@@ -108,6 +110,16 @@
       }
     }
   },
+  "gamecontrols": {
+    "start": "Start",
+    "pause": "Pause",
+    "end": "end",
+    "continue": "continue"
+  },
+  "gamesetting": {
+    "settingbtn": "Setting",
+    "title": "GameSetting"
+  },
   "auth": {
     "signIn": "Sign In",
     "signOut": "Sign out",
@@ -173,5 +185,21 @@
       "emailMismatch": "Your GitHub email doesn't match your account email. Please use a GitHub account with the same email address.",
       "githubHint": "To link GitHub, sign in with a GitHub account that uses the same email address as your account."
     }
+  },
+  "addPassword": {
+    "label": "Choose a password",
+    "placeholder": "Type a new password",
+    "submit": "Add password login",
+    "loading": "Saving...",
+    "errorFallback": "Something went wrong",
+    "success": "Password added! You can now log in with email too."
+  },
+  "apiErrors": {
+    "missingFields": "Missing fields",
+    "userNotFound": "User not found",
+    "displayNameTaken": "Display name is already taken",
+    "passwordTooShort": "Password too short",
+    "userAlreadyExists": "User already exists",
+    "unauthorized": "Unauthorized"
   }
 }

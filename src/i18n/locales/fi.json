@@ -22,7 +22,9 @@
     "play": "Pelaa"
   },
   "home": {
-    "title": "Etusivu"
+    "welcome": "Tervetuloa <Verkkosivuston nimi>",
+    "intro": "Tämä on lyhyt esittely verkkosivustosta.",
+    "startgame": "Aloita toisto"
   },
   "terms": {
     "title": "Käyttöehdot",
@@ -102,6 +104,16 @@
       }
     }
   },
+  "gamecontrols": {
+    "start": "Käynnistä",
+    "pause": "Keskeytä",
+    "end": "loppu",
+    "continue": "jatka"
+  },
+  "gamesetting": {
+    "settingbtn": "Asetus",
+    "title": "Peliasetukset"
+  },
   "auth": {
     "signIn": "Kirjaudu sisään",
     "signOut": "Kirjaudu ulos",
@@ -167,5 +179,21 @@
       "emailMismatch": "GitHub-sähköpostisi ei vastaa tilisi sähköpostia. Käytä GitHub-tiliä, jolla on sama sähköpostiosoite.",
       "githubHint": "Yhdistääksesi GitHubin, kirjaudu sisään GitHub-tilillä, jolla on sama sähköpostiosoite kuin tililläsi."
     }
+  },
+  "addPassword": {
+    "label": "Valitse salasana",
+    "placeholder": "Kirjoita uusi salasana",
+    "submit": "Lisää salasanakirjautuminen",
+    "loading": "Tallennetaan...",
+    "errorFallback": "Jotain meni pieleen",
+    "success": "Salasana lisätty! Voit nyt kirjautua myös sähköpostilla."
+  },
+  "apiErrors": {
+    "missingFields": "Puuttuvat kentät",
+    "userNotFound": "Käyttäjää ei löydy",
+    "displayNameTaken": "Näyttönimi on jo käytössä",
+    "passwordTooShort": "Salasana on liian lyhyt",
+    "userAlreadyExists": "Käyttäjä on jo olemassa",
+    "unauthorized": "Ei käyttöoikeutta"
   }
 }

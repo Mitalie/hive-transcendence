@@ -66,7 +66,7 @@ export default function LoginPage() {
               placeholder={t("login.emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-transparent placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-text/30 transition-all"
+              className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-purple-light placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-purple-light transition-all"
               required
             />
           </div>
@@ -80,12 +80,16 @@ export default function LoginPage() {
               placeholder={t("login.passwordPlaceholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-transparent placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-text/30 transition-all"
+              className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-purple-light placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-purple-light transition-all"
               required
             />
           </div>
 
-          <Button type="submit" disabled={loading} className="mt-1">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="bg-gradient-to-r from-blue-dark to-purple-dark mt-1 text-white"
+          >
             {loading ? t("login.loading") : t("login.submit")}
           </Button>
         </form>

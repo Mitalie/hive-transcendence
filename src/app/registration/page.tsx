@@ -29,7 +29,8 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || t("registration.errorFallback"));
+        const key = data.error;
+        throw new Error(t(`apiErrors.${key}`, t("registration.errorFallback")));
       }
 
       sessionStorage.setItem(
@@ -60,9 +61,7 @@ export default function RegisterPage() {
   };
 
   return (
-    /* Gradient fills the rounded middle-content area from the layout */
     <div className="flex-1 h-full flex items-center justify-center p-4 sm:p-8">
-      {/* Card uses theme variables — adapts to dark mode automatically */}
       <div className="w-full max-w-sm sm:max-w-md bg-card rounded-2xl p-6 sm:p-10 flex flex-col gap-5 shadow-xl">
         <div className="text-center">
           <h1 className="text-2xl sm:text-3xl font-bold text-text">
@@ -86,7 +85,7 @@ export default function RegisterPage() {
               placeholder={t("registration.emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-transparent placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-text/30 transition-all"
+              className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-purple-light placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-purple-light transition-all"
               required
             />
           </div>
@@ -100,17 +99,20 @@ export default function RegisterPage() {
               placeholder={t("registration.passwordPlaceholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-transparent placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-text/30 transition-all"
+              className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-purple-light placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-purple-light transition-all"
               required
             />
           </div>
 
-          <Button type="submit" disabled={loading} className="mt-1">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="bg-gradient-to-r from-blue-dark to-purple-dark mt-1 text-white"
+          >
             {loading ? t("registration.loading") : t("registration.submit")}
           </Button>
         </form>
 
-        {/* Divider */}
         <div className="flex items-center gap-3">
           <div className="flex-1 h-px bg-text/15" />
           <span className="text-xs text-text/40">{t("registration.or")}</span>

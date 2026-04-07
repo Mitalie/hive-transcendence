@@ -30,7 +30,8 @@ export default function ProfileSetupPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || t("profile.errorFallback"));
+        const key = data.error;
+        throw new Error(t(`apiErrors.${key}`, t("profile.errorFallback")));
       }
 
       const pending = sessionStorage.getItem("pendingAuth");
@@ -83,12 +84,16 @@ export default function ProfileSetupPage() {
               placeholder={t("profile.displayNamePlaceholder")}
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-transparent placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-text/30 transition-all"
+              className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-purple-light placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-purple-light transition-all"
               required
             />
           </div>
 
-          <Button type="submit" disabled={loading} className="mt-1">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="bg-gradient-to-r from-blue-dark to-purple-dark mt-1 text-white"
+          >
             {loading ? t("profile.loading") : t("profile.submit")}
           </Button>
         </form>

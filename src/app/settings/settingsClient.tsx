@@ -21,8 +21,9 @@ export function SettingsClient({
   const { t } = useTranslation();
 
   return (
-    <div className="flex-1 flex flex-col overflow-y-auto">
-      <div className="flex-1 max-w-2xl w-full mx-auto px-6 py-8 flex flex-col gap-6 text-left">
+    <div className="flex-1 h-full flex flex-col overflow-y-auto p-4 sm:p-8">
+      {/* Card wide and spacious, bg-card floats over the gradient */}
+      <div className="w-full max-w-3xl mx-auto bg-card rounded-2xl p-6 sm:p-10 flex flex-col gap-6 shadow-xl my-auto">
         <div>
           <h1 className="text-2xl font-semibold text-text">
             {t("settings.title")}
@@ -31,8 +32,8 @@ export function SettingsClient({
         </div>
 
         {/* Account Section */}
-        <section className="bg-bg border border-text/10 rounded-2xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-text/10">
+        <section className="border border-purple-light rounded-2xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-purple-light">
             <h2 className="text-sm font-semibold uppercase tracking-widest text-text/40">
               {t("settings.account.title")}
             </h2>
@@ -50,8 +51,8 @@ export function SettingsClient({
         </section>
 
         {/* Security Section */}
-        <section className="bg-bg border border-text/10 rounded-2xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-text/10">
+        <section className="border border-purple-light rounded-2xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-purple-light">
             <h2 className="text-sm font-semibold uppercase tracking-widest text-text/40">
               {t("settings.security.title")}
             </h2>
@@ -76,8 +77,8 @@ export function SettingsClient({
         </section>
 
         {/* Connected Accounts Section */}
-        <section className="bg-bg border border-text/10 rounded-2xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-text/10">
+        <section className="border border-purple-light rounded-2xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-purple-light">
             <h2 className="text-sm font-semibold uppercase tracking-widest text-text/40">
               {t("settings.connectedAccounts.title")}
             </h2>

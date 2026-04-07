@@ -1,11 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { apiErrors } from "@/lib/api-errors";
 
 export async function POST(req: Request) {
   const { userId, displayName } = await req.json();
 
   if (!userId || !displayName?.trim()) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    return NextResponse.json(
+      { error: apiErrors.missingFields },
+      { status: 400 },
+    );
   }
 
   const user = await prisma.user.findFirst({
@@ -15,7 +19,21 @@ export async function POST(req: Request) {
   });
 
   if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: apiErrors.userNotFound },
+      { status: 404 },
+    );
+  }
+
+  const existingDisplayName = await prisma.user.findUnique({
+    where: { displayName },
+  });
+
+  if (existingDisplayName) {
+    return NextResponse.json(
+      { error: apiErrors.displayNameTaken },
+      { status: 409 },
+    );
   }
 
   await prisma.user.update({

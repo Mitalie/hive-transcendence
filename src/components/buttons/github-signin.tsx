@@ -8,6 +8,7 @@ export const GitSignInButton = () => {
   const { t } = useTranslation();
   return (
     <Button
+      className="bg-gradient-to-r from-blue-dark to-purple-dark text-white"
       onClick={() =>
         signIn("github", { callbackUrl: "/registration/git-setup" })
       }

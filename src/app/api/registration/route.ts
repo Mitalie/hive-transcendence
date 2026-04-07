@@ -2,16 +2,23 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { setUserPassword } from "@/data/user";
+import { apiErrors } from "@/lib/api-errors";
 
 export async function POST(req: Request) {
   const { email, password } = await req.json();
 
   if (!email || !password) {
-    return NextResponse.json({ error: "Missing Fields" }, { status: 400 });
+    return NextResponse.json(
+      { error: apiErrors.missingFields },
+      { status: 400 },
+    );
   }
 
   if (password.length < 6) {
-    return NextResponse.json({ error: "Password too short" }, { status: 400 });
+    return NextResponse.json(
+      { error: apiErrors.passwordTooShort },
+      { status: 400 },
+    );
   }
 
   const User_exists = await prisma.user.findFirst({
@@ -30,7 +37,10 @@ export async function POST(req: Request) {
       });
     }
 
-    return NextResponse.json({ error: "User already exists" }, { status: 400 });
+    return NextResponse.json(
+      { error: apiErrors.userAlreadyExists },
+      { status: 400 },
+    );
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);

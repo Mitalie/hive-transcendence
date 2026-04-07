@@ -7,7 +7,10 @@ import { useTranslation } from "react-i18next";
 export const SignOutButton = () => {
   const { t } = useTranslation();
   return (
-    <Button onClick={() => signOut({ callbackUrl: "/login" })}>
+    <Button
+      className="bg-red-light hover:bg-red-600 transition"
+      onClick={() => signOut({ callbackUrl: "/login" })}
+    >
       {t("auth.signOut")}
     </Button>
   );
