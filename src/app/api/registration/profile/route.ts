@@ -25,17 +25,6 @@ export async function POST(req: Request) {
     );
   }
 
-  const existingDisplayName = await prisma.user.findUnique({
-    where: { displayName },
-  });
-
-  if (existingDisplayName) {
-    return NextResponse.json(
-      { error: apiErrors.displayNameTaken },
-      { status: 409 },
-    );
-  }
-
   await prisma.user.update({
     where: { id: user.id },
     data: { displayName },
