@@ -9,6 +9,21 @@ services:
     # Expose the DB port for standalone use
     ports:
       - "3306:3306"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mariadb-admin",
+          "ping",
+          "-h",
+          "localhost",
+          "-uroot",
+          "-p${MARIADB_ROOT_PASSWORD}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
 
 volumes:
   transcendence_mariadb_data:

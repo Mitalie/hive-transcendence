@@ -17,5 +17,6 @@ export default defineConfig({
   },
   datasource: {
     url: `mysql://${user}:${password}@${host}:3306/${database}`,
+    shadowDatabaseUrl: `mysql://${user}:${password}@${host}:3306/transcendence_shadow`,
   },
 });
