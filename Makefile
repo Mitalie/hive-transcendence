@@ -1,6 +1,7 @@
 NAME := ft_transcendence
 
 DC := docker compose
+DB_CONTAINER := transcendence_db
 
 # Ensures 'make' runs 'all' by default
 .DEFAULT_GOAL := all
@@ -20,6 +21,21 @@ dev: up
 up:
 	@echo "Starting $(NAME) database container in the background..."
 	@$(DC) up --build -d
+	@echo "Waiting for database to become healthy..."
+	@until [ "$$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}starting{{end}}' $(DB_CONTAINER))" = "healthy" ]; do \
+		sleep 2; \
+	done
+	@echo "Applying Prisma migrations..."
+	@attempt=1; \
+	until npm run migrate:deploy; do \
+		if [ $$attempt -ge 10 ]; then \
+			echo "Prisma migrations failed after $$attempt attempts."; \
+			exit 1; \
+		fi; \
+		echo "Migration attempt $$attempt failed. Retrying in 3 seconds..."; \
+		attempt=$$((attempt + 1)); \
+		sleep 3; \
+	done
 
 # Stop the database container.
 # Leaves volumes intact.
