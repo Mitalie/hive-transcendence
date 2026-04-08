@@ -3,9 +3,10 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
+// Prisma CLI needs to be able to create a shadow database for migrations, so connect as root
+const user = "root";
 const {
-  MARIADB_USER: user,
-  MARIADB_PASSWORD: password,
+  MARIADB_ROOT_PASSWORD: password,
   MARIADB_HOST: host,
   MARIADB_DATABASE: database,
 } = process.env;
@@ -17,6 +18,5 @@ export default defineConfig({
   },
   datasource: {
     url: `mysql://${user}:${password}@${host}:3306/${database}`,
-    shadowDatabaseUrl: `mysql://${user}:${password}@${host}:3306/transcendence_shadow`,
   },
 });
