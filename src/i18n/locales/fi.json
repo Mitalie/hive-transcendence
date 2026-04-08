@@ -16,11 +16,15 @@
     "registration": "Rekisteröidy",
     "terms_of_service": "Käyttöehdot",
     "privacy": "Tietosuojakäytäntö",
+    "settings": "Tilin asetukset",
+    "SetProfile": "Profiilin luonti",
     "default": "Oletussivu",
     "play": "Pelaa"
   },
   "home": {
-    "title": "Etusivu"
+    "welcome": "Tervetuloa <Verkkosivuston nimi>",
+    "intro": "Tämä on lyhyt esittely verkkosivustosta.",
+    "startgame": "Aloita toisto"
   },
   "terms": {
     "title": "Käyttöehdot",
@@ -109,5 +113,87 @@
   "gamesetting": {
     "settingbtn": "Asetus",
     "title": "Peliasetukset"
+  },
+  "auth": {
+    "signIn": "Kirjaudu sisään",
+    "signOut": "Kirjaudu ulos",
+    "signInWithGitHub": "Kirjaudu GitHubilla"
+  },
+  "login": {
+    "title": "Kirjaudu sisään",
+    "emailLabel": "Sähköposti",
+    "emailPlaceholder": "Kirjoita sähköpostiosoitteesi",
+    "passwordLabel": "Salasana",
+    "passwordPlaceholder": "Kirjoita salasanasi",
+    "submit": "KIRJAUDU",
+    "loading": "Kirjaudutaan...",
+    "error": "Virheellinen käyttäjänimi tai salasana",
+    "or": "Tai",
+    "noAccount": "Eikö sinulla ole tiliä?",
+    "signUp": "Rekisteröidy"
+  },
+  "registration": {
+    "title": "Rekisteröidy",
+    "emailLabel": "Sähköposti",
+    "emailPlaceholder": "Kirjoita sähköpostiosoitteesi",
+    "passwordLabel": "Salasana",
+    "passwordPlaceholder": "Kirjoita salasanasi",
+    "submit": "REKISTERÖIDY",
+    "loading": "Rekisteröidään...",
+    "errorFallback": "Rekisteröinti epäonnistui",
+    "errorUnexpected": "Rekisteröinnin aikana tapahtui odottamaton virhe",
+    "or": "Tai",
+    "hasAccount": "Onko sinulla jo tili?",
+    "signIn": "Kirjaudu sisään"
+  },
+  "profile": {
+    "title": "Luo profiilisi",
+    "subtitle": "Valitse, miten sinut näytetään muille",
+    "displayNameLabel": "Näyttönimi",
+    "displayNamePlaceholder": "Kirjoita näyttönimesi",
+    "submit": "JATKA",
+    "loading": "Tallennetaan...",
+    "errorFallback": "Profiilin luonti epäonnistui",
+    "errorUnexpected": "Rekisteröinnin aikana tapahtui odottamaton virhe"
+  },
+  "settings": {
+    "title": "Asetukset",
+    "subtitle": "Hallinnoi tilin asetuksia",
+    "notSet": "Ei asetettu",
+    "badge": {
+      "connected": "Yhdistetty",
+      "notSet": "Ei asetettu"
+    },
+    "account": {
+      "title": "Tili",
+      "displayName": "Näyttönimi",
+      "email": "Sähköposti"
+    },
+    "security": {
+      "title": "Turvallisuus",
+      "passwordLogin": "Salasanakirjautuminen"
+    },
+    "connectedAccounts": {
+      "title": "Yhdistetyt tilit",
+      "github": "GitHub",
+      "emailMismatch": "GitHub-sähköpostisi ei vastaa tilisi sähköpostia. Käytä GitHub-tiliä, jolla on sama sähköpostiosoite.",
+      "githubHint": "Yhdistääksesi GitHubin, kirjaudu sisään GitHub-tilillä, jolla on sama sähköpostiosoite kuin tililläsi."
+    }
+  },
+  "addPassword": {
+    "label": "Valitse salasana",
+    "placeholder": "Kirjoita uusi salasana",
+    "submit": "Lisää salasanakirjautuminen",
+    "loading": "Tallennetaan...",
+    "errorFallback": "Jotain meni pieleen",
+    "success": "Salasana lisätty! Voit nyt kirjautua myös sähköpostilla."
+  },
+  "apiErrors": {
+    "missingFields": "Puuttuvat kentät",
+    "userNotFound": "Käyttäjää ei löydy",
+    "displayNameTaken": "Näyttönimi on jo käytössä",
+    "passwordTooShort": "Salasana on liian lyhyt",
+    "userAlreadyExists": "Käyttäjä on jo olemassa",
+    "unauthorized": "Ei käyttöoikeutta"
   }
 }

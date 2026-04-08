@@ -41,26 +41,30 @@ export default function Header() {
         return t("header.terms_of_service");
       case "/privacy":
         return t("header.privacy");
+      case "/settings":
+        return t("header.settings");
+      case "/registration/profile":
+        return t("header.SetProfile");
       default:
         return t("header.default");
     }
   };
 
   return (
-    <Bar className="justify-between">
+    <Bar>
       {/* website logo and name */}
       <Link
         href="/"
         className="flex items-center gap-3 no-underline text-inherit"
       >
-        {/* Website Name */}
         <Image
           src="/images/website_logo.png"
           alt="logo"
           width={32}
           height={32}
+          className="dark:invert"
         />
-        <span className="text-2xl text-text font-extrabold leading-none">
+        <span className="text-2xl font-extrabold leading-none">
           {t("header.websitename")}
         </span>
       </Link>
@@ -70,27 +74,29 @@ export default function Header() {
 
       {/* buttons */}
       <div className="flex items-center gap-2.5">
-        <NavButton href="/game" active={pathname === "/game"}>
-          {t("header.play")}
-        </NavButton>
-
         <NavButton href="/friends" active={pathname === "/friends"}>
-          {t("header.friends")}
+          <Image
+            src="/images/friends_icon.png"
+            alt="friends"
+            width={32}
+            height={32}
+            className="rounded-full cursor-pointer dark:invert"
+          />
         </NavButton>
 
         <NavButton href="/profile" active={pathname === "/profile"}>
-          {t("header.profile")}
-        </NavButton>
-
-        {session?.user?.image && (
           <Image
-            src={session.user.image}
+            src={session?.user?.image || "/images/user_icon.png"}
+            alt="user"
             width={32}
             height={32}
-            alt="avatar"
-            className="rounded-full"
+            className={`
+              rounded-full cursor-pointer
+              ${!session?.user?.image ? "dark:invert" : ""}
+            `}
           />
-        )}
+        </NavButton>
+
         {/* Signin/out button depending if logged in */}
         {session ? <SignOutButton /> : <SignInButton />}
       </div>
