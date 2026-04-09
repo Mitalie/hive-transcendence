@@ -1,8 +1,8 @@
 import { GameState, GameStateDispatch, resumeAction } from "@/game/GameState";
-import GameControls from "./GameControls";
-import ScoreBoard from "./ScoreBoard";
-import GameSettingButton from "./GameSettingButton";
-import ExitModal from "./ExitPrompt";
+import GameControls from "@/game/ui/GameControls";
+import ScoreBoard from "@/game/ui/ScoreBoard";
+import GameSettingButton from "@/game/ui/GameSettingButton";
+import ExitModal from "@/game/ui/ExitPrompt";
 
 export default function GameUI({
   state,

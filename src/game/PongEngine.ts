@@ -1,5 +1,5 @@
-import { GameConfig } from "./GameConfig";
-import { GameType } from "./GameState";
+import { GameConfig } from "@/game/GameConfig";
+import { GameType } from "@/game/GameState";
 
 export class PongEngine {
   public ball = { x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, spin: 0 };

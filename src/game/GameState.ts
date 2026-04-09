@@ -1,5 +1,5 @@
 import { Dispatch, useEffect, useReducer, useRef } from "react";
-import { GameConfig } from "./GameConfig";
+import { GameConfig } from "@/game/GameConfig";
 import { saveMatchAction } from "@/actions/matchHistory";
 
 export type GameType = "classic" | "advanced";

@@ -1,12 +1,12 @@
 import { useRef, useEffect, useMemo, RefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { GameConfig } from "@/game/GameConfig";
+import { GameMode } from "@/game/GameState";
 import { PongEngine } from "@/game/PongEngine";
 import { AIOpponent } from "@/game/AIOpponent";
-import Ball from "./Ball";
-import Paddle from "./Paddle";
-import Arena from "./Arena";
-import { GameMode } from "@/game/GameState";
+import Ball from "@/game/3d/Ball";
+import Paddle from "@/game/3d/Paddle";
+import Arena from "@/game/3d/Arena";
 
 export default function GameRender({
   mode,

@@ -1,12 +1,12 @@
 import { useRef, useEffect, useCallback } from "react";
-import Button from "@/components/Button";
-import GameSettingPanel from "./GameSettingPanel";
 import { useTranslation } from "react-i18next";
 import {
   closeMenuAction,
   GameStateDispatch,
   openMenuAction,
-} from "../GameState";
+} from "@/game/GameState";
+import GameSettingPanel from "@/game/ui/GameSettingPanel";
+import Button from "@/components/Button";
 
 export default function GameSettingButton({
   open,

@@ -1,9 +1,9 @@
-import Button from "@/components/Button";
 import {
   exitCancelAction,
   exitConfirmAction,
   GameStateDispatch,
-} from "../GameState";
+} from "@/game/GameState";
+import Button from "@/components/Button";
 
 export default function ExitModal({
   exitPromptOpen,

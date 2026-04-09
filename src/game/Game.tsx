@@ -1,8 +1,6 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
-import GameRender from "@/game/3d/GameRender";
-import GameUI from "@/game/ui/GameUI";
 import {
   exitConfirmAction,
   pauseAction,
@@ -13,7 +11,9 @@ import {
   useGameState,
 } from "@/game/GameState";
 import Button from "@/components/Button";
-import ScoreBoard from "./ui/ScoreBoard";
+import ScoreBoard from "@/game/ui/ScoreBoard";
+import GameUI from "@/game/ui/GameUI";
+import GameRender from "@/game/3d/GameRender";
 
 export default function Game() {
   const [state, dispatch] = useGameState();

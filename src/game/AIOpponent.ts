@@ -1,5 +1,5 @@
-import { PongEngine } from "./PongEngine";
-import { GameConfig } from "./GameConfig";
+import { PongEngine } from "@/game/PongEngine";
+import { GameConfig } from "@/game/GameConfig";
 
 export type AIDifficulty = "easy" | "medium" | "hard";
 

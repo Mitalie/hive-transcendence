@@ -1,4 +1,3 @@
-import Button from "@/components/Button";
 import { useTranslation } from "react-i18next";
 import {
   GameStateDispatch,
@@ -7,7 +6,8 @@ import {
   pauseAction,
   resumeAction,
   startGameAction,
-} from "../GameState";
+} from "@/game/GameState";
+import Button from "@/components/Button";
 
 export default function GameControls({
   view,
