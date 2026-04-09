@@ -195,5 +195,50 @@
     "passwordTooShort": "密码太短",
     "userAlreadyExists": "用户已存在",
     "unauthorized": "未授权"
+  },
+  "profilePage": {
+    "title": "个人资料",
+    "email": "电子邮件",
+    "username": "用户名",
+    "name": "姓名",
+    "bio": "简介",
+    "noBio": "暂无简介。",
+    "matchHistory": "对战历史",
+    "friends": "好友",
+    "stats": {
+      "title": "统计",
+      "totalMatches": "总对战次数",
+      "wins": "胜场",
+      "losses": "败场",
+      "draws": "平局",
+      "winRate": "胜率"
+    },
+    "friendshipStats": {
+      "title": "好友统计",
+      "accepted": "已接受的好友",
+      "pendingSent": "已发送的请求",
+      "pendingReceived": "待处理的请求"
+    },
+    "accountDetails": {
+      "title": "账户详情",
+      "displayName": "显示名称",
+      "avatarUrl": "头像链接",
+      "lastActive": "最后活跃时间",
+      "joined": "注册时间"
+    },
+    "recentMatches": {
+      "title": "最近对战",
+      "seeAll": "查看全部",
+      "noMatches": "暂无对战记录。",
+      "versus": "vs",
+      "win": "胜",
+      "loss": "负",
+      "draw": "平"
+    },
+    "settingsLink": "设置",
+    "startPlay": "开始游戏",
+    "totalStat": "总统计",
+    "achievements": "成就",
+    "gameHistory": "游戏统计与历史"
   }
 }

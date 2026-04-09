@@ -195,5 +195,50 @@
     "passwordTooShort": "Salasana on liian lyhyt",
     "userAlreadyExists": "Käyttäjä on jo olemassa",
     "unauthorized": "Ei käyttöoikeutta"
+  },
+  "profilePage": {
+    "title": "Profiili",
+    "email": "Sähköposti",
+    "username": "Käyttäjänimi",
+    "name": "Nimi",
+    "bio": "Esittely",
+    "noBio": "Ei esittelyä lisätty.",
+    "matchHistory": "Otteluhistoria",
+    "friends": "Kaverit",
+    "stats": {
+      "title": "Tilastot",
+      "totalMatches": "Ottelut yhteensä",
+      "wins": "Voitot",
+      "losses": "Häviöt",
+      "draws": "Tasapelit",
+      "winRate": "Voittoprosentti"
+    },
+    "friendshipStats": {
+      "title": "Kaverisuhteet",
+      "accepted": "Hyväksytyt kaverit",
+      "pendingSent": "Lähetetyt pyynnöt",
+      "pendingReceived": "Vastaanotetut pyynnöt"
+    },
+    "accountDetails": {
+      "title": "Tilin tiedot",
+      "displayName": "Näyttönimi",
+      "avatarUrl": "Avatar-URL",
+      "lastActive": "Viimeksi aktiivinen",
+      "joined": "Liittynyt"
+    },
+    "recentMatches": {
+      "title": "Viimeisimmät ottelut",
+      "seeAll": "Näytä kaikki",
+      "noMatches": "Ei pelattuja otteluita.",
+      "versus": "vs",
+      "win": "Voitto",
+      "loss": "Häviö",
+      "draw": "Tasapeli"
+    },
+    "settingsLink": "Asetukset",
+    "startPlay": "Aloita peli",
+    "totalStat": "Kokonaistilastot",
+    "achievements": "Saavutukset",
+    "gameHistory": "Pelitilastot & historia"
   }
 }
