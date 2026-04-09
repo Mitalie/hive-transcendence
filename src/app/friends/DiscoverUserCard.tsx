@@ -1,32 +1,22 @@
+"use client";
+
+import { useTranslation } from "react-i18next";
 import { sendFriendRequest } from "@/actions/friendships";
 
-type Props = {
-  userId: string;
-  name: string | null;
-  username: string | null;
-};
+type Props = { userId: string; label: string };
 
-export default function DiscoverUserCard({ userId, name, username }: Props) {
+export default function DiscoverUserCard({ userId, label }: Props) {
+  const { t } = useTranslation();
   return (
-    <div className="flex flex-col gap-3 rounded-xl border p-4 md:flex-row md:items-center md:justify-between">
-      <div>
-        <p className="font-medium">{name || username || "Unknown user"}</p>
-        <p className="text-sm text-gray-600">{username || "No username"}</p>
-      </div>
-
-      <form
-        action={async () => {
-          "use server";
-          await sendFriendRequest(userId);
-        }}
+    <div className="flex items-center justify-between rounded-xl border border-purple-light p-4 gap-3">
+      <p className="font-medium text-text text-sm truncate min-w-0">{label}</p>
+      <button
+        type="button"
+        onClick={() => sendFriendRequest(userId)}
+        className="shrink-0 rounded-lg px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-blue-dark to-purple-dark hover:opacity-90 transition-opacity"
       >
-        <button
-          type="submit"
-          className="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white"
-        >
-          Add friend
-        </button>
-      </form>
+        {t("friends.discover.addFriend")}
+      </button>
     </div>
   );
 }
