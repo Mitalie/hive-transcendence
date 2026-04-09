@@ -201,5 +201,50 @@
     "passwordTooShort": "Password too short",
     "userAlreadyExists": "User already exists",
     "unauthorized": "Unauthorized"
+  },
+  "profilePage": {
+    "title": "Profile",
+    "email": "Email",
+    "username": "Username",
+    "name": "Name",
+    "bio": "Bio",
+    "noBio": "No bio added yet.",
+    "matchHistory": "Match history",
+    "friends": "Friends",
+    "stats": {
+      "title": "Stats",
+      "totalMatches": "Total matches",
+      "wins": "Wins",
+      "losses": "Losses",
+      "draws": "Draws",
+      "winRate": "Win rate"
+    },
+    "friendshipStats": {
+      "title": "Friendship stats",
+      "accepted": "Accepted friends",
+      "pendingSent": "Pending sent",
+      "pendingReceived": "Pending received"
+    },
+    "accountDetails": {
+      "title": "Account details",
+      "displayName": "Display name",
+      "avatarUrl": "Avatar URL",
+      "lastActive": "Last active",
+      "joined": "Joined"
+    },
+    "recentMatches": {
+      "title": "Recent matches",
+      "seeAll": "See all",
+      "noMatches": "No matches played yet.",
+      "versus": "vs",
+      "win": "Win",
+      "loss": "Loss",
+      "draw": "Draw"
+    },
+    "settingsLink": "Settings",
+    "startPlay": "Start Play",
+    "totalStat": "Total Stats",
+    "achievements": "Achievements",
+    "gameHistory": "Game Stats & History"
   }
 }
