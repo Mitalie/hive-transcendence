@@ -1,6 +1,7 @@
+import { use } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  GameStateDispatch,
+  GameStateDispatchContext,
   GameView,
   exitPromptAction,
   pauseAction,
@@ -12,13 +13,12 @@ import Button from "@/components/Button";
 export default function GameControls({
   view,
   paused,
-  dispatch,
 }: {
   view: GameView;
   paused: boolean;
-  dispatch: GameStateDispatch;
 }) {
   const { t } = useTranslation();
+  const dispatch = use(GameStateDispatchContext);
 
   return (
     <div className="flex gap-2.5 items-center">

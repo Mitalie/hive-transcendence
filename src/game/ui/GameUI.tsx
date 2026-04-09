@@ -1,17 +1,17 @@
-import { GameState, GameStateDispatch, resumeAction } from "@/game/GameState";
+import { use } from "react";
+import {
+  GameState,
+  GameStateDispatchContext,
+  resumeAction,
+} from "@/game/GameState";
 import GameControls from "@/game/ui/GameControls";
 import ScoreBoard from "@/game/ui/ScoreBoard";
 import GameSettingButton from "@/game/ui/GameSettingButton";
 import ExitModal from "@/game/ui/ExitPrompt";
 
-export default function GameUI({
-  state,
-  dispatch,
-}: {
-  state: GameState;
-  dispatch: GameStateDispatch;
-}) {
+export default function GameUI({ state }: { state: GameState }) {
   const { view, paused, score1, score2, menuOpen, exitPromptOpen } = state;
+  const dispatch = use(GameStateDispatchContext);
 
   return (
     <>
@@ -19,13 +19,13 @@ export default function GameUI({
         className={`absolute top-[15px] left-[15px] right-[15px] flex items-center justify-between z-10
                  ${exitPromptOpen ? "pointer-events-none opacity-50" : ""}`}
       >
-        <GameControls view={view} paused={paused} dispatch={dispatch} />
+        <GameControls view={view} paused={paused} />
 
         <div className="absolute left-1/2 -translate-x-1/2">
           <ScoreBoard p1={score1} p2={score2} />
         </div>
 
-        <GameSettingButton open={menuOpen} dispatch={dispatch} />
+        <GameSettingButton open={menuOpen} />
       </div>
 
       {state.paused && (
@@ -39,7 +39,7 @@ export default function GameUI({
         </div>
       )}
 
-      <ExitModal exitPromptOpen={state.exitPromptOpen} dispatch={dispatch} />
+      <ExitModal exitPromptOpen={state.exitPromptOpen} />
     </>
   );
 }

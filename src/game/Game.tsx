@@ -3,6 +3,7 @@
 import { useCallback, useEffect } from "react";
 import {
   exitConfirmAction,
+  GameStateDispatchContext,
   pauseAction,
   resumeAction,
   scoreP1Action,
@@ -82,8 +83,10 @@ export default function Game() {
 
   return (
     <div className="relative h-full w-full">
-      <GameRender onScore={onScore} mode={state.mode} paused={state.paused} />
-      <GameUI state={state} dispatch={dispatch} />
+      <GameStateDispatchContext value={dispatch}>
+        <GameRender onScore={onScore} mode={state.mode} paused={state.paused} />
+        <GameUI state={state} />
+      </GameStateDispatchContext>
     </div>
   );
 }

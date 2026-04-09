@@ -1,23 +1,18 @@
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, use } from "react";
 import { useTranslation } from "react-i18next";
 import {
   closeMenuAction,
-  GameStateDispatch,
+  GameStateDispatchContext,
   openMenuAction,
 } from "@/game/GameState";
 import GameSettingPanel from "@/game/ui/GameSettingPanel";
 import Button from "@/components/Button";
 
-export default function GameSettingButton({
-  open,
-  dispatch,
-}: {
-  open: boolean;
-  dispatch: GameStateDispatch;
-}) {
+export default function GameSettingButton({ open }: { open: boolean }) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const { t } = useTranslation();
+  const dispatch = use(GameStateDispatchContext);
 
   const toggleSettingPanel = useCallback(() => {
     if (open) dispatch(closeMenuAction());

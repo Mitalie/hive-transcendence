@@ -1,4 +1,4 @@
-import { Dispatch, useEffect, useReducer, useRef } from "react";
+import { createContext, Dispatch, useEffect, useReducer, useRef } from "react";
 import { GameConfig } from "@/game/GameConfig";
 import { saveMatchAction } from "@/actions/matchHistory";
 
@@ -42,8 +42,6 @@ type GameStateAction =
   | { type: "EXIT_PROMPT" }
   | { type: "EXIT_CANCEL" }
   | { type: "EXIT_CONFIRM" };
-
-export type GameStateDispatch = Dispatch<GameStateAction>;
 
 export const setModeAction = (mode: GameMode): GameStateAction => ({
   type: "SET_MODE",
@@ -161,3 +159,9 @@ export const useGameState = () => {
 
   return [state, dispatch] as const;
 };
+
+export const GameStateDispatchContext = createContext<
+  Dispatch<GameStateAction>
+>(() => {
+  throw new Error("GameStateDispatchContext not provided");
+});

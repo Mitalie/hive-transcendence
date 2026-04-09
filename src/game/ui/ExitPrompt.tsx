@@ -1,18 +1,19 @@
+import { use } from "react";
 import {
   exitCancelAction,
   exitConfirmAction,
-  GameStateDispatch,
+  GameStateDispatchContext,
 } from "@/game/GameState";
 import Button from "@/components/Button";
 
 export default function ExitModal({
   exitPromptOpen,
-  dispatch,
 }: {
   exitPromptOpen: boolean;
-  dispatch: GameStateDispatch;
 }) {
   if (!exitPromptOpen) return null;
+
+  const dispatch = use(GameStateDispatchContext);
 
   return (
     <div className="absolute inset-0 flex justify-center items-center rounded-xl">
