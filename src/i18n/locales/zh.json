@@ -271,5 +271,38 @@
     "totalStat": "总统计",
     "achievements": "成就",
     "gameHistory": "游戏统计与历史"
+  },
+  "friends": {
+    "title": "好友",
+    "subtitle": "管理您的好友和请求。",
+    "stats": {
+      "friends": "好友",
+      "incoming": "收到的请求",
+      "sent": "已发送的请求"
+    },
+    "incoming": {
+      "title": "收到的请求",
+      "empty": "暂无收到的请求。"
+    },
+    "myFriends": {
+      "title": "我的好友",
+      "empty": "您还没有好友。"
+    },
+    "sentRequests": {
+      "title": "已发送的请求",
+      "empty": "暂无待处理的已发送请求。"
+    },
+    "discover": {
+      "title": "发现用户",
+      "empty": "暂无更多可添加的用户。",
+      "searchPlaceholder": "搜索好友",
+      "unknownUser": "未知用户",
+      "noUsername": "无用户名",
+      "addFriend": "添加好友",
+      "remove": "删除",
+      "accept": "接受",
+      "decline": "拒绝",
+      "cancelRequest": "取消请求"
+    }
   }
 }

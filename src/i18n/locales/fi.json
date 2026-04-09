@@ -271,5 +271,38 @@
     "totalStat": "Kokonaistilastot",
     "achievements": "Saavutukset",
     "gameHistory": "Pelitilastot & historia"
+  },
+  "friends": {
+    "title": "Kaverit",
+    "subtitle": "Hallinnoi kavereita ja pyyntöjä.",
+    "stats": {
+      "friends": "Kaverit",
+      "incoming": "Saapuneet pyynnöt",
+      "sent": "Lähetetyt pyynnöt"
+    },
+    "incoming": {
+      "title": "Saapuneet pyynnöt",
+      "empty": "Ei saapuneita pyyntöjä."
+    },
+    "myFriends": {
+      "title": "Kaverisi",
+      "empty": "Sinulla ei ole vielä kavereita."
+    },
+    "sentRequests": {
+      "title": "Lähetetyt pyynnöt",
+      "empty": "Ei odottavia lähetettyjä pyyntöjä."
+    },
+    "discover": {
+      "title": "Etsi ihmisiä",
+      "empty": "Ei enempää käyttäjiä lisättäväksi juuri nyt.",
+      "searchPlaceholder": "Etsi kaveria",
+      "unknownUser": "Tuntematon käyttäjä",
+      "noUsername": "Ei käyttäjänimeä",
+      "addFriend": "Lisää kaveriksi",
+      "remove": "Poista",
+      "accept": "Hyväksy",
+      "decline": "Hylkää",
+      "cancelRequest": "Peruuta pyyntö"
+    }
   }
 }

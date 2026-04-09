@@ -277,5 +277,38 @@
     "totalStat": "Total Stats",
     "achievements": "Achievements",
     "gameHistory": "Game Stats & History"
+  },
+  "friends": {
+    "title": "Friends",
+    "subtitle": "Manage your friends and requests.",
+    "stats": {
+      "friends": "Friends",
+      "incoming": "Incoming requests",
+      "sent": "Sent requests"
+    },
+    "incoming": {
+      "title": "Incoming requests",
+      "empty": "No incoming requests."
+    },
+    "myFriends": {
+      "title": "Your friends",
+      "empty": "You have no friends yet."
+    },
+    "sentRequests": {
+      "title": "Sent requests",
+      "empty": "No pending sent requests."
+    },
+    "discover": {
+      "title": "Find people",
+      "empty": "No more users available to add right now.",
+      "searchPlaceholder": "Search friend",
+      "unknownUser": "Unknown user",
+      "noUsername": "No username",
+      "addFriend": "Add friend",
+      "remove": "Remove",
+      "accept": "Accept",
+      "decline": "Decline",
+      "cancelRequest": "Cancel request"
+    }
   }
 }
