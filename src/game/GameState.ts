@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef } from "react";
+import { Dispatch, useEffect, useReducer, useRef } from "react";
 import { GameConfig } from "./GameConfig";
 import { saveMatchAction } from "@/actions/matchHistory";
 
@@ -39,6 +39,8 @@ type GameStateAction =
   | { type: "RESUME" }
   | { type: "OPEN_MENU" }
   | { type: "CLOSE_MENU" };
+
+export type GameStateDispatch = Dispatch<GameStateAction>;
 
 export const setModeAction = (mode: GameMode): GameStateAction => ({
   type: "SET_MODE",

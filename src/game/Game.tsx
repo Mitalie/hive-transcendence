@@ -1,10 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import GameRender from "@/game/3d/GameRender";
 import GameUI from "@/game/ui/GameUI";
 import {
-  mainMenuAction,
   pauseAction,
   resumeAction,
   scoreP1Action,
@@ -19,40 +18,6 @@ export default function Game() {
   const onScore = useCallback(
     (player: 1 | 2) => {
       dispatch(player === 1 ? scoreP1Action() : scoreP2Action());
-    },
-    [dispatch],
-  );
-
-  // Compatibility layer between useGameState and existing components
-  // FIXME - refactor GameUI to align with state structure
-
-  const score = useMemo(
-    () => ({ p1: state.score1, p2: state.score2 }),
-    [state.score1, state.score2],
-  );
-
-  const gameState = useMemo(() => {
-    switch (state.view) {
-      case "start":
-        return "START";
-      case "play":
-        return state.paused ? "PAUSED" : "PLAYING";
-      case "end":
-        return "WON";
-    }
-  }, [state.view, state.paused]);
-
-  const setGameState = useCallback(
-    (newState: "START" | "PLAYING" | "PAUSED" | "WON") => {
-      console.log("Setting game state to", newState);
-      switch (newState) {
-        case "START":
-          return dispatch(mainMenuAction());
-        case "PLAYING":
-          return dispatch(startGameAction());
-        case "PAUSED":
-          return dispatch(pauseAction());
-      }
     },
     [dispatch],
   );
@@ -73,7 +38,7 @@ export default function Game() {
   return (
     <div className="relative h-full w-full">
       <GameRender onScore={onScore} mode={state.mode} paused={state.paused} />
-      <GameUI score={score} gameState={gameState} setGameState={setGameState} />
+      <GameUI state={state} dispatch={dispatch} />
     </div>
   );
 }
