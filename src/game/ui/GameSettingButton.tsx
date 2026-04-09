@@ -1,8 +1,6 @@
-"use client";
-
 import { useState, useRef, useEffect } from "react";
 import Button from "@/components/Button";
-import GameSettingPanel from "@/components/game/GameSettingPanel";
+import GameSettingPanel from "./GameSettingPanel";
 import { useTranslation } from "react-i18next";
 
 type Props = {

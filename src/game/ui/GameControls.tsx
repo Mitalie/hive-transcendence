@@ -1,5 +1,3 @@
-"use client";
-
 import Button from "@/components/Button";
 import { useTranslation } from "react-i18next";
 

@@ -1,10 +1,8 @@
-"use client";
-
 import { useState } from "react";
-import GameControls from "@/components/game/GameControls";
-import ScoreBoard from "@/components/game/ScoreBoard";
-import GameSettingButton from "@/components/game/GameSettingButton";
-import ConfirmModal from "@/components/game/ConfirmModal";
+import GameControls from "./GameControls";
+import ScoreBoard from "./ScoreBoard";
+import GameSettingButton from "./GameSettingButton";
+import ConfirmModal from "./ConfirmModal";
 
 interface GameUIProps {
   score: { p1: number; p2: number };

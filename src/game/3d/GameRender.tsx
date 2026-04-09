@@ -1,7 +1,5 @@
-"use client";
-
-import { useRef, useEffect, useMemo } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useRef, useEffect, useMemo, RefObject } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { GameConfig } from "@/game/GameConfig";
 import { PongEngine } from "@/game/PongEngine";
 import { AIOpponent } from "@/game/AIOpponent";
@@ -9,7 +7,7 @@ import Ball from "./Ball";
 import Paddle from "./Paddle";
 import Arena from "./Arena";
 
-export default function PongScheme({
+export default function GameRender({
   onScore,
   gameState,
   mode,
@@ -71,6 +69,55 @@ export default function PongScheme({
     };
   }, []);
 
+  return (
+    <div className="w-full h-full rounded-xl overflow-hidden">
+      <Canvas
+        camera={{
+          position: GameConfig.camera.position,
+          fov: GameConfig.camera.fov,
+        }}
+      >
+        <GameUpdate
+          gameState={gameState}
+          playMode={playMode}
+          engine={engine}
+          aiOpponent={aiOpponent}
+          keys={keys}
+        />
+        <color attach="background" args={["#050505"]} />
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[0, 10, 5]} intensity={1} />
+        <Arena />
+        <Ball ballData={engine.ball} />
+        <Paddle
+          paddleData={engine.p1}
+          initialX={GameConfig.player1.xPos}
+          color="blue"
+        />
+        <Paddle
+          paddleData={engine.p2}
+          initialX={GameConfig.player2.xPos}
+          color="red"
+        />
+      </Canvas>
+    </div>
+  );
+}
+
+// We'd prefer to not have a separate component for this, but useFrame can only be used in a child of Canvas
+function GameUpdate({
+  gameState,
+  playMode,
+  engine,
+  aiOpponent,
+  keys,
+}: {
+  gameState: "START" | "PLAYING" | "PAUSED" | "WON";
+  playMode: "PvP" | "PvE";
+  engine: PongEngine;
+  aiOpponent: AIOpponent;
+  keys: RefObject<Record<string, boolean>>;
+}) {
   useFrame((_, delta) => {
     // Start with the real human keyboard inputs
     let activeInputs = { ...keys.current };
@@ -93,26 +140,5 @@ export default function PongScheme({
     engine.update(delta, activeInputs, gameState);
   });
 
-  return (
-    <>
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[0, 10, 5]} intensity={1} />
-
-      {/* STATIC ENVIRONMENT */}
-      <Arena />
-
-      {/* DECENTRALIZED ENTITIES */}
-      <Ball ballData={engine.ball} />
-      <Paddle
-        paddleData={engine.p1}
-        initialX={GameConfig.player1.xPos}
-        color="blue"
-      />
-      <Paddle
-        paddleData={engine.p2}
-        initialX={GameConfig.player2.xPos}
-        color="red"
-      />
-    </>
-  );
+  return null;
 }
