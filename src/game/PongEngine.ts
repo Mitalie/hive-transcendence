@@ -1,6 +1,5 @@
 import { GameConfig } from "./GameConfig";
-
-export type GameMode = "classic" | "advanced";
+import { GameType } from "./GameState";
 
 export class PongEngine {
   public ball = { x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, spin: 0 };
@@ -11,21 +10,15 @@ export class PongEngine {
   public serveTimer = 0;
   private nextServeDirection: 1 | 2 = 1;
   private onScore: (player: 1 | 2) => void;
-  public mode: GameMode;
+  public mode: GameType;
 
-  constructor(onScore: (player: 1 | 2) => void, mode: GameMode = "advanced") {
+  constructor(onScore: (player: 1 | 2) => void, mode: GameType) {
     this.onScore = onScore;
     this.mode = mode;
     this.resetBall(1);
   }
 
-  public update(
-    delta: number,
-    keys: Record<string, boolean>,
-    gameState: string,
-  ) {
-    if (gameState !== "PLAYING") return;
-
+  public update(delta: number, keys: Record<string, boolean>) {
     const safeDelta = Math.min(delta, 0.1);
 
     if (this.serveTimer > 0) {

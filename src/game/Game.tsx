@@ -24,7 +24,7 @@ export default function Game() {
   );
 
   // Compatibility layer between useGameState and existing components
-  // FIXME - refactor GameRender and GameUI to align with state structure
+  // FIXME - refactor GameUI to align with state structure
 
   const score = useMemo(
     () => ({ p1: state.score1, p2: state.score2 }),
@@ -72,11 +72,7 @@ export default function Game() {
 
   return (
     <div className="relative h-full w-full">
-      <GameRender
-        onScore={onScore}
-        gameState={gameState}
-        mode={state.mode.type}
-      />
+      <GameRender onScore={onScore} mode={state.mode} paused={state.paused} />
       <GameUI score={score} gameState={gameState} setGameState={setGameState} />
     </div>
   );

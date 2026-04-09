@@ -6,29 +6,27 @@ import { AIOpponent } from "@/game/AIOpponent";
 import Ball from "./Ball";
 import Paddle from "./Paddle";
 import Arena from "./Arena";
+import { GameMode } from "@/game/GameState";
 
 export default function GameRender({
-  onScore,
-  gameState,
   mode,
-  playMode = "PvP",
-  aiDifficulty = "medium",
+  onScore,
+  paused,
 }: {
+  mode: GameMode;
   onScore: (player: 1 | 2) => void;
-  gameState: "START" | "PLAYING" | "PAUSED" | "WON";
-  mode?: "classic" | "advanced";
-  playMode?: "PvP" | "PvE";
-  aiDifficulty?: "easy" | "medium" | "hard";
+  paused: boolean;
 }) {
-  const engine = useMemo(() => new PongEngine(onScore, mode), [onScore, mode]);
+  const engine = useMemo(
+    () => new PongEngine(onScore, mode.type),
+    [onScore, mode.type],
+  );
 
   // Initialize AI and automatically toggle it based on the playMode prop
   const aiOpponent = useMemo(() => {
-    const ai = new AIOpponent(engine);
-    ai.setEnabled(playMode === "PvE");
-    ai.setDifficulty(aiDifficulty);
-    return ai;
-  }, [engine, playMode, aiDifficulty]);
+    if (mode.opponent === "human") return null;
+    return new AIOpponent(engine, mode.opponent);
+  }, [engine, mode.opponent]);
 
   const keys = useRef<Record<string, boolean>>({});
 
@@ -78,11 +76,10 @@ export default function GameRender({
         }}
       >
         <GameUpdate
-          gameState={gameState}
-          playMode={playMode}
           engine={engine}
           aiOpponent={aiOpponent}
           keys={keys}
+          paused={paused}
         />
         <color attach="background" args={["#050505"]} />
         <ambientLight intensity={0.5} />
@@ -106,39 +103,24 @@ export default function GameRender({
 
 // We'd prefer to not have a separate component for this, but useFrame can only be used in a child of Canvas
 function GameUpdate({
-  gameState,
-  playMode,
   engine,
   aiOpponent,
   keys,
+  paused,
 }: {
-  gameState: "START" | "PLAYING" | "PAUSED" | "WON";
-  playMode: "PvP" | "PvE";
   engine: PongEngine;
-  aiOpponent: AIOpponent;
+  aiOpponent: AIOpponent | null;
   keys: RefObject<Record<string, boolean>>;
+  paused: boolean;
 }) {
   useFrame((_, delta) => {
-    // Start with the real human keyboard inputs
-    let activeInputs = { ...keys.current };
-
-    // If PvE is active, override Player 2's keys with the AI's logic
-    if (playMode === "PvE") {
-      const aiKeys = aiOpponent.getInputs();
-
-      // We lowercase them here to match your event listener's formatting
-      activeInputs = {
-        ...activeInputs,
-        arrowup: aiKeys.ArrowUp,
-        arrowdown: aiKeys.ArrowDown,
-        arrowleft: aiKeys.ArrowLeft,
-        arrowright: aiKeys.ArrowRight,
-      };
-    }
-
-    // Feed the final merged inputs to the engine
-    engine.update(delta, activeInputs, gameState);
-  });
+    if (paused) return;
+    const aiKeys = aiOpponent?.getInputs() ?? {};
+    engine.update(delta, {
+      ...keys.current,
+      ...aiKeys,
+    });
+  }, -1); // Make sure this runs before components that read the engine state
 
   return null;
 }
