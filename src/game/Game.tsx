@@ -24,6 +24,7 @@ export default function Game() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (state.exitPromptOpen) return;
       if (e.code === "Space" && !e.repeat) {
         if (state.view !== "play") dispatch(startGameAction());
         else if (state.paused) dispatch(resumeAction());
@@ -33,7 +34,7 @@ export default function Game() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [dispatch, state.paused, state.view]);
+  }, [dispatch, state.paused, state.view, state.exitPromptOpen]);
 
   return (
     <div className="relative h-full w-full">

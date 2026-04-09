@@ -1,15 +1,8 @@
-import { useState } from "react";
-import {
-  GameState,
-  GameStateDispatch,
-  mainMenuAction,
-  pauseAction,
-  resumeAction,
-} from "@/game/GameState";
+import { GameState, GameStateDispatch, resumeAction } from "@/game/GameState";
 import GameControls from "./GameControls";
 import ScoreBoard from "./ScoreBoard";
 import GameSettingButton from "./GameSettingButton";
-import ConfirmModal from "./ConfirmModal";
+import ExitModal from "./ExitPrompt";
 
 export default function GameUI({
   state,
@@ -18,25 +11,15 @@ export default function GameUI({
   state: GameState;
   dispatch: GameStateDispatch;
 }) {
-  const [showEndModal, setShowEndModal] = useState(false);
-
-  const { view, paused, score1, score2, menuOpen } = state;
+  const { view, paused, score1, score2, menuOpen, exitPromptOpen } = state;
 
   return (
     <>
       <div
         className={`absolute top-[15px] left-[15px] right-[15px] flex items-center justify-between z-10
-                 ${showEndModal ? "pointer-events-none opacity-50" : ""}`}
+                 ${exitPromptOpen ? "pointer-events-none opacity-50" : ""}`}
       >
-        <GameControls
-          view={view}
-          paused={paused}
-          dispatch={dispatch}
-          openEndModal={() => {
-            dispatch(pauseAction());
-            setShowEndModal(true);
-          }}
-        />
+        <GameControls view={view} paused={paused} dispatch={dispatch} />
 
         <div className="absolute left-1/2 -translate-x-1/2">
           <ScoreBoard p1={score1} p2={score2} />
@@ -56,14 +39,7 @@ export default function GameUI({
         </div>
       )}
 
-      <ConfirmModal
-        visible={showEndModal}
-        onCancel={() => setShowEndModal(false)}
-        onConfirm={() => {
-          dispatch(mainMenuAction());
-          setShowEndModal(false);
-        }}
-      />
+      <ExitModal exitPromptOpen={state.exitPromptOpen} dispatch={dispatch} />
     </>
   );
 }

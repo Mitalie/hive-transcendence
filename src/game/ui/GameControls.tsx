@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   GameStateDispatch,
   GameView,
+  exitPromptAction,
   pauseAction,
   resumeAction,
   startGameAction,
@@ -12,12 +13,10 @@ export default function GameControls({
   view,
   paused,
   dispatch,
-  openEndModal,
 }: {
   view: GameView;
   paused: boolean;
   dispatch: GameStateDispatch;
-  openEndModal: () => void;
 }) {
   const { t } = useTranslation();
 
@@ -42,7 +41,7 @@ export default function GameControls({
           </Button>
           <Button
             className="bg-btn-purple hover:bg-btn-purple-hover"
-            onClick={openEndModal}
+            onClick={() => dispatch(exitPromptAction())}
           >
             {t("gamecontrols.end")}
           </Button>
@@ -59,7 +58,7 @@ export default function GameControls({
           </Button>
           <Button
             className="bg-btn-purple hover:bg-btn-purple-hover"
-            onClick={openEndModal}
+            onClick={() => dispatch(exitPromptAction())}
           >
             {t("gamecontrols.end")}
           </Button>

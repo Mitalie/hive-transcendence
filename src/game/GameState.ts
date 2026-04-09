@@ -26,19 +26,22 @@ export interface GameState {
   score2: number;
   menuOpen: boolean;
   paused: boolean;
+  exitPromptOpen: boolean;
 }
 
 type GameStateAction =
   | { type: "SET_MODE"; mode: GameMode }
   | { type: "SET_SETTINGS"; settings: GameSettings }
-  | { type: "MAIN_MENU" }
   | { type: "START_GAME" }
   | { type: "SCORE_P1" }
   | { type: "SCORE_P2" }
   | { type: "PAUSE" }
   | { type: "RESUME" }
   | { type: "OPEN_MENU" }
-  | { type: "CLOSE_MENU" };
+  | { type: "CLOSE_MENU" }
+  | { type: "EXIT_PROMPT" }
+  | { type: "EXIT_CANCEL" }
+  | { type: "EXIT_CONFIRM" };
 
 export type GameStateDispatch = Dispatch<GameStateAction>;
 
@@ -50,7 +53,6 @@ export const setSettingsAction = (settings: GameSettings): GameStateAction => ({
   type: "SET_SETTINGS",
   settings,
 });
-export const mainMenuAction = (): GameStateAction => ({ type: "MAIN_MENU" });
 export const startGameAction = (): GameStateAction => ({ type: "START_GAME" });
 export const scoreP1Action = (): GameStateAction => ({ type: "SCORE_P1" });
 export const scoreP2Action = (): GameStateAction => ({ type: "SCORE_P2" });
@@ -58,6 +60,15 @@ export const pauseAction = (): GameStateAction => ({ type: "PAUSE" });
 export const resumeAction = (): GameStateAction => ({ type: "RESUME" });
 export const openMenuAction = (): GameStateAction => ({ type: "OPEN_MENU" });
 export const closeMenuAction = (): GameStateAction => ({ type: "CLOSE_MENU" });
+export const exitPromptAction = (): GameStateAction => ({
+  type: "EXIT_PROMPT",
+});
+export const exitCancelAction = (): GameStateAction => ({
+  type: "EXIT_CANCEL",
+});
+export const exitConfirmAction = (): GameStateAction => ({
+  type: "EXIT_CONFIRM",
+});
 
 const checkWinCondition = (score1: number, score2: number): boolean => {
   const { winLimit, winByTwo } = GameConfig.rules;
@@ -75,8 +86,6 @@ const gameStateReducer = (
       return { ...prev, mode: action.mode };
     case "SET_SETTINGS":
       return { ...prev, settings: action.settings };
-    case "MAIN_MENU":
-      return { ...prev, view: "start" };
     case "START_GAME":
       return {
         ...prev,
@@ -102,6 +111,12 @@ const gameStateReducer = (
       return { ...prev, paused: true, menuOpen: true };
     case "CLOSE_MENU":
       return { ...prev, menuOpen: false };
+    case "EXIT_PROMPT":
+      return { ...prev, paused: true, exitPromptOpen: true };
+    case "EXIT_CANCEL":
+      return { ...prev, exitPromptOpen: false };
+    case "EXIT_CONFIRM":
+      return { ...prev, view: "start", exitPromptOpen: false };
     default:
       throw new Error(
         `Unhandled action type: ${(action as { type: string }).type}`,
@@ -120,6 +135,7 @@ const initGameState: GameState = {
   score2: 0,
   menuOpen: false,
   paused: false,
+  exitPromptOpen: false,
 };
 
 export const useGameState = () => {
