@@ -17,16 +17,12 @@ export default function GameRender({
   onScore: (player: 1 | 2) => void;
   paused: boolean;
 }) {
-  const engine = useMemo(
-    () => new PongEngine(onScore, mode.type),
-    [onScore, mode.type],
-  );
-
-  // Initialize AI and automatically toggle it based on the playMode prop
-  const aiOpponent = useMemo(() => {
-    if (mode.opponent === "human") return null;
-    return new AIOpponent(engine, mode.opponent);
-  }, [engine, mode.opponent]);
+  const [engine, aiOpponent] = useMemo(() => {
+    const engine = new PongEngine(onScore, mode.type);
+    const aiOpponent =
+      mode.opponent === "human" ? null : new AIOpponent(engine, mode.opponent);
+    return [engine, aiOpponent];
+  }, [onScore, mode]); // Depend on mode object instead of individual properties to allow resetting the engine by reassigning mode in state
 
   const keys = useRef<Record<string, boolean>>({});
 

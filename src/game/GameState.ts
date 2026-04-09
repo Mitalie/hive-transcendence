@@ -78,7 +78,14 @@ const gameStateReducer = (
     case "MAIN_MENU":
       return { ...prev, view: "start" };
     case "START_GAME":
-      return { ...prev, view: "play", score1: 0, score2: 0, paused: false };
+      return {
+        ...prev,
+        view: "play",
+        score1: 0,
+        score2: 0,
+        paused: false,
+        mode: { ...prev.mode }, // Create new instance of mode object to re-create engine
+      };
     case "SCORE_P1":
     case "SCORE_P2":
       let { score1, score2 } = prev;
