@@ -1,40 +1,33 @@
-"use client";
-
-import { useState, useRef, useEffect } from "react";
-import Button from "@/components/Button";
-import GameSettingPanel from "@/components/game/GameSettingPanel";
+import { useRef, useEffect, useCallback, use } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  closeMenuAction,
+  GameStateDispatchContext,
+  openMenuAction,
+} from "@/game/GameState";
+import GameSettingPanel from "@/game/ui/GameSettingPanel";
+import Button from "@/components/Button";
 
-type Props = {
-  gameState: "START" | "PLAYING" | "PAUSED" | "WON";
-  setGameState: (state: "START" | "PLAYING" | "PAUSED" | "WON") => void;
-};
-
-export default function GameSettingButton({ gameState, setGameState }: Props) {
-  const [open, setOpen] = useState(false);
-
+export default function GameSettingButton({ open }: { open: boolean }) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const { t } = useTranslation();
+  const dispatch = use(GameStateDispatchContext);
 
-  // make the setting button toggled, and set the position for setting panel
-  const openSettingPanel = () => {
-    if (open) {
-      setOpen(false);
-      return;
-    }
+  const toggleSettingPanel = useCallback(() => {
+    if (open) dispatch(closeMenuAction());
+    else dispatch(openMenuAction());
+  }, [dispatch, open]);
 
-    if (gameState === "PLAYING") {
-      setGameState("PAUSED");
-    }
-    setOpen(true);
-  };
+  const closeSettingPanel = useCallback(() => {
+    if (open) dispatch(closeMenuAction());
+  }, [dispatch, open]);
 
   // close setting panel when click outside
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (!open) return;
+    if (!open) return;
 
+    const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Node;
 
       if (
@@ -43,7 +36,7 @@ export default function GameSettingButton({ gameState, setGameState }: Props) {
         buttonRef.current &&
         !buttonRef.current.contains(target)
       ) {
-        setOpen(false);
+        dispatch(closeMenuAction());
       }
     };
 
@@ -51,13 +44,13 @@ export default function GameSettingButton({ gameState, setGameState }: Props) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [open]);
+  }, [dispatch, open]);
 
   return (
     <div>
       <Button
         ref={buttonRef}
-        onClick={openSettingPanel}
+        onClick={toggleSettingPanel}
         className={`
           ${open ? "bg-btn-purple-active" : "bg-btn-purple"}
           hover:bg-btn-purple-hover
@@ -68,7 +61,7 @@ export default function GameSettingButton({ gameState, setGameState }: Props) {
       {open && (
         <div className="relative">
           <div ref={panelRef} className="absolute right-[0] top-[15px] z-20">
-            <GameSettingPanel onClose={() => setOpen(false)} />
+            <GameSettingPanel onClose={closeSettingPanel} />
           </div>
         </div>
       )}

@@ -1,11 +1,10 @@
-import { PongEngine } from "./PongEngine";
-import { GameConfig } from "./GameConfig";
+import { PongEngine } from "@/game/PongEngine";
+import { GameConfig } from "@/game/GameConfig";
 
 export type AIDifficulty = "easy" | "medium" | "hard";
 
 export class AIOpponent {
   private engine: PongEngine;
-  private isEnabled: boolean = false;
 
   // Defaults (Medium)
   private reactionDelayMs: number = 250;
@@ -23,16 +22,9 @@ export class AIOpponent {
   private focusZ: number = 0;
   private focusX: number = 0;
 
-  constructor(engine: PongEngine) {
+  constructor(engine: PongEngine, difficulty: AIDifficulty) {
     this.engine = engine;
-  }
-
-  public setEnabled(enabled: boolean) {
-    this.isEnabled = enabled;
-  }
-
-  public setDifficulty(level: AIDifficulty) {
-    switch (level) {
+    switch (difficulty) {
       case "easy":
         this.reactionDelayMs = 600;
         this.errorMargin = 1.5;
@@ -51,13 +43,11 @@ export class AIOpponent {
 
   public getInputs(): Record<string, boolean> {
     const inputs = {
-      ArrowUp: false,
-      ArrowDown: false,
-      ArrowLeft: false,
-      ArrowRight: false,
+      arrowup: false,
+      arrowdown: false,
+      arrowleft: false,
+      arrowright: false,
     };
-
-    if (!this.isEnabled) return inputs;
 
     const ball = this.engine.ball;
     const paddle = this.engine.p2;
@@ -93,12 +83,12 @@ export class AIOpponent {
 
     // --- 4. THE MUSCLES ---
     const deadzoneZ = 0.3;
-    if (this.focusZ > paddle.z + deadzoneZ) inputs.ArrowDown = true;
-    else if (this.focusZ < paddle.z - deadzoneZ) inputs.ArrowUp = true;
+    if (this.focusZ > paddle.z + deadzoneZ) inputs.arrowdown = true;
+    else if (this.focusZ < paddle.z - deadzoneZ) inputs.arrowup = true;
 
     const deadzoneX = 0.2;
-    if (this.focusX < paddle.x - deadzoneX) inputs.ArrowLeft = true;
-    else if (this.focusX > paddle.x + deadzoneX) inputs.ArrowRight = true;
+    if (this.focusX < paddle.x - deadzoneX) inputs.arrowleft = true;
+    else if (this.focusX > paddle.x + deadzoneX) inputs.arrowright = true;
 
     return inputs;
   }
