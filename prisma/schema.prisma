@@ -23,7 +23,9 @@ model User {
 
   displayName   String?
   bio           String?   @db.Text
-  avatarUrl     String?
+  avatarUrl     String?   @db.Text
+  avatarData    Bytes?
+  avatarMime    String?
   lastActiveAt  DateTime?
 
   accounts      Account[]

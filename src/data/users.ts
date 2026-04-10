@@ -45,6 +45,7 @@ export async function getAvailableUsersForFriendRequest(currentUserId: string) {
     },
     select: {
       id: true,
+      displayName: true,
       name: true,
       username: true,
       email: true,

@@ -91,19 +91,47 @@ export default async function ProfilePage() {
 
   const { user, stats, friendshipStats } = data;
 
+  const avatarSrc = user.avatarData
+    ? `/api/avatar/${user.id}`
+    : user.avatarUrl || null;
+
   return (
     <main className="mx-auto max-w-4xl px-6 py-10">
       <section className="mb-8 rounded-2xl border p-6 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">
-              {user.displayName || user.username || user.name || "Profile"}
-            </h1>
+          <div className="flex items-start gap-4">
+            {avatarSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={avatarSrc}
+                alt={
+                  user.displayName ||
+                  user.username ||
+                  user.name ||
+                  "Profile avatar"
+                }
+                className="h-24 w-24 rounded-full object-cover border"
+              />
+            ) : (
+              <div className="h-24 w-24 rounded-full border bg-gray-100 flex items-center justify-center text-3xl font-semibold text-gray-600">
+                {(user.displayName ||
+                  user.username ||
+                  user.name ||
+                  user.email ||
+                  "?")[0].toUpperCase()}
+              </div>
+            )}
 
-            <div className="mt-2 space-y-1 text-sm text-gray-600">
-              <p>Email: {user.email || "-"}</p>
-              <p>Username: {user.username || "-"}</p>
-              <p>Name: {user.name || "-"}</p>
+            <div>
+              <h1 className="text-3xl font-bold">
+                {user.displayName || user.username || user.name || "Profile"}
+              </h1>
+
+              <div className="mt-2 space-y-1 text-sm text-gray-600">
+                <p>Email: {user.email || "-"}</p>
+                <p>Username: {user.username || "-"}</p>
+                <p>Name: {user.name || "-"}</p>
+              </div>
             </div>
           </div>
 

@@ -66,7 +66,11 @@ export default async function FriendsPage() {
               <IncomingRequestCard
                 key={friendship.id}
                 friendshipId={friendship.id}
-                name={friendship.requester.name}
+                name={
+                  friendship.requester.displayName ||
+                  friendship.requester.name ||
+                  friendship.requester.email
+                }
                 username={friendship.requester.username}
               />
             ))}
@@ -91,7 +95,7 @@ export default async function FriendsPage() {
                 <FriendCard
                   key={friendship.id}
                   friendshipId={friendship.id}
-                  name={friend.name}
+                  name={friend.displayName || friend.name || friend.email}
                   username={friend.username}
                 />
               );
@@ -111,7 +115,11 @@ export default async function FriendsPage() {
               <SentRequestCard
                 key={friendship.id}
                 friendshipId={friendship.id}
-                name={friendship.addressee.name}
+                name={
+                  friendship.addressee.displayName ||
+                  friendship.addressee.name ||
+                  friendship.addressee.email
+                }
                 username={friendship.addressee.username}
               />
             ))}
@@ -132,7 +140,7 @@ export default async function FriendsPage() {
               <DiscoverUserCard
                 key={user.id}
                 userId={user.id}
-                name={user.name}
+                name={user.displayName || user.name || user.email}
                 username={user.username}
               />
             ))}

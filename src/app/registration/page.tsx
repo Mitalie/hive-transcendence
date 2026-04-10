@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
 import { signIn } from "next-auth/react";
 import { useTranslation } from "react-i18next";
+import { registerUserAction } from "@/actions/registration";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -21,15 +22,10 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/registration", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
+      const result = await registerUserAction(email, password);
 
-      if (!res.ok) {
-        const key = data.error;
+      if (!result.ok) {
+        const key = result.error;
         throw new Error(t(`apiErrors.${key}`, t("registration.errorFallback")));
       }
 
@@ -38,7 +34,7 @@ export default function RegisterPage() {
         JSON.stringify({ email, password }),
       );
 
-      if (data.needsProfile === false) {
+      if (result.needsProfile === false) {
         sessionStorage.removeItem("pendingAuth");
         await signIn("credentials", {
           email,
@@ -47,7 +43,7 @@ export default function RegisterPage() {
           callbackUrl: "/",
         });
       } else {
-        router.push(`/registration/profile?userId=${data.userId}`);
+        router.push(`/registration/profile?userId=${result.userId}`);
       }
     } catch (err: unknown) {
       if (err instanceof Error) {

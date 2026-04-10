@@ -6,6 +6,7 @@ import { signIn } from "next-auth/react";
 import Button from "@/components/Button";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { completeRegistrationProfileAction } from "@/actions/registration";
 
 export default function ProfileSetupPage() {
   const [displayName, setDisplayName] = useState("");
@@ -22,15 +23,13 @@ export default function ProfileSetupPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/registration/profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, displayName }),
-      });
+      const result = await completeRegistrationProfileAction(
+        userId ?? "",
+        displayName,
+      );
 
-      if (!res.ok) {
-        const data = await res.json();
-        const key = data.error;
+      if (!result.ok) {
+        const key = result.error;
         throw new Error(t(`apiErrors.${key}`, t("profile.errorFallback")));
       }
 
