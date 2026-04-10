@@ -1,8 +1,12 @@
-import { useRef, useEffect, useMemo, RefObject } from "react";
+import { useRef, useEffect, useMemo, RefObject, use } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { GameConfig } from "@/game/GameConfig";
-import { GameMode } from "@/game/GameState";
+import {
+  GameMode,
+  GameStateDispatchContext,
+  pauseAction,
+} from "@/game/GameState";
 import { PongEngine } from "@/game/PongEngine";
 import { AIOpponent } from "@/game/AIOpponent";
 import Ball from "@/game/3d/Ball";
@@ -14,10 +18,9 @@ function ResponsiveCamera() {
 
   useEffect(() => {
     if (!(camera instanceof THREE.PerspectiveCamera)) return;
-
+    const perspectiveCamera = camera as THREE.PerspectiveCamera;
     const aspect = size.width / size.height;
     const targetAspect = 2.2;
-
     let calculatedFov = GameConfig.camera.fov;
 
     if (aspect < targetAspect) {
@@ -31,8 +34,7 @@ function ResponsiveCamera() {
       cam.fov = newFov;
       cam.updateProjectionMatrix();
     };
-
-    applyLensUpdate(camera, calculatedFov);
+    applyLensUpdate(perspectiveCamera, calculatedFov);
   }, [size, camera]);
 
   return null;
@@ -47,6 +49,8 @@ export default function GameRender({
   onScore: (player: 1 | 2) => void;
   paused: boolean;
 }) {
+  const dispatch = use(GameStateDispatchContext);
+
   const [engine, aiOpponent] = useMemo(() => {
     const engine = new PongEngine(onScore, mode.type);
     const aiOpponent =
@@ -59,46 +63,37 @@ export default function GameRender({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.repeat) return;
-
-      const gameKeys = [
-        "w",
-        "s",
-        "a",
-        "d",
-        "ArrowUp",
-        "ArrowDown",
-        "ArrowLeft",
-        "ArrowRight",
-        " ",
-        "Space",
-      ];
-
-      if (gameKeys.includes(e.key) || gameKeys.includes(e.code)) {
-        e.preventDefault();
-      }
-
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
       keys.current[e.key.toLowerCase()] = true;
     };
-
     const handleKeyUp = (e: KeyboardEvent) => {
       keys.current[e.key.toLowerCase()] = false;
+    };
+    const handleVisibilityChange = () => {
+      if (document.hidden && !paused) dispatch(pauseAction());
     };
 
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
-
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [dispatch, paused]);
 
   return (
     <div className="w-full h-full rounded-xl overflow-hidden">
       <Canvas
+        shadows
         camera={{
           position: GameConfig.camera.position,
           fov: GameConfig.camera.fov,
+        }}
+        onCreated={({ gl }) => {
+          gl.shadowMap.type = THREE.PCFShadowMap;
         }}
       >
         <ResponsiveCamera />
@@ -108,9 +103,23 @@ export default function GameRender({
           keys={keys}
           paused={paused}
         />
-        <color attach="background" args={["#050505"]} />
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[0, 10, 5]} intensity={1} />
+
+        <color attach="background" args={["#1a1a2e"]} />
+        <ambientLight intensity={0.8} />
+
+        <directionalLight
+          position={[0, 30, 0]}
+          intensity={1.5}
+          castShadow
+          shadow-mapSize={[2048, 2048]}
+          shadow-bias={-0.0005}
+        >
+          <orthographicCamera
+            attach="shadow-camera"
+            args={[-15, 15, 10, -10, 0.1, 50]}
+          />
+        </directionalLight>
+
         <Arena />
         <Ball ballData={engine.ball} />
         <Paddle
@@ -140,7 +149,7 @@ function GameUpdate({
   keys: RefObject<Record<string, boolean>>;
   paused: boolean;
 }) {
-  useFrame((_, delta) => {
+  useFrame((_state, delta) => {
     if (paused) return;
     const aiKeys = aiOpponent?.getInputs() ?? {};
     engine.update(delta, {

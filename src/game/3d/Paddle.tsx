@@ -26,8 +26,7 @@ export default function Paddle({
   });
 
   return (
-    // Pass the initial position so it spawns in the right place
-    <mesh ref={meshRef} position={[initialX, 0, 0]}>
+    <mesh ref={meshRef} position={[initialX, 0, 0]} castShadow receiveShadow>
       <boxGeometry
         args={[
           GameConfig.paddle.width,

@@ -4,11 +4,11 @@ export default function Arena() {
   return (
     <>
       {/* FLOOR */}
-      <mesh position={[0, -0.5, 0]}>
+      <mesh position={[0, -0.5, 0]} receiveShadow>
         <boxGeometry
           args={[GameConfig.court.width, 0.1, GameConfig.court.depth]}
         />
-        <meshStandardMaterial color="#222222" />
+        <meshStandardMaterial color="#3a3a50" />
       </mesh>
 
       {/* TOP WALL */}

@@ -18,7 +18,7 @@ export default function Ball({ ballData }: { ballData: BallData }) {
   });
 
   return (
-    <mesh ref={meshRef} position={[0, 0, 0]}>
+    <mesh ref={meshRef} position={[0, 0, 0]} castShadow>
       <sphereGeometry args={[GameConfig.ball.radius, 16, 16]} />
       <meshStandardMaterial color="white" />
     </mesh>
