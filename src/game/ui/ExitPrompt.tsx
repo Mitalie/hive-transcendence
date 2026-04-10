@@ -1,13 +1,19 @@
+import { use } from "react";
+import {
+  exitCancelAction,
+  exitConfirmAction,
+  GameStateDispatchContext,
+} from "@/game/GameState";
 import Button from "@/components/Button";
 
-type Props = {
-  visible: boolean;
-  onCancel: () => void;
-  onConfirm: () => void;
-};
+export default function ExitModal({
+  exitPromptOpen,
+}: {
+  exitPromptOpen: boolean;
+}) {
+  if (!exitPromptOpen) return null;
 
-export default function ConfirmModal({ visible, onCancel, onConfirm }: Props) {
-  if (!visible) return null;
+  const dispatch = use(GameStateDispatchContext);
 
   return (
     <div className="absolute inset-0 flex justify-center items-center rounded-xl">
@@ -16,13 +22,13 @@ export default function ConfirmModal({ visible, onCancel, onConfirm }: Props) {
         <div className="flex gap-2.5 justify-center">
           <Button
             className="bg-blue-dark hover:bg-purple-dark"
-            onClick={onCancel}
+            onClick={() => dispatch(exitCancelAction())}
           >
             Return to Game
           </Button>
           <Button
             className="bg-btn-blue hover:bg-btn-blue-hover"
-            onClick={onConfirm}
+            onClick={() => dispatch(exitConfirmAction())}
           >
             End Game
           </Button>

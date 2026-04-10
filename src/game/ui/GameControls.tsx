@@ -1,64 +1,64 @@
-"use client";
-
-import Button from "@/components/Button";
+import { use } from "react";
 import { useTranslation } from "react-i18next";
-
-type Props = {
-  gameState: "START" | "PLAYING" | "PAUSED" | "WON";
-  onStart: () => void;
-  onPause: () => void;
-  onContinue: () => void;
-  onEnd: () => void;
-};
+import {
+  GameStateDispatchContext,
+  GameView,
+  exitPromptAction,
+  pauseAction,
+  resumeAction,
+  startGameAction,
+} from "@/game/GameState";
+import Button from "@/components/Button";
 
 export default function GameControls({
-  gameState,
-  onStart,
-  onPause,
-  onContinue,
-  onEnd,
-}: Props) {
+  view,
+  paused,
+}: {
+  view: GameView;
+  paused: boolean;
+}) {
   const { t } = useTranslation();
+  const dispatch = use(GameStateDispatchContext);
 
   return (
     <div className="flex gap-2.5 items-center">
-      {(gameState === "START" || gameState === "WON") && (
+      {(view === "start" || view === "end") && (
         <Button
           className="bg-btn-purple hover:bg-btn-purple-hover"
-          onClick={onStart}
+          onClick={() => dispatch(startGameAction())}
         >
           {t("gamecontrols.start")}
         </Button>
       )}
 
-      {gameState === "PLAYING" && (
+      {view === "play" && !paused && (
         <>
           <Button
             className="bg-btn-purple hover:bg-btn-purple-hover"
-            onClick={onPause}
+            onClick={() => dispatch(pauseAction())}
           >
             {t("gamecontrols.pause")}
           </Button>
           <Button
             className="bg-btn-purple hover:bg-btn-purple-hover"
-            onClick={onEnd}
+            onClick={() => dispatch(exitPromptAction())}
           >
             {t("gamecontrols.end")}
           </Button>
         </>
       )}
 
-      {gameState === "PAUSED" && (
+      {view === "play" && paused && (
         <>
           <Button
             className="bg-btn-purple hover:bg-btn-purple-hover"
-            onClick={onContinue}
+            onClick={() => dispatch(resumeAction())}
           >
             {t("gamecontrols.continue")}
           </Button>
           <Button
             className="bg-btn-purple hover:bg-btn-purple-hover"
-            onClick={onEnd}
+            onClick={() => dispatch(exitPromptAction())}
           >
             {t("gamecontrols.end")}
           </Button>
