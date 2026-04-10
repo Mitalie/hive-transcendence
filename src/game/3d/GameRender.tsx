@@ -1,5 +1,6 @@
 import { useRef, useEffect, useMemo, RefObject } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import * as THREE from "three";
 import { GameConfig } from "@/game/GameConfig";
 import { GameMode } from "@/game/GameState";
 import { PongEngine } from "@/game/PongEngine";
@@ -7,6 +8,35 @@ import { AIOpponent } from "@/game/AIOpponent";
 import Ball from "@/game/3d/Ball";
 import Paddle from "@/game/3d/Paddle";
 import Arena from "@/game/3d/Arena";
+
+function ResponsiveCamera() {
+  const { camera, size } = useThree();
+
+  useEffect(() => {
+    if (!(camera instanceof THREE.PerspectiveCamera)) return;
+
+    const aspect = size.width / size.height;
+    const targetAspect = 2.2;
+
+    let calculatedFov = GameConfig.camera.fov;
+
+    if (aspect < targetAspect) {
+      const zoomFactor = targetAspect / aspect;
+      const baseFovRads = THREE.MathUtils.degToRad(GameConfig.camera.fov);
+      const newFovRads = 2 * Math.atan(Math.tan(baseFovRads / 2) * zoomFactor);
+      calculatedFov = THREE.MathUtils.radToDeg(newFovRads);
+    }
+
+    const applyLensUpdate = (cam: THREE.PerspectiveCamera, newFov: number) => {
+      cam.fov = newFov;
+      cam.updateProjectionMatrix();
+    };
+
+    applyLensUpdate(camera, calculatedFov);
+  }, [size, camera]);
+
+  return null;
+}
 
 export default function GameRender({
   mode,
@@ -71,6 +101,7 @@ export default function GameRender({
           fov: GameConfig.camera.fov,
         }}
       >
+        <ResponsiveCamera />
         <GameUpdate
           engine={engine}
           aiOpponent={aiOpponent}
