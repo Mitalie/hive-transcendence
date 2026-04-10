@@ -11,7 +11,7 @@ export class AIOpponent {
   private errorMargin: number = 0.5;
 
   private lastThoughtTime: number = 0;
-  private lastMistakeTime: number = 0; // NEW: Keeps mistakes stable
+  private lastMistakeTime: number = 0; // Keeps mistakes stable
 
   private currentMistakeZ: number = 0;
   private currentMistakeX: number = 0;
@@ -65,11 +65,20 @@ export class AIOpponent {
     if (now - this.lastThoughtTime >= this.reactionDelayMs) {
       this.lastThoughtTime = now;
 
-      // Lock in the target with the stable mistake offset
+      // Lock in the Z target with the stable mistake offset
       this.targetZ = ball.z + this.currentMistakeZ;
 
+      // Read the height! Can we actually hit this?
+      const isBallTooHigh = ball.y > GameConfig.paddle.height;
+
       if (ball.x > 0) {
-        this.targetX = ball.x + this.currentMistakeX;
+        if (isBallTooHigh) {
+          // Lob detected! Backpedal towards the baseline to let it drop
+          this.targetX = GameConfig.court.xLimit - 2;
+        } else {
+          // Normal shot, track it!
+          this.targetX = ball.x + this.currentMistakeX;
+        }
       } else {
         this.targetX = GameConfig.player2.xPos; // Return to baseline
       }

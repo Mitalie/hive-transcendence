@@ -172,6 +172,19 @@ export class PongEngine {
     if (this.ball.y <= 0) {
       this.ball.y = 0;
       this.ball.vy = Math.abs(this.ball.vy) * GameConfig.ball.bounceFriction;
+
+      // Kill micro-bounces to prevent infinite jitter
+      if (this.ball.vy < 0.5) this.ball.vy = 0;
+
+      // The Anti-Stall Nudge
+      // If the ball is dead on the floor and barely moving horizontally, push it out of bounds
+      if (
+        this.ball.vy === 0 &&
+        Math.abs(this.ball.vx) < 1.5 &&
+        Math.abs(this.ball.vz) < 1.5
+      ) {
+        this.ball.vx += (this.ball.x > 0 ? 1 : -1) * safeDelta;
+      }
     }
 
     // Magnus Curve
@@ -215,6 +228,11 @@ export class PongEngine {
     const bx = this.ball.x;
     const by = this.ball.y;
     const bz = this.ball.z;
+
+    // The Squeeze Fix
+    // If the ball is already past the paddle, ignore all collision so it can hit the wall/score!
+    if (player === 1 && bx < paddleX - hitBoxWidth) return;
+    if (player === 2 && bx > paddleX + hitBoxWidth) return;
 
     // 1. REGION CHECK: Is the ball even near the paddle?
     const isInsideX =
@@ -282,6 +300,11 @@ export class PongEngine {
       this.ball.spin =
         this.ball.spin * -0.5 +
         paddleVelocityZ * GameConfig.ball.swipeSpinFactor * -1;
+
+      // Hard clamp on the Magnus spin to prevent 90-degree boomerang bugs
+      const maxSpin = 15;
+      this.ball.spin = Math.max(Math.min(this.ball.spin, maxSpin), -maxSpin);
+
       this.ball.vy = GameConfig.ball.paddleHitForceY;
     } else {
       // 3. CLASSIC ONLY (Clean state)
