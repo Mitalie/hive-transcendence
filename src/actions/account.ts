@@ -43,9 +43,16 @@ export async function updateProfileAction(formData: FormData) {
     return { ok: false, error: apiErrors.missingFields };
   }
 
-  let avatarData: Uint8Array<ArrayBuffer> | null = null;
-  let avatarMime: string | null = null;
-  let storedAvatarUrl: string | null = null;
+  const data: {
+    displayName: string;
+    bio: string;
+    avatarUrl?: string | null;
+    avatarData?: Uint8Array<ArrayBuffer> | null;
+    avatarMime?: string | null;
+  } = {
+    displayName,
+    bio,
+  };
 
   if (avatarFile instanceof File && avatarFile.size > 0) {
     if (!avatarFile.type.startsWith("image/")) {
@@ -53,9 +60,9 @@ export async function updateProfileAction(formData: FormData) {
     }
 
     const fileBuffer: ArrayBuffer = await avatarFile.arrayBuffer();
-    avatarData = toPrismaBytes(fileBuffer);
-    avatarMime = avatarFile.type;
-    storedAvatarUrl = null;
+    data.avatarData = toPrismaBytes(fileBuffer);
+    data.avatarMime = avatarFile.type;
+    data.avatarUrl = null;
   } else if (avatarUrl) {
     const response = await fetch(avatarUrl);
 
@@ -69,24 +76,41 @@ export async function updateProfileAction(formData: FormData) {
     }
 
     const downloadedBuffer: ArrayBuffer = await response.arrayBuffer();
-    avatarData = toPrismaBytes(downloadedBuffer);
-    avatarMime = contentType;
-    storedAvatarUrl = avatarUrl;
+    data.avatarData = toPrismaBytes(downloadedBuffer);
+    data.avatarMime = contentType;
+    data.avatarUrl = avatarUrl;
   }
 
   await prisma.user.update({
     where: { email: session.user.email },
-    data: {
-      displayName,
-      bio,
-      avatarUrl: storedAvatarUrl,
-      avatarData,
-      avatarMime,
-    },
+    data,
   });
 
   revalidatePath("/settings");
   revalidatePath("/profile");
 
   return { ok: true };
+}
+
+export async function deleteProfileAction() {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.email) {
+    return { ok: false, error: apiErrors.unauthorized };
+  }
+
+  try {
+    await prisma.user.delete({
+      where: { email: session.user.email },
+    });
+
+    revalidatePath("/");
+    revalidatePath("/settings");
+    revalidatePath("/profile");
+
+    return { ok: true };
+  } catch (error) {
+    console.error("deleteProfileAction error:", error);
+    return { ok: false, error: apiErrors.internalServerError };
+  }
 }

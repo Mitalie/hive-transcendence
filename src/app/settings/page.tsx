@@ -26,6 +26,7 @@ export default async function SettingsPage({
       bio={user?.bio ?? null}
       avatarUrl={user?.avatarUrl ?? null}
       hasStoredAvatar={!!user?.avatarData}
+      avatarVersion={user?.updatedAt ? user.updatedAt.getTime() : null}
       hasGithub={hasGithub}
       hasPassword={hasPassword}
       error={error ?? null}

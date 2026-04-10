@@ -1,10 +1,9 @@
 "use client";
 
-"use client";
-
 import { useTranslation } from "react-i18next";
 import { AddPasswordForm } from "@/components/AddPasswordForm";
 import { EditProfileForm } from "@/components/EditProfileForm";
+import { DeleteProfileButton } from "@/components/DeleteProfileButton";
 
 interface SettingsClientProps {
   userId: string | null;
@@ -13,6 +12,7 @@ interface SettingsClientProps {
   bio: string | null;
   avatarUrl: string | null;
   hasStoredAvatar: boolean;
+  avatarVersion: number | null;
   hasGithub: boolean;
   hasPassword: boolean;
   error: string | null;
@@ -25,6 +25,7 @@ export function SettingsClient({
   bio,
   avatarUrl,
   hasStoredAvatar,
+  avatarVersion,
   hasGithub,
   hasPassword,
   error,
@@ -32,7 +33,11 @@ export function SettingsClient({
   const { t } = useTranslation();
 
   const avatarSrc =
-    hasStoredAvatar && userId ? `/api/avatar/${userId}` : avatarUrl || null;
+    hasStoredAvatar && userId
+      ? avatarVersion != null
+        ? `/api/avatar/${userId}?v=${avatarVersion}`
+        : `/api/avatar/${userId}`
+      : avatarUrl || null;
 
   return (
     <div className="flex-1 h-full flex flex-col overflow-y-auto p-4 sm:p-8">
@@ -153,6 +158,21 @@ export function SettingsClient({
                 {t("settings.connectedAccounts.githubHint")}
               </p>
             )}
+          </div>
+        </section>
+
+        {/* Danger Zone */}
+        <section className="border border-red-500/20 rounded-2xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-red-500/20">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-red-400">
+              Danger Zone
+            </h2>
+          </div>
+          <div className="px-5 py-4 flex flex-col gap-3">
+            <p className="text-sm text-text/60">
+              Deleting your account is permanent and cannot be undone.
+            </p>
+            <DeleteProfileButton />
           </div>
         </section>
       </div>

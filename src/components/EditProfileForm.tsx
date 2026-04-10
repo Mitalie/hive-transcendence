@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import Button from "./Button";
 import { updateProfileAction } from "@/actions/account";
@@ -24,6 +25,7 @@ export function EditProfileForm({
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const router = useRouter();
   const { t } = useTranslation();
 
   const clearSelectedFile = () => {
@@ -56,6 +58,7 @@ export function EditProfileForm({
     } else {
       setSuccess(true);
       clearSelectedFile();
+      router.refresh();
     }
 
     setLoading(false);

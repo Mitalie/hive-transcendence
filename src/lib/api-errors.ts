@@ -8,6 +8,7 @@ export const apiErrors = {
   displayNameTooLong: "displayNameTooLong",
   bioTooLong: "bioTooLong",
   avatarUrlTooLong: "avatarUrlTooLong",
+  internalServerError: "internalServerError",
 } as const;
 
 export type ApiErrorKey = keyof typeof apiErrors;
