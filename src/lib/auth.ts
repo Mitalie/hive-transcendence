@@ -12,6 +12,7 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GITHUB_ID!,
       clientSecret: process.env.GITHUB_SECRET!,
       allowDangerousEmailAccountLinking: true,
+      issuer: "https://github.com/login/oauth",
     }),
     CredentialsProvider({
       name: "Credentials",
