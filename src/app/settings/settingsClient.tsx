@@ -2,23 +2,42 @@
 
 import { useTranslation } from "react-i18next";
 import { AddPasswordForm } from "@/components/AddPasswordForm";
+import { EditProfileForm } from "@/components/EditProfileForm";
+import { DeleteProfileButton } from "@/components/DeleteProfileButton";
 
 interface SettingsClientProps {
+  userId: string | null;
   displayName: string | null;
   email: string | null;
+  bio: string | null;
+  avatarUrl: string | null;
+  hasStoredAvatar: boolean;
+  avatarVersion: number | null;
   hasGithub: boolean;
   hasPassword: boolean;
   error: string | null;
 }
 
 export function SettingsClient({
+  userId,
   displayName,
   email,
+  bio,
+  avatarUrl,
+  hasStoredAvatar,
+  avatarVersion,
   hasGithub,
   hasPassword,
   error,
 }: SettingsClientProps) {
   const { t } = useTranslation();
+
+  const avatarSrc =
+    hasStoredAvatar && userId
+      ? avatarVersion != null
+        ? `/api/avatar/${userId}?v=${avatarVersion}`
+        : `/api/avatar/${userId}`
+      : avatarUrl || null;
 
   return (
     <div className="flex-1 h-full flex flex-col overflow-y-auto p-4 sm:p-8">
@@ -31,6 +50,30 @@ export function SettingsClient({
           <p className="text-sm text-text/50 mt-1">{t("settings.subtitle")}</p>
         </div>
 
+        <div className="flex items-center gap-4">
+          {avatarSrc ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={avatarSrc}
+              alt={displayName ?? "User avatar"}
+              className="h-20 w-20 rounded-full object-cover border border-purple-light"
+            />
+          ) : (
+            <div className="h-20 w-20 rounded-full border border-purple-light bg-button flex items-center justify-center text-2xl font-semibold text-text/70">
+              {(displayName ?? email ?? "?").charAt(0).toUpperCase()}
+            </div>
+          )}
+
+          <div className="flex flex-col">
+            <span className="text-lg font-semibold text-text">
+              {displayName ?? t("settings.notSet")}
+            </span>
+            <span className="text-sm text-text/50">
+              {email ?? t("settings.notSet")}
+            </span>
+          </div>
+        </div>
+
         {/* Account Section */}
         <section className="border border-purple-light rounded-2xl overflow-hidden">
           <div className="px-5 py-4 border-b border-purple-light">
@@ -40,12 +83,13 @@ export function SettingsClient({
           </div>
           <div className="px-5 py-4 flex flex-col gap-4">
             <Field
-              label={t("settings.account.displayName")}
-              value={displayName ?? t("settings.notSet")}
-            />
-            <Field
               label={t("settings.account.email")}
               value={email ?? t("settings.notSet")}
+            />
+            <EditProfileForm
+              displayName={displayName}
+              bio={bio}
+              avatarUrl={avatarUrl}
             />
           </div>
         </section>
@@ -114,6 +158,21 @@ export function SettingsClient({
                 {t("settings.connectedAccounts.githubHint")}
               </p>
             )}
+          </div>
+        </section>
+
+        {/* Danger Zone */}
+        <section className="border border-red-500/20 rounded-2xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-red-500/20">
+            <h2 className="text-sm font-semibold uppercase tracking-widest text-red-400">
+              Danger Zone
+            </h2>
+          </div>
+          <div className="px-5 py-4 flex flex-col gap-3">
+            <p className="text-sm text-text/60">
+              Deleting your account is permanent and cannot be undone.
+            </p>
+            <DeleteProfileButton />
           </div>
         </section>
       </div>

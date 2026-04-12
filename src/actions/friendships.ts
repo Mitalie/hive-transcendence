@@ -46,7 +46,7 @@ export async function sendFriendRequest(targetUserId: string) {
     },
   });
 
-  revalidatePath("/test-friendships");
+  revalidatePath("/friends");
 }
 
 export async function acceptFriendRequest(friendshipId: string) {
@@ -85,7 +85,7 @@ export async function acceptFriendRequest(friendshipId: string) {
     },
   });
 
-  revalidatePath("/test-friendships");
+  revalidatePath("/friends");
 }
 
 export async function declineFriendRequest(friendshipId: string) {
@@ -121,7 +121,7 @@ export async function declineFriendRequest(friendshipId: string) {
     },
   });
 
-  revalidatePath("/test-friendships");
+  revalidatePath("/friends");
 }
 
 export async function cancelFriendRequest(friendshipId: string) {
@@ -157,7 +157,7 @@ export async function cancelFriendRequest(friendshipId: string) {
     },
   });
 
-  revalidatePath("/test-friendships");
+  revalidatePath("/friends");
 }
 
 export async function removeFriend(friendshipId: string) {
@@ -197,5 +197,5 @@ export async function removeFriend(friendshipId: string) {
     },
   });
 
-  revalidatePath("/test-friendships");
+  revalidatePath("/friends");
 }

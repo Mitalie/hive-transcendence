@@ -59,9 +59,12 @@ export async function getPendingFriendRequestsByUserId(userId: string) {
       requester: {
         select: {
           id: true,
+          displayName: true,
           name: true,
           username: true,
+          email: true,
           image: true,
+          avatarUrl: true,
         },
       },
     },
@@ -81,9 +84,12 @@ export async function getSentFriendRequestsByUserId(userId: string) {
       addressee: {
         select: {
           id: true,
+          displayName: true,
           name: true,
           username: true,
+          email: true,
           image: true,
+          avatarUrl: true,
         },
       },
     },
@@ -103,17 +109,23 @@ export async function getAcceptedFriendsByUserId(userId: string) {
       requester: {
         select: {
           id: true,
+          displayName: true,
           name: true,
           username: true,
+          email: true,
           image: true,
+          avatarUrl: true,
         },
       },
       addressee: {
         select: {
           id: true,
+          displayName: true,
           name: true,
           username: true,
+          email: true,
           image: true,
+          avatarUrl: true,
         },
       },
     },

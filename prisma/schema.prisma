@@ -21,26 +21,28 @@ model User {
   password      String?
   image         String?
 
-  displayName   String?
-  bio           String?   @db.Text
-  avatarUrl     String?
-  lastActiveAt  DateTime?
+  displayName  String?
+  bio          String?   @db.Text
+  avatarUrl    String?   @db.Text
+  avatarData   Bytes?
+  avatarMime   String?
+  lastActiveAt DateTime?
 
-  accounts      Account[]
-  sessions      Session[]
-  matches       Match[]
+  accounts Account[]
+  sessions Session[]
+  matches  Match[]
 
   sentFriendRequests     Friendship[] @relation("FriendshipRequester")
   receivedFriendRequests Friendship[] @relation("FriendshipAddressee")
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Match {
   id        String   @id @default(cuid())
   player1Id String
-  player1   User     @relation(fields: [player1Id], references: [id])
+  player1   User     @relation(fields: [player1Id], references: [id], onDelete: Cascade)
   player2   String
   score1    Int
   score2    Int
@@ -48,15 +50,15 @@ model Match {
 }
 
 model Friendship {
-  id           String           @id @default(cuid())
-  requesterId  String
-  addresseeId  String
-  status       FriendshipStatus @default(PENDING)
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
+  id          String           @id @default(cuid())
+  requesterId String
+  addresseeId String
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 
-  requester    User @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
-  addressee    User @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+  requester User @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee User @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
 
   @@unique([requesterId, addresseeId])
   @@index([requesterId])
@@ -77,7 +79,7 @@ model Account {
   id_token                 String? @db.Text
   session_state            String?
   refresh_token_expires_in Int?
-  user                     User?   @relation(fields: [userId], references: [id])
+  user                     User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -91,7 +93,7 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

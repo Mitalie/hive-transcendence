@@ -20,8 +20,13 @@ export default async function SettingsPage({
 
   return (
     <SettingsClient
+      userId={user?.id ?? null}
       displayName={user?.displayName ?? null}
       email={user?.email ?? null}
+      bio={user?.bio ?? null}
+      avatarUrl={user?.avatarUrl ?? null}
+      hasStoredAvatar={!!user?.avatarData}
+      avatarVersion={user?.updatedAt ? user.updatedAt.getTime() : null}
       hasGithub={hasGithub}
       hasPassword={hasPassword}
       error={error ?? null}
