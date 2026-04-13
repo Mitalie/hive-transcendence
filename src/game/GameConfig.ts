@@ -12,11 +12,10 @@ export const GameConfig = {
     zLimit: 5, // The glass wall is here
     xLimit: 11,
     wallHeight: 2.0,
-    floorHeight: 5.0, // Extracted from Arena.tsx
+    floorHeight: 5.0,
   },
 
   // --- ARENA VISUALS & THEME ---
-  // Ready to be hooked into a Settings menu for different visual themes
   arena: {
     floorColor: "#2d2d3d",
     bezelColor: "#88889a",
@@ -26,7 +25,7 @@ export const GameConfig = {
     glassOpacity: 0.08,
     frameColor: "#ffffff",
     frameOpacity: 0.5,
-    fontUrl: "/fonts/helvetiker_bold.typeface.json", // Extracted from Arena.tsx
+    fontUrl: "/fonts/helvetiker_bold.typeface.json",
   },
 
   // --- PADDLE SETTINGS ---
@@ -46,7 +45,7 @@ export const GameConfig = {
   player1: { xPos: -8 },
   player2: { xPos: 8 },
 
-  // --- BALL SETTINGS ---
+  // --- BALL PHYSICS ---
   ball: {
     radius: 0.3,
     startVelocityX: 6,
@@ -59,6 +58,24 @@ export const GameConfig = {
     serveHeight: 2.5,
     paddleHitForceY: 6,
     bounceFriction: 0.8,
+  },
+
+  // --- BALL VISUALS ---
+  ballVisuals: {
+    showTrail: true,
+    color: "#ffffff",
+    emissive: "#ffffff",
+    emissiveIntensity: 0.4,
+    roughness: 0.2,
+    metalness: 0.1,
+    trailColor: "#ffffff",
+    trailLength: 4,
+    trailDecay: 5,
+    showGlow: true,
+    glowIntensity: 2.0,
+    glowDistance: 8,
+    segments: 32,
+    visualSpinMultiplier: 5.0,
   },
 
   // --- CAMERA SETTINGS ---
