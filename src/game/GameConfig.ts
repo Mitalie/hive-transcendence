@@ -5,7 +5,7 @@ export const GameConfig = {
     p2: "#ff3333",
   },
 
-  // --- COURT BOUNDARIES ---
+  // --- COURT BOUNDARIES & DIMENSIONS ---
   court: {
     width: 22,
     depth: 11,
@@ -13,6 +13,14 @@ export const GameConfig = {
     xLimit: 11,
     wallHeight: 2.0,
     floorHeight: 5.0,
+    // --- RENDER SPECS ---
+    // Standardized dimensions for arena decorative elements.
+    wallThickness: 0.5,
+    bezelInset: 0.1,
+    bezelHeight: 0.01,
+    netWidth: 0.15,
+    frameThickness: 0.02,
+    scoreboardHeightOffset: 0.3,
   },
 
   // --- ARENA VISUALS & THEME ---
@@ -26,6 +34,15 @@ export const GameConfig = {
     frameColor: "#ffffff",
     frameOpacity: 0.5,
     fontUrl: "/fonts/helvetiker_bold.typeface.json",
+    // --- Z-FIGHTING OFFSETS ---
+    // These micro-adjustments prevent "Moiré" flickering and texture bleeding by
+    // ensuring no two surfaces occupy the exact same floating-point coordinate.
+    offsets: {
+      floor: -0.01,
+      bezel: -0.005,
+      net: 0.001,
+      scoreboardDepth: 0.01,
+    },
   },
 
   // --- PADDLE SETTINGS ---
@@ -39,6 +56,16 @@ export const GameConfig = {
     acceleration: 60,
     friction: 10,
     maxVelocity: 15,
+  },
+
+  // --- PADDLE VISUALS ---
+  paddleVisuals: {
+    emissiveIntensity: 0.4,
+    roughness: 0.1,
+    metalness: 0.5,
+    tiltFactor: -0.02, // Visual lean intensity
+    skirtExtension: 0.5, // Extra height to hide the gap when tilting
+    fpsBase: 60, // Standardizes delta-based movement to a 60fps baseline
   },
 
   // --- PLAYER STARTING POSITIONS ---
@@ -62,7 +89,7 @@ export const GameConfig = {
 
   // --- BALL VISUALS ---
   ballVisuals: {
-    showTrail: true,
+    showTrail: false,
     color: "#ffffff",
     emissive: "#ffffff",
     emissiveIntensity: 0.4,
@@ -71,7 +98,7 @@ export const GameConfig = {
     trailColor: "#ffffff",
     trailLength: 4,
     trailDecay: 5,
-    showGlow: true,
+    showGlow: false,
     glowIntensity: 2.0,
     glowDistance: 8,
     segments: 32,
