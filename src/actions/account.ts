@@ -6,10 +6,7 @@ import { setUserPassword } from "@/data/user";
 import { apiErrors } from "@/lib/api-errors";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-
-function toPrismaBytes(buffer: ArrayBuffer): Uint8Array<ArrayBuffer> {
-  return new Uint8Array(buffer) as Uint8Array<ArrayBuffer>;
-}
+import { fileToStoredAvatar, urlToStoredAvatar } from "@/lib/avatar";
 
 export async function addPasswordAction(password: string) {
   const session = await getServerSession(authOptions);
@@ -54,42 +51,31 @@ export async function updateProfileAction(formData: FormData) {
     bio,
   };
 
-  if (avatarFile instanceof File && avatarFile.size > 0) {
-    if (!avatarFile.type.startsWith("image/")) {
-      return { ok: false, error: apiErrors.missingFields };
+  try {
+    if (avatarFile instanceof File && avatarFile.size > 0) {
+      const storedAvatar = await fileToStoredAvatar(avatarFile);
+      data.avatarData = storedAvatar.avatarData;
+      data.avatarMime = storedAvatar.avatarMime;
+      data.avatarUrl = null;
+    } else if (avatarUrl) {
+      const storedAvatar = await urlToStoredAvatar(avatarUrl);
+      data.avatarData = storedAvatar.avatarData;
+      data.avatarMime = storedAvatar.avatarMime;
+      data.avatarUrl = null;
     }
 
-    const fileBuffer: ArrayBuffer = await avatarFile.arrayBuffer();
-    data.avatarData = toPrismaBytes(fileBuffer);
-    data.avatarMime = avatarFile.type;
-    data.avatarUrl = null;
-  } else if (avatarUrl) {
-    const response = await fetch(avatarUrl);
+    await prisma.user.update({
+      where: { email: session.user.email },
+      data,
+    });
 
-    if (!response.ok) {
-      return { ok: false, error: apiErrors.userNotFound };
-    }
+    revalidatePath("/settings");
+    revalidatePath("/profile");
 
-    const contentType = response.headers.get("content-type") || "";
-    if (!contentType.startsWith("image/")) {
-      return { ok: false, error: apiErrors.missingFields };
-    }
-
-    const downloadedBuffer: ArrayBuffer = await response.arrayBuffer();
-    data.avatarData = toPrismaBytes(downloadedBuffer);
-    data.avatarMime = contentType;
-    data.avatarUrl = avatarUrl;
+    return { ok: true };
+  } catch {
+    return { ok: false, error: apiErrors.missingFields };
   }
-
-  await prisma.user.update({
-    where: { email: session.user.email },
-    data,
-  });
-
-  revalidatePath("/settings");
-  revalidatePath("/profile");
-
-  return { ok: true };
 }
 
 export async function deleteProfileAction() {

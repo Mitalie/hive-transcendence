@@ -15,15 +15,12 @@ function validateSaveMatchArgs(o: unknown): o is SaveMatchArgs {
 export async function saveMatchAction(args: SaveMatchArgs) {
   const session = await getServerSession(authOptions);
 
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
   if (!validateSaveMatchArgs(args)) {
     throw new Error("Invalid arguments to action");
   }
 
-  if (!session?.user?.id) {
-    return { saved: false, reason: "not_logged_in" };
-  }
-
   await saveMatch(session.user.id, args);
-
-  return { saved: true };
 }

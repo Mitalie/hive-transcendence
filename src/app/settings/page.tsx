@@ -1,6 +1,4 @@
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth";
 import { getCurrentUser } from "@/data/user";
 import { SettingsClient } from "./settingsClient";
 
@@ -10,25 +8,25 @@ export default async function SettingsPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const { error } = await searchParams;
-  const session = await getServerSession(authOptions);
-  if (!session) redirect("/login");
-
   const user = await getCurrentUser();
-  const hasGithub =
-    user?.accounts.some((a) => a.provider === "github") ?? false;
-  const hasPassword = !!user?.password;
+
+  if (!user) {
+    redirect("/login");
+  }
 
   return (
     <SettingsClient
-      userId={user?.id ?? null}
-      displayName={user?.displayName ?? null}
-      email={user?.email ?? null}
-      bio={user?.bio ?? null}
-      avatarUrl={user?.avatarUrl ?? null}
-      hasStoredAvatar={!!user?.avatarData}
-      avatarVersion={user?.updatedAt ? user.updatedAt.getTime() : null}
-      hasGithub={hasGithub}
-      hasPassword={hasPassword}
+      user={{
+        id: user.id,
+        displayName: user.displayName,
+        email: user.email,
+        bio: user.bio,
+        avatarUrl: user.avatarUrl,
+        hasStoredAvatar: !!user.avatarMime,
+        avatarVersion: user.updatedAt.getTime(),
+        hasGithub: user.accounts.some((a) => a.provider === "github"),
+        hasPassword: !!user.password,
+      }}
       error={error ?? null}
     />
   );

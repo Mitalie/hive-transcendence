@@ -43,7 +43,7 @@ export default function RegisterPage() {
           callbackUrl: "/",
         });
       } else {
-        router.push(`/registration/profile?userId=${result.userId}`);
+        router.push("/registration/profile");
       }
     } catch (err: unknown) {
       if (err instanceof Error) {

@@ -10,7 +10,7 @@ export default async function SetupPage() {
   const user = await getCurrentUser();
 
   if (!user?.displayName) {
-    redirect(`/registration/profile?userId=${user?.id}`);
+    redirect("/registration/profile");
   }
 
   redirect("/");
