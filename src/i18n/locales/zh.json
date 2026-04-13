@@ -229,6 +229,17 @@
     "fileTooLarge": "图片太大，请选择小于 2MB 的文件。",
     "errorUnexpected": "发生意外错误，请重试。"
   },
+  "friendshipErrors": {
+    "cannotAddSelf": "不能向自己发送好友请求",
+    "userNotFound": "用户不存在",
+    "friendshipAlreadyExists": "好友请求或好友关系已存在",
+    "friendRequestNotFound": "该请求已不存在，请刷新页面。",
+    "friendRequestAlreadyHandled": "该请求已被处理。",
+    "notAllowed": "您无权执行此操作。",
+    "friendshipNotFound": "该好友关系已不存在，请刷新页面。",
+    "notFriends": "只能删除已接受的好友关系。",
+    "internalServerError": "出现错误，请刷新页面后重试。"
+  },
   "profilePage": {
     "title": "个人资料",
     "subtitle": "您的用户信息",
@@ -295,14 +306,31 @@
     "discover": {
       "title": "发现用户",
       "empty": "暂无更多可添加的用户。",
-      "searchPlaceholder": "搜索好友",
+      "searchPlaceholder": "搜索用户",
+      "searchHint": "在上方搜索框中搜索用户。",
       "unknownUser": "未知用户",
       "noUsername": "无用户名",
       "addFriend": "添加好友",
+      "viewProfile": "查看资料",
       "remove": "删除",
       "accept": "接受",
       "decline": "拒绝",
       "cancelRequest": "取消请求"
+    },
+    "profile": {
+      "subtitle": "好友",
+      "subtitleStranger": "玩家",
+      "matchHistory": "对战历史",
+      "matchHistoryEmpty": "对战历史即将上线",
+      "matchHistoryLocked": "添加好友后可查看对战历史",
+      "stats": {
+        "games": "游戏场数",
+        "wins": "胜利场数",
+        "winRate": "胜率"
+      },
+      "removeConfirmText": "确定将 {{name}} 从好友中删除？",
+      "removeConfirm": "确认删除",
+      "removeCancel": "取消"
     }
   }
 }

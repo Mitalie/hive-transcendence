@@ -6,9 +6,9 @@ import {
   getAcceptedFriendsByUserId,
   getSentFriendRequestsByUserId,
 } from "@/data/friendships";
-import { getAvailableUsersForFriendRequest } from "@/data/users";
-import { FriendsClient } from "./FriendsClient";
+import { FriendsClient } from "@/components/friends/FriendsClient";
 
+// ---------- Raw Prisma return types ----------
 type RawUser = {
   id: string;
   displayName: string | null;
@@ -32,23 +32,23 @@ type RawFriendshipBoth = {
   addressee: RawUser;
 };
 
+// ---------- Helpers ----------
 function resolveLabel(u: RawUser): string {
   return u.displayName || u.email || "Unknown user";
 }
 
+// ---------- Page ----------
 export default async function FriendsPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
 
   const userId = session.user.id;
 
-  const [incomingRequests, sentRequests, friends, discoverUsers] =
-    await Promise.all([
-      getPendingFriendRequestsByUserId(userId),
-      getSentFriendRequestsByUserId(userId),
-      getAcceptedFriendsByUserId(userId),
-      getAvailableUsersForFriendRequest(userId),
-    ]);
+  const [incomingRequests, sentRequests, friends] = await Promise.all([
+    getPendingFriendRequestsByUserId(userId),
+    getSentFriendRequestsByUserId(userId),
+    getAcceptedFriendsByUserId(userId),
+  ]);
 
   return (
     <FriendsClient
@@ -57,21 +57,23 @@ export default async function FriendsPage() {
       ).map((f) => ({
         id: f.id,
         label: resolveLabel(f.requester),
+        email: f.requester.email ?? undefined,
       }))}
       sentRequests={(
         sentRequests as unknown as RawFriendshipWithAddressee[]
       ).map((f) => ({
         id: f.id,
         label: resolveLabel(f.addressee),
+        email: f.addressee.email ?? undefined,
       }))}
       friends={(friends as unknown as RawFriendshipBoth[]).map((f) => {
         const friend = f.requesterId === userId ? f.addressee : f.requester;
-        return { id: f.id, label: resolveLabel(friend) };
+        return {
+          id: f.id,
+          label: resolveLabel(friend),
+          email: friend.email ?? undefined,
+        };
       })}
-      discoverUsers={(discoverUsers as unknown as RawUser[]).map((u) => ({
-        id: u.id,
-        label: resolveLabel(u),
-      }))}
     />
   );
 }

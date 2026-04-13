@@ -235,6 +235,17 @@
     "fileTooLarge": "Image is too large. Please choose a file under 2MB.",
     "errorUnexpected": "An unexpected error occurred. Please try again."
   },
+  "friendshipErrors": {
+    "cannotAddSelf": "You cannot send a friend request to yourself",
+    "userNotFound": "User not found",
+    "friendshipAlreadyExists": "A friend request or friendship already exists",
+    "friendRequestNotFound": "This request no longer exists. Please refresh the page.",
+    "friendRequestAlreadyHandled": "This request has already been handled.",
+    "notAllowed": "You are not allowed to do this.",
+    "friendshipNotFound": "This friendship no longer exists. Please refresh the page.",
+    "notFriends": "Only accepted friendships can be removed.",
+    "internalServerError": "Something went wrong. Please refresh and try again."
+  },
   "profilePage": {
     "title": "Profile",
     "subtitle": "Your user information",
@@ -301,14 +312,31 @@
     "discover": {
       "title": "Find people",
       "empty": "No more users available to add right now.",
-      "searchPlaceholder": "Search friend",
+      "searchPlaceholder": "Search people",
+      "searchHint": "Search for people above to find them.",
       "unknownUser": "Unknown user",
       "noUsername": "No username",
       "addFriend": "Add friend",
+      "viewProfile": "View Profile",
       "remove": "Remove",
       "accept": "Accept",
       "decline": "Decline",
       "cancelRequest": "Cancel request"
+    },
+    "profile": {
+      "subtitle": "Friend",
+      "subtitleStranger": "Player",
+      "matchHistory": "Match History",
+      "matchHistoryEmpty": "Match history coming soon",
+      "matchHistoryLocked": "Add as a friend to view match history",
+      "stats": {
+        "games": "Games",
+        "wins": "Wins",
+        "winRate": "Win rate"
+      },
+      "removeConfirmText": "Remove {{name}} from friends?",
+      "removeConfirm": "Remove",
+      "removeCancel": "Cancel"
     }
   }
 }
