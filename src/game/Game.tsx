@@ -84,7 +84,13 @@ export default function Game() {
   return (
     <div className="relative h-full w-full">
       <GameStateDispatchContext value={dispatch}>
-        <GameRender onScore={onScore} mode={state.mode} paused={state.paused} />
+        <GameRender
+          onScore={onScore}
+          mode={state.mode}
+          paused={state.paused}
+          p1Score={state.score1}
+          p2Score={state.score2}
+        />
         <GameUI state={state} />
       </GameStateDispatchContext>
     </div>
