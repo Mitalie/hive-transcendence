@@ -1,16 +1,19 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect, memo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Trail } from "@react-three/drei";
 import * as THREE from "three";
 import { BallData } from "@/game/PongEngine";
 import { GameConfig } from "@/game/GameConfig";
 
-export default function Ball({ ballData }: { ballData: BallData }) {
+// memo prevents re-renders from parent UI state changes.
+// ballData is a mutable reference from PongEngine — its properties
+// are mutated in place each frame and read directly in useFrame,
+// so React's shallow prop comparison correctly treats it as stable.
+export default memo(function Ball({ ballData }: { ballData: BallData }) {
   const meshRef = useRef<THREE.Mesh>(null!);
 
   // In React Three Fiber, inline geometries force the Garbage Collector to rebuild
   // the buffer on every render. We useMemo to lock it in GPU memory once.
-  // We pull segments from config to allow for "Low Poly" performance modes.
   const { geometry, material } = useMemo(() => {
     return {
       geometry: new THREE.SphereGeometry(
@@ -27,6 +30,14 @@ export default function Ball({ ballData }: { ballData: BallData }) {
       }),
     };
   }, []);
+
+  // Cleanup effect to release GPU resources when the ball is removed from the scene.
+  useEffect(() => {
+    return () => {
+      geometry.dispose();
+      material.dispose();
+    };
+  }, [geometry, material]);
 
   useFrame((_, delta) => {
     if (!meshRef.current) return;
@@ -80,4 +91,4 @@ export default function Ball({ ballData }: { ballData: BallData }) {
       {ballMesh}
     </Trail>
   );
-}
+});

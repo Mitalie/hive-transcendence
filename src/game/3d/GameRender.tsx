@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useEffect, useMemo, RefObject, use } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useRef, useEffect, useMemo, RefObject, use, memo } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { GameConfig } from "@/game/GameConfig";
 import {
@@ -16,34 +16,44 @@ import Paddle from "@/game/3d/Paddle";
 import Arena from "@/game/3d/Arena";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 
-function ResponsiveCamera() {
-  const { camera, size } = useThree();
-
-  useEffect(() => {
+/**
+ * ResponsiveCamera handles dynamic vertical FOV scaling.
+ * We use useFrame instead of useEffect to bypass React Compiler immutability
+ * restrictions and to ensure the camera adjusts if the container resizes
+ * independently of the window.
+ */
+const ResponsiveCamera = memo(function ResponsiveCamera() {
+  useFrame((state) => {
+    const { camera, size } = state;
     if (!(camera instanceof THREE.PerspectiveCamera)) return;
 
     const aspect = size.width / size.height;
-    const targetAspect = 2.2;
+    const target = GameConfig.render.responsive.targetAspect;
     let calculatedFov = GameConfig.camera.fov;
 
-    if (aspect < targetAspect) {
-      const zoomFactor = targetAspect / aspect;
+    // If the viewport is narrower than our target aspect, we increase
+    // the FOV to keep the full width of the court in frame.
+    if (aspect < target) {
+      const zoomFactor = target / aspect;
       const baseFovRads = THREE.MathUtils.degToRad(GameConfig.camera.fov);
       const newFovRads = 2 * Math.atan(Math.tan(baseFovRads / 2) * zoomFactor);
       calculatedFov = THREE.MathUtils.radToDeg(newFovRads);
     }
 
-    const cam = camera as THREE.PerspectiveCamera;
-    if (cam.fov !== calculatedFov) {
-      cam.fov = calculatedFov;
-      cam.updateProjectionMatrix();
+    // Direct mutation inside useFrame is the R3F standard for performance.
+    // This allows us to update the lens without triggering React's reconciliation.
+    if (camera.fov !== calculatedFov) {
+      camera.fov = calculatedFov;
+      camera.updateProjectionMatrix();
     }
-  }, [size.width, size.height, camera]);
+  });
 
   return null;
-}
+});
 
-export default function GameRender({
+// GameRender is memoized to isolate the entire 3D pipeline from UI state changes
+// that don't affect the 3D environment.
+export default memo(function GameRender({
   mode,
   onScore,
   paused,
@@ -56,8 +66,14 @@ export default function GameRender({
   p1Score: number;
   p2Score: number;
 }) {
+  // React 19: use() reads context imperatively — equivalent to
+  // useContext(GameStateDispatchContext) but works outside component top-level too.
   const dispatch = use(GameStateDispatchContext);
 
+  // We memoize the engine and AI instances to ensure they persist exactly once
+  // across the match lifecycle, even if the renderer re-mounts.
+  // Depend on mode object instead of individual properties to allow resetting
+  // the engine by reassigning mode in state.
   const [engine, aiOpponent] = useMemo(() => {
     const engine = new PongEngine(onScore, mode.type);
     const aiOpponent =
@@ -65,20 +81,39 @@ export default function GameRender({
     return [engine, aiOpponent];
   }, [onScore, mode]);
 
+  // Clean up engine resources when GameRender unmounts or restarts.
+  useEffect(() => {
+    return () => {
+      engine.destroy?.();
+      aiOpponent?.destroy?.();
+    };
+  }, [engine, aiOpponent]);
+
   const keys = useRef<Record<string, boolean>>({});
 
+  const pausedRef = useRef(paused);
+  useEffect(() => {
+    pausedRef.current = paused;
+  }, [paused]);
+
+  // Input listeners are strictly scoped to the lifecycle of this match instance.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.repeat) return;
+
+      // UX GUARD: Don't move paddles if the user is typing in a UI input field.
       const target = e.target as HTMLElement;
       if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
+
       keys.current[e.key.toLowerCase()] = true;
     };
+
     const handleKeyUp = (e: KeyboardEvent) => {
       keys.current[e.key.toLowerCase()] = false;
     };
+
     const handleVisibilityChange = () => {
-      if (document.hidden && !paused) dispatch(pauseAction());
+      if (document.hidden && !pausedRef.current) dispatch(pauseAction());
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -90,7 +125,7 @@ export default function GameRender({
       window.removeEventListener("keyup", handleKeyUp);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [dispatch, paused]);
+  }, [dispatch]);
 
   return (
     <div className="w-full h-full rounded-xl overflow-hidden bg-transparent">
@@ -102,6 +137,7 @@ export default function GameRender({
           powerPreference: "high-performance",
         }}
         onCreated={({ gl }) => {
+          // PCFSoftShadowMap provides superior blurred edge quality for our court lighting.
           gl.shadowMap.type = THREE.PCFSoftShadowMap;
           gl.setClearColor(0x000000, 0);
         }}
@@ -110,17 +146,17 @@ export default function GameRender({
           fov: GameConfig.camera.fov,
         }}
       >
-        {/* --- GLOBAL POST-PROCESSING --- */}
         <EffectComposer>
           <Bloom
-            luminanceThreshold={1}
-            luminanceSmoothing={0.9}
+            luminanceThreshold={GameConfig.render.bloom.luminanceThreshold}
+            luminanceSmoothing={GameConfig.render.bloom.luminanceSmoothing}
+            intensity={GameConfig.render.bloom.intensity}
             mipmapBlur
-            intensity={0.5}
           />
         </EffectComposer>
 
         <ResponsiveCamera />
+
         <GameUpdate
           engine={engine}
           aiOpponent={aiOpponent}
@@ -128,25 +164,38 @@ export default function GameRender({
           paused={paused}
         />
 
-        <ambientLight intensity={0.5} />
+        <ambientLight intensity={GameConfig.render.lighting.ambientIntensity} />
 
         <directionalLight
-          position={[0, 40, 0]}
-          intensity={2.5}
+          position={GameConfig.render.lighting.directional.position}
+          intensity={GameConfig.render.lighting.directional.intensity}
           castShadow
-          shadow-mapSize={[2048, 2048]}
-          shadow-bias={-0.0005}
+          shadow-mapSize={[
+            GameConfig.render.lighting.directional.shadowMapSize,
+            GameConfig.render.lighting.directional.shadowMapSize,
+          ]}
+          shadow-bias={GameConfig.render.lighting.directional.shadowBias}
+          shadow-normalBias={
+            GameConfig.render.lighting.directional.shadowNormalBias
+          }
         >
           <orthographicCamera
             attach="shadow-camera"
-            args={[-25, 25, 15, -15, 0.5, 60]}
+            args={GameConfig.render.lighting.directional.cameraArgs}
           />
         </directionalLight>
 
-        <pointLight position={[0, -2, 10]} intensity={2} distance={20} />
-        <pointLight position={[0, -2, -10]} intensity={2} distance={20} />
+        {GameConfig.render.lighting.points.map((light, i) => (
+          <pointLight
+            key={`fill-light-${i}`}
+            position={light.position}
+            intensity={light.intensity}
+            distance={light.distance}
+          />
+        ))}
 
         <Arena p1Score={p1Score} p2Score={p2Score} />
+
         <Ball ballData={engine.ball} />
 
         <Paddle
@@ -154,6 +203,7 @@ export default function GameRender({
           initialX={GameConfig.player1.xPos}
           color={GameConfig.colors.p1}
         />
+
         <Paddle
           paddleData={engine.p2}
           initialX={GameConfig.player2.xPos}
@@ -162,9 +212,10 @@ export default function GameRender({
       </Canvas>
     </div>
   );
-}
+});
 
-function GameUpdate({
+// We'd prefer to not have a separate component for this, but useFrame can only be used in a child of Canvas.
+const GameUpdate = memo(function GameUpdate({
   engine,
   aiOpponent,
   keys,
@@ -182,7 +233,7 @@ function GameUpdate({
       ...keys.current,
       ...aiKeys,
     });
-  }, -1);
+  }, -1); // Priority -1 ensures physics processes movement BEFORE components draw.
 
   return null;
-}
+});

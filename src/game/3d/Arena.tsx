@@ -1,135 +1,109 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, memo, Suspense } from "react";
 import { Text3D, Center } from "@react-three/drei";
 import { GameConfig } from "@/game/GameConfig";
 import * as THREE from "three";
 
-// Extracted outside the component to prevent constant garbage collection and memory reallocation during React renders.
+// Extracted outside the component to prevent constant garbage collection
+// and memory reallocation during React renders.
 const HALF_DEPTH = GameConfig.court.depth / 2;
 const HALF_WIDTH = GameConfig.court.width / 2;
 
+// Module-level constants — self-documenting in JSX
+const WALL_Z_NEAR = -(
+  GameConfig.court.zLimit +
+  GameConfig.court.wallThickness / 2
+);
+const WALL_Z_FAR = GameConfig.court.zLimit + GameConfig.court.wallThickness / 2;
+
 const TEXT_PROPS = {
   font: GameConfig.arena.fontUrl,
-  size: 2.2,
-  height: 0.1,
-  curveSegments: 12,
-  bevelEnabled: true,
-  bevelThickness: 0.01,
-  bevelSize: 0.01,
-};
+  ...GameConfig.arena.textStyle,
+} as const;
 
-export default function Arena({
-  p1Score,
-  p2Score,
+// ArenaStaticGeometry is memoized separately — score changes don't touch it
+const ArenaStaticGeometry = memo(function ArenaStaticGeometry({
+  geoms,
+  mats,
 }: {
-  p1Score: number;
-  p2Score: number;
+  geoms: Record<string, THREE.BufferGeometry>;
+  mats: Record<string, THREE.Material>;
 }) {
-  // In React Three Fiber, declaring inline tags like <boxGeometry> forces the engine to
-  // destroy and recreate the 3D buffer on every single score update (causing frame stutter).
-  // We useMemo to allocate them onto the GPU exactly once.
-  const geoms = useMemo(
-    () => ({
-      floor: new THREE.BoxGeometry(
-        GameConfig.court.width,
-        GameConfig.court.floorHeight,
-        GameConfig.court.depth,
-      ),
-      bezel: new THREE.BoxGeometry(
-        GameConfig.court.width - 0.1,
-        0.01,
-        GameConfig.court.depth - 0.1,
-      ),
-      net: new THREE.PlaneGeometry(0.15, GameConfig.court.depth),
-      wall: new THREE.BoxGeometry(
-        GameConfig.court.width,
-        GameConfig.court.wallHeight,
-        0.5,
-      ),
-      topFrame: new THREE.BoxGeometry(GameConfig.court.width, 0.02, 0.51),
-      vertFrame: new THREE.BoxGeometry(0.02, GameConfig.court.wallHeight, 0.51),
-    }),
-    [],
-  );
-
-  const mats = useMemo(
-    () => ({
-      floor: new THREE.MeshToonMaterial({ color: GameConfig.arena.floorColor }),
-      bezel: new THREE.MeshStandardMaterial({
-        color: GameConfig.arena.bezelColor,
-        roughness: 0.1,
-        metalness: 0.9,
-      }),
-      net: new THREE.MeshBasicMaterial({
-        color: GameConfig.arena.netColor,
-        transparent: true,
-        opacity: GameConfig.arena.netOpacity,
-      }),
-
-      // emissiveIntensity is set to 2.5 to intentionally break the Bloom luminanceThreshold (1.0)
-      // defined in the parent GameRender. This guarantees only the scores glow.
-      p1Text: new THREE.MeshStandardMaterial({
-        color: GameConfig.colors.p1,
-        emissive: GameConfig.colors.p1,
-        emissiveIntensity: 2.5,
-        toneMapped: false,
-      }),
-      p2Text: new THREE.MeshStandardMaterial({
-        color: GameConfig.colors.p2,
-        emissive: GameConfig.colors.p2,
-        emissiveIntensity: 2.5,
-        toneMapped: false,
-      }),
-
-      // MeshBasicMaterial is used here instead of Standard to make the "VS" completely immune
-      // to scene point-lights. This prevents uneven bottom-glare/hotspots.
-      vsText: new THREE.MeshBasicMaterial({
-        color: "#ffffff",
-        toneMapped: false,
-      }),
-
-      glass: new THREE.MeshStandardMaterial({
-        color: GameConfig.arena.glassColor,
-        transparent: true,
-        opacity: GameConfig.arena.glassOpacity,
-        depthWrite: false, // Prevents Z-fighting and transparency sorting bugs against the net
-      }),
-      frame: new THREE.MeshStandardMaterial({
-        color: GameConfig.arena.frameColor,
-        emissive: GameConfig.arena.frameColor,
-        emissiveIntensity: 0.5,
-        transparent: true,
-        opacity: GameConfig.arena.frameOpacity,
-        metalness: 0.8,
-        roughness: 0.2,
-        depthWrite: false,
-      }),
-    }),
-    [],
-  );
-
   return (
     <group>
       <mesh
-        position={[0, -(GameConfig.court.floorHeight / 2), 0]}
+        position={[
+          0,
+          -(GameConfig.court.floorHeight / 2) + GameConfig.arena.offsets.floor,
+          0,
+        ]}
         receiveShadow
         geometry={geoms.floor}
         material={mats.floor}
       />
 
       <mesh
-        position={[0, -0.005, 0]}
+        position={[0, GameConfig.arena.offsets.bezel, 0]}
         castShadow={false}
+        receiveShadow
         geometry={geoms.bezel}
         material={mats.bezel}
       />
 
+      <mesh
+        position={[0, GameConfig.arena.offsets.net, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        geometry={geoms.net}
+        material={mats.net}
+      />
+
+      {/* The wall geometry is extracted from config. We offset its center position by half thickness
+          so the inner face sits perfectly flush against the zLimit boundary without clipping. */}
+      {[WALL_Z_NEAR, WALL_Z_FAR].map((z, i) => (
+        <group
+          key={`side-wall-${i}`}
+          position={[0, GameConfig.court.wallHeight / 2, z]}
+        >
+          <mesh geometry={geoms.wall} material={mats.glass} />
+          <mesh
+            position={[0, GameConfig.court.wallHeight / 2, 0]}
+            geometry={geoms.topFrame}
+            material={mats.frame}
+          />
+          {[GameConfig.court.width / 2, -GameConfig.court.width / 2].map(
+            (x, k) => (
+              <mesh
+                key={`v-${k}`}
+                position={[x, GameConfig.arena.offsets.vertFrameY, 0]}
+                geometry={geoms.vertFrame}
+                material={mats.frame}
+              />
+            ),
+          )}
+        </group>
+      ))}
+    </group>
+  );
+});
+
+const Scoreboard = memo(function Scoreboard({
+  p1Score,
+  p2Score,
+  mats,
+}: {
+  p1Score: number;
+  p2Score: number;
+  mats: Record<string, THREE.Material>;
+}) {
+  return (
+    <Suspense fallback={null}>
       {[1, -1].map((side) => (
         <group
           key={`scoreboard-${side}`}
           position={[
             0,
-            -(GameConfig.court.floorHeight / 2) + 0.3,
-            (HALF_DEPTH + 0.01) * side,
+            -(GameConfig.court.floorHeight / 2) +
+              GameConfig.court.scoreboardHeightOffset,
+            (HALF_DEPTH + GameConfig.arena.offsets.scoreboardDepth) * side,
           ]}
           rotation={[0, side === -1 ? Math.PI : 0, 0]}
         >
@@ -158,43 +132,120 @@ export default function Arena({
           </group>
         </group>
       ))}
+    </Suspense>
+  );
+});
 
-      <mesh
-        position={[0, 0.001, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-        geometry={geoms.net}
-        material={mats.net}
-      />
+export default memo(function Arena({
+  p1Score,
+  p2Score,
+}: {
+  p1Score: number;
+  p2Score: number;
+}) {
+  // In React Three Fiber, declaring inline tags like <boxGeometry> forces the engine to
+  // destroy and recreate the 3D buffer on every single score update (causing frame stutter).
+  // We useMemo to allocate them onto the GPU exactly once.
+  const geoms = useMemo(
+    () => ({
+      floor: new THREE.BoxGeometry(
+        GameConfig.court.width,
+        GameConfig.court.floorHeight,
+        GameConfig.court.depth,
+      ),
+      bezel: new THREE.BoxGeometry(
+        GameConfig.court.width - GameConfig.court.bezelInset,
+        GameConfig.court.bezelHeight,
+        GameConfig.court.depth - GameConfig.court.bezelInset,
+      ),
+      net: new THREE.PlaneGeometry(
+        GameConfig.court.netWidth,
+        GameConfig.court.depth,
+      ),
+      wall: new THREE.BoxGeometry(
+        GameConfig.court.width,
+        GameConfig.court.wallHeight,
+        GameConfig.court.wallThickness,
+      ),
+      topFrame: new THREE.BoxGeometry(
+        GameConfig.court.width,
+        GameConfig.court.frameThickness,
+        GameConfig.court.wallThickness + 0.01,
+      ),
+      vertFrame: new THREE.BoxGeometry(
+        GameConfig.court.frameThickness,
+        GameConfig.court.wallHeight,
+        GameConfig.court.wallThickness + 0.01,
+      ),
+    }),
+    [],
+  );
 
-      {/* The wall geometry is 0.5 thick. We offset its center position by exactly half that (0.25)
-          so the inner face sits perfectly flush against the zLimit boundary without clipping. */}
-      {[-(GameConfig.court.zLimit + 0.25), GameConfig.court.zLimit + 0.25].map(
-        (z, i) => (
-          <group
-            key={`side-wall-${i}`}
-            position={[0, GameConfig.court.wallHeight / 2, z]}
-          >
-            <mesh geometry={geoms.wall} material={mats.glass} />
+  const mats = useMemo(
+    () => ({
+      floor: new THREE.MeshToonMaterial({ color: GameConfig.arena.floorColor }),
+      bezel: new THREE.MeshStandardMaterial({
+        color: GameConfig.arena.bezelColor,
+        roughness: GameConfig.arena.bezelRoughness,
+        metalness: GameConfig.arena.bezelMetalness,
+      }),
+      net: new THREE.MeshBasicMaterial({
+        color: GameConfig.arena.netColor,
+        transparent: true,
+        opacity: GameConfig.arena.netOpacity,
+      }),
+      // Emissive intensity intentionally breaks the Bloom luminanceThreshold (1.0)
+      // defined in GameConfig.render.bloom. This guarantees the scores glow.
+      p1Text: new THREE.MeshStandardMaterial({
+        color: GameConfig.colors.p1,
+        emissive: GameConfig.colors.p1,
+        emissiveIntensity: GameConfig.arena.scoreboardEmissive,
+        toneMapped: false,
+      }),
+      p2Text: new THREE.MeshStandardMaterial({
+        color: GameConfig.colors.p2,
+        emissive: GameConfig.colors.p2,
+        emissiveIntensity: GameConfig.arena.scoreboardEmissive,
+        toneMapped: false,
+      }),
+      // MeshBasicMaterial makes the "VS" completely immune to scene point-lights,
+      // preventing uneven bottom-glare hotspots.
+      vsText: new THREE.MeshBasicMaterial({
+        color: GameConfig.arena.vsTextColor,
+        toneMapped: false,
+      }),
+      glass: new THREE.MeshStandardMaterial({
+        color: GameConfig.arena.glassColor,
+        transparent: true,
+        opacity: GameConfig.arena.glassOpacity,
+        depthWrite: false, // Prevents Z-fighting transparency bugs against the net
+      }),
+      frame: new THREE.MeshStandardMaterial({
+        color: GameConfig.arena.frameColor,
+        emissive: GameConfig.arena.frameColor,
+        emissiveIntensity: GameConfig.arena.frameEmissiveIntensity,
+        transparent: true,
+        opacity: GameConfig.arena.frameOpacity,
+        metalness: GameConfig.arena.frameMetalness,
+        roughness: GameConfig.arena.frameRoughness,
+        depthWrite: false,
+      }),
+    }),
+    [],
+  );
 
-            <mesh
-              position={[0, GameConfig.court.wallHeight / 2, 0]}
-              geometry={geoms.topFrame}
-              material={mats.frame}
-            />
+  // Freeing up all GPU buffers on unmount to prevent memory leaks.
+  useEffect(() => {
+    return () => {
+      Object.values(geoms).forEach((g) => g.dispose());
+      Object.values(mats).forEach((m) => m.dispose());
+    };
+  }, [geoms, mats]);
 
-            {[GameConfig.court.width / 2, -GameConfig.court.width / 2].map(
-              (x, k) => (
-                <mesh
-                  key={`v-${k}`}
-                  position={[x, -0.01, 0]}
-                  geometry={geoms.vertFrame}
-                  material={mats.frame}
-                />
-              ),
-            )}
-          </group>
-        ),
-      )}
+  return (
+    <group>
+      <ArenaStaticGeometry geoms={geoms} mats={mats} />
+      <Scoreboard p1Score={p1Score} p2Score={p2Score} mats={mats} />
     </group>
   );
-}
+});

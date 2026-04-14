@@ -4,6 +4,9 @@ import * as THREE from "three";
 import { PaddleData } from "@/game/PongEngine";
 import { GameConfig } from "@/game/GameConfig";
 
+// Calculate the dynamic vertical center of the paddle once at module level.
+const PADDLE_Y = GameConfig.paddle.height / 2;
+
 // Wrapped in React.memo to prevent the component from re-executing during
 // parent UI renders unless the paddleData or color actually changes.
 export default memo(function Paddle({
@@ -40,7 +43,7 @@ export default memo(function Paddle({
         // defined in the parent GameRender. This guarantees the paddle glows.
         toneMapped: false,
       }),
-      // MATH: The "skirt" extension sits below the floor to hide gaps during tilts.
+      // The "skirt" extension sits below the floor to hide gaps during tilts.
       // This offset ensures the visible paddle base aligns perfectly with the floor at y=0.
       verticalOffset: -(s / 2),
     };
@@ -56,18 +59,21 @@ export default memo(function Paddle({
   }, [geometry, material]);
 
   useFrame((_, delta) => {
+    // Defensive: engine initializes p1/p2 synchronously, but this guard
+    // protects against any future lazy-init changes in PongEngine.
     if (!groupRef.current || !paddleData) return;
 
     // Using .set() is a direct memory write to the underlying Float32Array,
     // making it significantly faster than assigning properties individually in the loop.
     groupRef.current.position.set(
       paddleData.x ?? initialX,
-      paddleData.y ?? 0.8,
+      paddleData.y ?? PADDLE_Y,
       paddleData.z ?? 0,
     );
 
-    // Normalizing by 'delta' (time since last frame) is critical here.
-    // It ensures the visual tilt is identical across 60Hz and 144Hz monitor refresh rates.
+    // Scales tilt by elapsed time so the visual feel is consistent per-second.
+    // Note: absolute tilt magnitude depends on engine velocities also being
+    // delta-normalized in PongEngine.update(). See GameConfig.paddleVisuals.fpsBase.
     const tiltMultiplier = GameConfig.paddleVisuals.fpsBase * delta;
 
     groupRef.current.rotation.x =
