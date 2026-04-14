@@ -1,6 +1,14 @@
 "use client";
 
-import { useRef, useEffect, useMemo, RefObject, use, memo } from "react";
+import {
+  useRef,
+  useEffect,
+  useMemo,
+  RefObject,
+  use,
+  memo,
+  useState,
+} from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
@@ -71,10 +79,11 @@ export default memo(function GameRender({
   // useContext(GameStateDispatchContext) but works outside component top-level too.
   const dispatch = use(GameStateDispatchContext);
 
+  // Tracks if the camera has rotated to the opposite side of the court.
+  const [flipped, setFlipped] = useState(false);
+
   // We memoize the engine and AI instances to ensure they persist exactly once
   // across the match lifecycle, even if the renderer re-mounts.
-  // Depend on mode object instead of individual properties to allow resetting
-  // the engine by reassigning mode in state.
   const [engine, aiOpponent] = useMemo(() => {
     const engine = new PongEngine(onScore, mode.type);
     const aiOpponent =
@@ -170,6 +179,12 @@ export default memo(function GameRender({
             MIDDLE: GameConfig.camera.controls.mouseButtons.middle,
             RIGHT: GameConfig.camera.controls.mouseButtons.right,
           }}
+          onChange={(e) => {
+            if (!e) return;
+            const azimuth = e.target.getAzimuthalAngle();
+            // Swaps scoreboard orientation if the camera crosses the court center-line (90 degrees).
+            setFlipped(Math.abs(azimuth) > Math.PI / 2);
+          }}
         />
 
         <GameUpdate
@@ -210,7 +225,7 @@ export default memo(function GameRender({
           />
         ))}
 
-        <Arena p1Score={p1Score} p2Score={p2Score} />
+        <Arena p1Score={p1Score} p2Score={p2Score} flipped={flipped} />
 
         <Ball ballData={engine.ball} />
 

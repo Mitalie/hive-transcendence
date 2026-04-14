@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo, useEffect, memo, Suspense } from "react";
 import { Text3D, Center } from "@react-three/drei";
 import { GameConfig } from "@/game/GameConfig";
@@ -85,15 +87,28 @@ const ArenaStaticGeometry = memo(function ArenaStaticGeometry({
   );
 });
 
+/**
+ * Scoreboard Sub-component
+ * Maps scores and colors to the bezel.
+ * Uses 'flipped' prop to ensure the score on the visual left matches the player on the visual left.
+ */
 const Scoreboard = memo(function Scoreboard({
   p1Score,
   p2Score,
+  flipped,
   mats,
 }: {
   p1Score: number;
   p2Score: number;
+  flipped: boolean;
   mats: Record<string, THREE.Material>;
 }) {
+  // Swaps visual data based on camera orientation state.
+  const displayScoreLeft = flipped ? p2Score : p1Score;
+  const displayScoreRight = flipped ? p1Score : p2Score;
+  const matLeft = flipped ? mats.p2Text : mats.p1Text;
+  const matRight = flipped ? mats.p1Text : mats.p2Text;
+
   return (
     <Suspense fallback={null}>
       {[1, -1].map((side) => (
@@ -109,8 +124,8 @@ const Scoreboard = memo(function Scoreboard({
         >
           <group position={[-HALF_WIDTH / 2, 0, 0]}>
             <Center>
-              <Text3D {...TEXT_PROPS} material={mats.p1Text}>
-                {String(p1Score).padStart(2, "0")}
+              <Text3D {...TEXT_PROPS} material={matLeft}>
+                {String(displayScoreLeft).padStart(2, "0")}
               </Text3D>
             </Center>
           </group>
@@ -125,8 +140,8 @@ const Scoreboard = memo(function Scoreboard({
 
           <group position={[HALF_WIDTH / 2, 0, 0]}>
             <Center>
-              <Text3D {...TEXT_PROPS} material={mats.p2Text}>
-                {String(p2Score).padStart(2, "0")}
+              <Text3D {...TEXT_PROPS} material={matRight}>
+                {String(displayScoreRight).padStart(2, "0")}
               </Text3D>
             </Center>
           </group>
@@ -139,9 +154,11 @@ const Scoreboard = memo(function Scoreboard({
 export default memo(function Arena({
   p1Score,
   p2Score,
+  flipped,
 }: {
   p1Score: number;
   p2Score: number;
+  flipped: boolean;
 }) {
   // In React Three Fiber, declaring inline tags like <boxGeometry> forces the engine to
   // destroy and recreate the 3D buffer on every single score update (causing frame stutter).
@@ -245,7 +262,12 @@ export default memo(function Arena({
   return (
     <group>
       <ArenaStaticGeometry geoms={geoms} mats={mats} />
-      <Scoreboard p1Score={p1Score} p2Score={p2Score} mats={mats} />
+      <Scoreboard
+        p1Score={p1Score}
+        p2Score={p2Score}
+        flipped={flipped}
+        mats={mats}
+      />
     </group>
   );
 });
