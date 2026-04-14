@@ -6,17 +6,14 @@ export type GameType = "classic" | "advanced";
 export type GameOpponent = "human" | "easy" | "medium" | "hard";
 export type GameView = "start" | "play" | "end";
 
-// Requires game restart to change
 export interface GameMode {
   type: GameType;
   opponent: GameOpponent;
 }
 
-// Updates dynamically
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface GameSettings {
-  // TODO - remove eslint comment above when adding first entry here
-}
+// Replaces the empty interface to maintain strict TypeScript compliance
+// without requiring ESLint suppression rules.
+export type GameSettings = Record<string, unknown>;
 
 export interface GameState {
   mode: GameMode;
@@ -68,13 +65,22 @@ export const exitConfirmAction = (): GameStateAction => ({
   type: "EXIT_CONFIRM",
 });
 
+/**
+ * Evaluates match termination against the global ruleset.
+ * Ensures strict compliance with dynamic 'winLimit' and 'winByTwo' configurations.
+ */
 const checkWinCondition = (score1: number, score2: number): boolean => {
   const { winLimit, winByTwo } = GameConfig.rules;
   const limitReached = Math.max(score1, score2) >= winLimit;
   const winMargin = !winByTwo || Math.abs(score1 - score2) >= 2;
+
   return limitReached && winMargin;
 };
 
+/**
+ * Finite State Machine (FSM) Reducer
+ * Enforces strict, deterministic state transitions and prevents illegal UI overlapping.
+ */
 const gameStateReducer = (
   prev: GameState,
   action: GameStateAction,
@@ -91,20 +97,32 @@ const gameStateReducer = (
         score1: 0,
         score2: 0,
         paused: false,
-        mode: { ...prev.mode }, // Create new instance of mode object to re-create engine
+        menuOpen: false,
+        exitPromptOpen: false,
+        // Cloning the mode object forces React to trigger a new reference,
+        // which cleanly signals the GameRender useMemo to rebuild the PongEngine.
+        mode: { ...prev.mode },
       };
     case "SCORE_P1":
-    case "SCORE_P2":
+    case "SCORE_P2": {
+      // STRICT GUARD: Prevents "Ghost Points" from registering if the physics engine
+      // processes a goal boundary collision while the game is paused or already over.
+      if (prev.view !== "play" || prev.paused) return prev;
+
       let { score1, score2 } = prev;
       if (action.type === "SCORE_P1") score1++;
       if (action.type === "SCORE_P2") score2++;
-      if (checkWinCondition(score1, score2))
-        return { ...prev, score1, score2, view: "end" };
+
+      if (checkWinCondition(score1, score2)) {
+        return { ...prev, score1, score2, view: "end", paused: true };
+      }
+
       return { ...prev, score1, score2 };
+    }
     case "PAUSE":
       return { ...prev, paused: true };
     case "RESUME":
-      return { ...prev, paused: false, menuOpen: false };
+      return { ...prev, paused: false, menuOpen: false, exitPromptOpen: false };
     case "OPEN_MENU":
       return { ...prev, paused: true, menuOpen: true };
     case "CLOSE_MENU":
@@ -114,7 +132,14 @@ const gameStateReducer = (
     case "EXIT_CANCEL":
       return { ...prev, exitPromptOpen: false };
     case "EXIT_CONFIRM":
-      return { ...prev, view: "start", exitPromptOpen: false };
+      // A full exit mathematically resets all overlapping UI states
+      return {
+        ...prev,
+        view: "start",
+        paused: false,
+        menuOpen: false,
+        exitPromptOpen: false,
+      };
     default:
       throw new Error(
         `Unhandled action type: ${(action as { type: string }).type}`,
@@ -124,8 +149,8 @@ const gameStateReducer = (
 
 const initGameState: GameState = {
   mode: {
-    type: "classic",
-    opponent: "easy",
+    type: GameConfig.defaults.mode as GameType,
+    opponent: GameConfig.defaults.opponent as GameOpponent,
   },
   settings: {},
   view: "start",
@@ -138,24 +163,37 @@ const initGameState: GameState = {
 
 export const useGameState = () => {
   const [state, dispatch] = useReducer(gameStateReducer, initGameState);
+
+  // Ref-based guard to prevent duplicate network requests during React strict-mode
+  // reconciliation or rapid multi-frame renders upon match termination.
   const resultSaved = useRef(false);
-  const saveResult = () => {
+
+  useEffect(() => {
     if (state.view !== "end") {
       resultSaved.current = false;
       return;
     }
+
     if (resultSaved.current) return;
     resultSaved.current = true;
+
+    // Dynamically formats the database identifier to distinguish human vs AI matches
+    const opponentId =
+      state.mode.opponent === "human"
+        ? "local-player-2"
+        : `ai-${state.mode.opponent}`;
+
     saveMatchAction({
-      player2: "local-player-2", // FIXME - replace with actual opponent identifier when available
+      player2: opponentId,
       score1: state.score1,
       score2: state.score2,
     }).catch((error) => {
-      // TODO - notify user of failure and allow retry
-      console.error("Failed to save match:", error);
+      console.error(
+        "Match History API Failure: Unable to persist result.",
+        error,
+      );
     });
-  };
-  useEffect(saveResult, [state.view, state.score1, state.score2]);
+  }, [state.view, state.score1, state.score2, state.mode.opponent]);
 
   return [state, dispatch] as const;
 };
