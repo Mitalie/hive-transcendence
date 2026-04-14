@@ -17,20 +17,10 @@ import ScoreBoard from "@/game/ui/ScoreBoard";
 import GameUI from "@/game/ui/GameUI";
 import GameRender from "@/game/3d/GameRender";
 
-/**
- * TOP-LEVEL GAME ORCHESTRATOR
- * Acts as the primary container for the Pong application. This component
- * initializes the Finite State Machine (FSM), manages global input listeners,
- * and routes high-level view rendering between 'start', 'play', and 'end' states.
- */
 export default function Game() {
   const [state, dispatch] = useGameState();
 
-  /**
-   * Memoized scoring bridge.
-   * Injected into the 3D physics loop to trigger state transitions
-   * across the React/Three.js boundary.
-   */
+  // Memoized scoring bridge injected into the 3D physics loop to trigger state transitions
   const onScore = useCallback(
     (player: 1 | 2) => {
       dispatch(player === 1 ? scoreP1Action() : scoreP2Action());
@@ -38,14 +28,10 @@ export default function Game() {
     [dispatch],
   );
 
-  /**
-   * Global Input Orchestration
-   * Maps hardware keyboard events to FSM transitions based on current context.
-   * Utilizes the 'togglePauseKey' defined in GameConfig for centralized control.
-   */
+  // Global input orchestration for FSM transitions based on current context
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Input suppression during critical dialog focus
+      // Input suppression during critical dialog focus prevents illegal state transitions
       if (state.exitPromptOpen) return;
 
       if (e.code === GameConfig.ui.controls.togglePauseKey && !e.repeat) {
@@ -67,7 +53,6 @@ export default function Game() {
     dispatch(exitConfirmAction());
   }, [dispatch]);
 
-  // --- START SCREEN VIEW ---
   if (state.view === "start") {
     return (
       <div
@@ -84,7 +69,6 @@ export default function Game() {
     );
   }
 
-  // --- MATCH TERMINATION VIEW ---
   if (state.view === "end") {
     return (
       <div
@@ -110,9 +94,7 @@ export default function Game() {
     );
   }
 
-  // --- ACTIVE SIMULATION VIEW ---
-  // Employs Context Provider pattern to allow deep UI components
-  // (GameUI, ExitPrompt) to dispatch actions without prop-drilling.
+  // Provider pattern allows deep UI components to dispatch actions without prop-drilling
   return (
     <div className="relative h-full w-full">
       <GameStateDispatchContext value={dispatch}>
