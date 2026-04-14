@@ -244,12 +244,14 @@ const GameUpdate = memo(function GameUpdate({
 }) {
   useFrame((_, delta) => {
     if (paused) return;
-    const aiKeys = aiOpponent?.getInputs() ?? {};
+
+    const aiKeys = aiOpponent?.getInputs(delta) ?? {};
+
     engine.update(delta, {
       ...keys.current,
       ...aiKeys,
     });
-  }, -1); // Priority -1 ensures physics processes movement BEFORE components draw.
+  }, -1);
 
   return null;
 });

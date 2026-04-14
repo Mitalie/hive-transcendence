@@ -6,12 +6,13 @@ export type AIDifficulty = "easy" | "medium" | "hard";
 export class AIOpponent {
   private engine: PongEngine;
 
-  // Defaults (Medium)
-  private reactionDelayMs: number = 250;
-  private errorMargin: number = 0.5;
+  private reactionDelaySec: number;
+  private errorMargin: number;
 
-  private lastThoughtTime: number = 0;
-  private lastMistakeTime: number = 0; // Keeps mistakes stable
+  // Internal time accumulators ensure the AI logic freezes exactly when
+  // the physics engine delta drops to 0 (e.g., during a pause state).
+  private timeSinceLastThought: number = 0;
+  private timeSinceLastMistake: number = 0;
 
   private currentMistakeZ: number = 0;
   private currentMistakeX: number = 0;
@@ -24,24 +25,15 @@ export class AIOpponent {
 
   constructor(engine: PongEngine, difficulty: AIDifficulty) {
     this.engine = engine;
-    switch (difficulty) {
-      case "easy":
-        this.reactionDelayMs = 600;
-        this.errorMargin = 1.5;
-        break;
-      case "medium":
-        this.reactionDelayMs = 250;
-        this.errorMargin = 0.5;
-        break;
-      case "hard":
-        // PROS don't wait for snapshots! They track live.
-        this.reactionDelayMs = 0;
-        this.errorMargin = 0.05;
-        break;
-    }
+
+    const config = GameConfig.ai.difficulties[difficulty];
+    // Convert milliseconds to seconds once during initialization to
+    // optimize the frame-by-frame delta math loop.
+    this.reactionDelaySec = config.reactionDelayMs / 1000;
+    this.errorMargin = config.errorMargin;
   }
 
-  public getInputs(): Record<string, boolean> {
+  public getInputs(delta: number): Record<string, boolean> {
     const inputs = {
       arrowup: false,
       arrowdown: false,
@@ -51,54 +43,69 @@ export class AIOpponent {
 
     const ball = this.engine.ball;
     const paddle = this.engine.p2;
-    const now = Date.now();
 
-    // --- 1. GENERATE MISTAKES (Only change mind every 600ms) ---
-    // This stops the Math.random() from vibrating the target every frame
-    if (now - this.lastMistakeTime > 600) {
-      this.lastMistakeTime = now;
+    this.timeSinceLastMistake += delta;
+    this.timeSinceLastThought += delta;
+
+    // Recalculating mistakes on a strict interval prevents rapid vibration
+    // of the target coordinate every frame.
+    const mistakeIntervalSec = GameConfig.ai.mistakeUpdateIntervalMs / 1000;
+    if (this.timeSinceLastMistake > mistakeIntervalSec) {
+      this.timeSinceLastMistake = 0;
       this.currentMistakeZ = (Math.random() - 0.5) * this.errorMargin;
       this.currentMistakeX = (Math.random() - 0.5) * this.errorMargin;
     }
 
-    // --- 2. THE BRAIN SNAPSHOT (How often it looks at the ball) ---
-    if (now - this.lastThoughtTime >= this.reactionDelayMs) {
-      this.lastThoughtTime = now;
+    // Simulates human reaction time by reading the ball's actual position
+    // only after the accumulated delta exceeds the reaction delay.
+    if (this.timeSinceLastThought >= this.reactionDelaySec) {
+      this.timeSinceLastThought = 0;
 
-      // Lock in the Z target with the stable mistake offset
       this.targetZ = ball.z + this.currentMistakeZ;
-
-      // Read the height! Can we actually hit this?
       const isBallTooHigh = ball.y > GameConfig.paddle.height;
 
       if (ball.x > 0) {
         if (isBallTooHigh) {
-          // Lob detected! Backpedal towards the baseline to let it drop
-          this.targetX = GameConfig.court.xLimit - 2;
+          this.targetX =
+            GameConfig.court.xLimit - GameConfig.ai.lobBackpedalOffset;
         } else {
-          // Normal shot, track it!
           this.targetX = ball.x + this.currentMistakeX;
         }
       } else {
-        this.targetX = GameConfig.player2.xPos; // Return to baseline
+        this.targetX = GameConfig.player2.xPos;
       }
     }
 
-    // --- 3. THE EYES (Smoothly drift focus) ---
-    // On Hard mode (0ms delay), we let it lerp faster so it feels snappy and responsive
-    const lerpSpeed = this.reactionDelayMs === 0 ? 0.3 : 0.15;
-    this.focusZ += (this.targetZ - this.focusZ) * lerpSpeed;
-    this.focusX += (this.targetX - this.focusX) * lerpSpeed;
+    const lerpBase =
+      this.reactionDelaySec === 0
+        ? GameConfig.ai.lerpSpeed.fast
+        : GameConfig.ai.lerpSpeed.base;
 
-    // --- 4. THE MUSCLES ---
-    const deadzoneZ = 0.3;
-    if (this.focusZ > paddle.z + deadzoneZ) inputs.arrowdown = true;
-    else if (this.focusZ < paddle.z - deadzoneZ) inputs.arrowup = true;
+    // Frame-rate independent lerp formula.
+    // Ensures the visual tracking speed remains mathematically identical
+    // regardless of monitor refresh rate variations (e.g., 60Hz vs 144Hz).
+    const lerpFactor =
+      1 - Math.pow(1 - lerpBase, delta * GameConfig.paddleVisuals.fpsBase);
 
-    const deadzoneX = 0.2;
-    if (this.focusX < paddle.x - deadzoneX) inputs.arrowleft = true;
-    else if (this.focusX > paddle.x + deadzoneX) inputs.arrowright = true;
+    this.focusZ += (this.targetZ - this.focusZ) * lerpFactor;
+    this.focusX += (this.targetX - this.focusX) * lerpFactor;
+
+    // Deadzones prevent micro-stuttering when the focus coordinate is
+    // sufficiently close to the current paddle coordinate.
+    if (this.focusZ > paddle.z + GameConfig.ai.deadzone.z)
+      inputs.arrowdown = true;
+    else if (this.focusZ < paddle.z - GameConfig.ai.deadzone.z)
+      inputs.arrowup = true;
+
+    if (this.focusX < paddle.x - GameConfig.ai.deadzone.x)
+      inputs.arrowleft = true;
+    else if (this.focusX > paddle.x + GameConfig.ai.deadzone.x)
+      inputs.arrowright = true;
 
     return inputs;
+  }
+
+  public destroy() {
+    // Teardown logic hook for future memory management
   }
 }
