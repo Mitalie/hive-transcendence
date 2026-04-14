@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useMemo, RefObject, use, memo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { GameConfig } from "@/game/GameConfig";
 import {
@@ -157,6 +158,20 @@ export default memo(function GameRender({
 
         <ResponsiveCamera />
 
+        {/* 360 INTERACTIVE CAMERA CONTROLS */}
+        <OrbitControls
+          makeDefault
+          enablePan={GameConfig.camera.controls.enablePan}
+          maxPolarAngle={GameConfig.camera.controls.maxPolarAngle}
+          minDistance={GameConfig.camera.controls.minDistance}
+          maxDistance={GameConfig.camera.controls.maxDistance}
+          mouseButtons={{
+            LEFT: GameConfig.camera.controls.mouseButtons.left,
+            MIDDLE: GameConfig.camera.controls.mouseButtons.middle,
+            RIGHT: GameConfig.camera.controls.mouseButtons.right,
+          }}
+        />
+
         <GameUpdate
           engine={engine}
           aiOpponent={aiOpponent}
@@ -185,6 +200,7 @@ export default memo(function GameRender({
           />
         </directionalLight>
 
+        {/* Dynamic Point Light Mapping from Config */}
         {GameConfig.render.lighting.points.map((light, i) => (
           <pointLight
             key={`fill-light-${i}`}
