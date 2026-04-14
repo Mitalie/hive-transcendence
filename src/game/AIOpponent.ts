@@ -34,13 +34,7 @@ export class AIOpponent {
   }
 
   public getInputs(delta: number): Record<string, boolean> {
-    const inputs = {
-      arrowup: false,
-      arrowdown: false,
-      arrowleft: false,
-      arrowright: false,
-    };
-
+    const inputs: Record<string, boolean> = {};
     const ball = this.engine.ball;
     const paddle = this.engine.p2;
 
@@ -90,17 +84,21 @@ export class AIOpponent {
     this.focusZ += (this.targetZ - this.focusZ) * lerpFactor;
     this.focusX += (this.targetX - this.focusX) * lerpFactor;
 
+    // Dynamically query Player 2's keybindings to ensure the AI seamlessly
+    // adapts to any global control remapping.
+    const p2Keys = GameConfig.player2.controls;
+
     // Deadzones prevent micro-stuttering when the focus coordinate is
     // sufficiently close to the current paddle coordinate.
     if (this.focusZ > paddle.z + GameConfig.ai.deadzone.z)
-      inputs.arrowdown = true;
+      inputs[p2Keys.down] = true;
     else if (this.focusZ < paddle.z - GameConfig.ai.deadzone.z)
-      inputs.arrowup = true;
+      inputs[p2Keys.up] = true;
 
     if (this.focusX < paddle.x - GameConfig.ai.deadzone.x)
-      inputs.arrowleft = true;
+      inputs[p2Keys.left] = true;
     else if (this.focusX > paddle.x + GameConfig.ai.deadzone.x)
-      inputs.arrowright = true;
+      inputs[p2Keys.right] = true;
 
     return inputs;
   }

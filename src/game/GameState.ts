@@ -6,13 +6,17 @@ export type GameType = "classic" | "advanced";
 export type GameOpponent = "human" | "easy" | "medium" | "hard";
 export type GameView = "start" | "play" | "end";
 
+/**
+ * GameMode defines the immutable match parameters required for engine initialization.
+ */
 export interface GameMode {
   type: GameType;
   opponent: GameOpponent;
 }
 
-// Replaces the empty interface to maintain strict TypeScript compliance
-// without requiring ESLint suppression rules.
+/**
+ * GameSettings permits dynamic runtime adjustments to the user environment.
+ */
 export type GameSettings = Record<string, unknown>;
 
 export interface GameState {
@@ -38,7 +42,8 @@ type GameStateAction =
   | { type: "CLOSE_MENU" }
   | { type: "EXIT_PROMPT" }
   | { type: "EXIT_CANCEL" }
-  | { type: "EXIT_CONFIRM" };
+  | { type: "EXIT_CONFIRM" }
+  | { type: "RESTORE_DEFAULTS" };
 
 export const setModeAction = (mode: GameMode): GameStateAction => ({
   type: "SET_MODE",
@@ -63,6 +68,9 @@ export const exitCancelAction = (): GameStateAction => ({
 });
 export const exitConfirmAction = (): GameStateAction => ({
   type: "EXIT_CONFIRM",
+});
+export const restoreDefaultsAction = (): GameStateAction => ({
+  type: "RESTORE_DEFAULTS",
 });
 
 /**
@@ -139,6 +147,16 @@ const gameStateReducer = (
         paused: false,
         menuOpen: false,
         exitPromptOpen: false,
+      };
+    case "RESTORE_DEFAULTS":
+      // Reverts the match configuration to the immutable blueprint in GameConfig.
+      return {
+        ...prev,
+        mode: {
+          type: GameConfig.defaults.mode as GameType,
+          opponent: GameConfig.defaults.opponent as GameOpponent,
+        },
+        settings: {},
       };
     default:
       throw new Error(
