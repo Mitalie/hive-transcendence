@@ -6,17 +6,11 @@ export type GameType = "classic" | "advanced";
 export type GameOpponent = "human" | "easy" | "medium" | "hard";
 export type GameView = "start" | "play" | "end";
 
-/**
- * GameMode defines the immutable match parameters required for engine initialization.
- */
 export interface GameMode {
   type: GameType;
   opponent: GameOpponent;
 }
 
-/**
- * GameSettings permits dynamic runtime adjustments to the user environment.
- */
 export type GameSettings = Record<string, unknown>;
 
 export interface GameState {
@@ -73,85 +67,74 @@ export const restoreDefaultsAction = (): GameStateAction => ({
   type: "RESTORE_DEFAULTS",
 });
 
-/**
- * Evaluates match termination against the global ruleset.
- * Ensures strict compliance with dynamic 'winLimit' and 'winByTwo' configurations.
- */
-const checkWinCondition = (score1: number, score2: number): boolean => {
-  const { winLimit, winByTwo } = GameConfig.rules;
-  const limitReached = Math.max(score1, score2) >= winLimit;
-  const winMargin = !winByTwo || Math.abs(score1 - score2) >= 2;
+function isWinningScore(mine: number, theirs: number): boolean {
+  const next = mine + 1;
+  if (!GameConfig.rules.winByTwo) return next >= GameConfig.rules.winLimit;
+  return next >= GameConfig.rules.winLimit && next - theirs >= 2;
+}
 
-  return limitReached && winMargin;
-};
-
-/**
- * Finite State Machine (FSM) Reducer
- * Enforces strict, deterministic state transitions and prevents illegal UI overlapping.
- */
 const gameStateReducer = (
-  prev: GameState,
+  state: GameState,
   action: GameStateAction,
 ): GameState => {
   switch (action.type) {
     case "SET_MODE":
-      return { ...prev, mode: action.mode };
+      return { ...state, mode: action.mode };
     case "SET_SETTINGS":
-      return { ...prev, settings: action.settings };
+      return { ...state, settings: { ...state.settings, ...action.settings } };
     case "START_GAME":
       return {
-        ...prev,
+        ...state,
         view: "play",
         score1: 0,
         score2: 0,
         paused: false,
         menuOpen: false,
         exitPromptOpen: false,
-        // Cloning the mode object forces React to trigger a new reference,
-        // which cleanly signals the GameRender useMemo to rebuild the PongEngine.
-        mode: { ...prev.mode },
+        mode: { ...state.mode },
       };
     case "SCORE_P1":
-    case "SCORE_P2": {
-      // STRICT GUARD: Prevents "Ghost Points" from registering if the physics engine
-      // processes a goal boundary collision while the game is paused or already over.
-      if (prev.view !== "play" || prev.paused) return prev;
-
-      let { score1, score2 } = prev;
-      if (action.type === "SCORE_P1") score1++;
-      if (action.type === "SCORE_P2") score2++;
-
-      if (checkWinCondition(score1, score2)) {
-        return { ...prev, score1, score2, view: "end", paused: true };
-      }
-
-      return { ...prev, score1, score2 };
-    }
-    case "PAUSE":
-      return { ...prev, paused: true };
-    case "RESUME":
-      return { ...prev, paused: false, menuOpen: false, exitPromptOpen: false };
-    case "OPEN_MENU":
-      return { ...prev, paused: true, menuOpen: true };
-    case "CLOSE_MENU":
-      return { ...prev, menuOpen: false };
-    case "EXIT_PROMPT":
-      return { ...prev, paused: true, exitPromptOpen: true };
-    case "EXIT_CANCEL":
-      return { ...prev, exitPromptOpen: false };
-    case "EXIT_CONFIRM":
-      // A full exit mathematically resets all overlapping UI states
+      if (state.view !== "play" || state.paused) return state;
       return {
-        ...prev,
-        view: "start",
+        ...state,
+        score1: state.score1 + 1,
+        view: isWinningScore(state.score1, state.score2) ? "end" : state.view,
+      };
+    case "SCORE_P2":
+      if (state.view !== "play" || state.paused) return state;
+      return {
+        ...state,
+        score2: state.score2 + 1,
+        view: isWinningScore(state.score2, state.score1) ? "end" : state.view,
+      };
+    case "PAUSE":
+      return { ...state, paused: true };
+    case "RESUME":
+      return {
+        ...state,
         paused: false,
         menuOpen: false,
         exitPromptOpen: false,
       };
-    case "RESTORE_DEFAULTS":
-      // Reverts the match configuration to the immutable blueprint in GameConfig.
+    case "OPEN_MENU":
+      return { ...state, paused: true, menuOpen: true };
+    case "CLOSE_MENU":
+      return { ...state, menuOpen: false };
+    case "EXIT_PROMPT":
+      return { ...state, exitPromptOpen: true, paused: true };
+    case "EXIT_CANCEL":
+      return { ...state, exitPromptOpen: false };
+    case "EXIT_CONFIRM":
       return {
-        ...prev,
+        ...state,
+        view: "start",
+        exitPromptOpen: false,
+        menuOpen: false,
+        paused: false,
+      };
+    case "RESTORE_DEFAULTS":
+      return {
+        ...state,
         mode: {
           type: GameConfig.defaults.mode as GameType,
           opponent: GameConfig.defaults.opponent as GameOpponent,
@@ -159,9 +142,7 @@ const gameStateReducer = (
         settings: {},
       };
     default:
-      throw new Error(
-        `Unhandled action type: ${(action as { type: string }).type}`,
-      );
+      return state;
   }
 };
 
@@ -181,9 +162,6 @@ const initGameState: GameState = {
 
 export const useGameState = () => {
   const [state, dispatch] = useReducer(gameStateReducer, initGameState);
-
-  // Ref-based guard to prevent duplicate network requests during React strict-mode
-  // reconciliation or rapid multi-frame renders upon match termination.
   const resultSaved = useRef(false);
 
   useEffect(() => {
@@ -195,7 +173,6 @@ export const useGameState = () => {
     if (resultSaved.current) return;
     resultSaved.current = true;
 
-    // Dynamically formats the database identifier to distinguish human vs AI matches
     const opponentId =
       state.mode.opponent === "human"
         ? "local-player-2"
@@ -206,10 +183,7 @@ export const useGameState = () => {
       score1: state.score1,
       score2: state.score2,
     }).catch((error) => {
-      console.error(
-        "Match History API Failure: Unable to persist result.",
-        error,
-      );
+      console.error("Match History API Failure", error);
     });
   }, [state.view, state.score1, state.score2, state.mode.opponent]);
 

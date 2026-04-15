@@ -16,7 +16,7 @@
     "@prisma/adapter-mariadb": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "@react-three/drei": "^10.7.7",
-    "@react-three/fiber": "^9.5.0",
+    "@react-three/fiber": "^9.6.0",
     "@react-three/postprocessing": "^3.0.4",
     "bcrypt": "^6.0.0",
     "i18next": "^25.10.9",

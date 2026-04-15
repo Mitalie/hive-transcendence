@@ -11,6 +11,7 @@ import {
 } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import { GameConfig } from "@/game/GameConfig";
 import {
@@ -25,12 +26,6 @@ import Paddle from "@/game/3d/Paddle";
 import Arena from "@/game/3d/Arena";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 
-/**
- * ResponsiveCamera handles dynamic vertical FOV scaling.
- * We use useFrame instead of useEffect to bypass React Compiler immutability
- * restrictions and to ensure the camera adjusts if the container resizes
- * independently of the window.
- */
 const ResponsiveCamera = memo(function ResponsiveCamera() {
   useFrame((state) => {
     const { camera, size } = state;
@@ -40,8 +35,6 @@ const ResponsiveCamera = memo(function ResponsiveCamera() {
     const target = GameConfig.render.responsive.targetAspect;
     let calculatedFov = GameConfig.camera.fov;
 
-    // If the viewport is narrower than our target aspect, we increase
-    // the FOV to keep the full width of the court in frame.
     if (aspect < target) {
       const zoomFactor = target / aspect;
       const baseFovRads = THREE.MathUtils.degToRad(GameConfig.camera.fov);
@@ -49,8 +42,6 @@ const ResponsiveCamera = memo(function ResponsiveCamera() {
       calculatedFov = THREE.MathUtils.radToDeg(newFovRads);
     }
 
-    // Direct mutation inside useFrame is the R3F standard for performance.
-    // This allows us to update the lens without triggering React's reconciliation.
     if (camera.fov !== calculatedFov) {
       camera.fov = calculatedFov;
       camera.updateProjectionMatrix();
@@ -60,8 +51,30 @@ const ResponsiveCamera = memo(function ResponsiveCamera() {
   return null;
 });
 
-// GameRender is memoized to isolate the entire 3D pipeline from UI state changes
-// that don't affect the 3D environment.
+const AzimuthTracker = memo(function AzimuthTracker({
+  orbitRef,
+  setFlipped,
+}: {
+  orbitRef: RefObject<OrbitControlsImpl | null>;
+  setFlipped: (val: boolean) => void;
+}) {
+  const flippedRef = useRef(false);
+
+  useFrame(() => {
+    if (!orbitRef.current) return;
+    const crossed =
+      Math.abs(orbitRef.current.getAzimuthalAngle()) >
+      GameConfig.camera.controls.flipAzimuthThreshold;
+
+    if (crossed !== flippedRef.current) {
+      flippedRef.current = crossed;
+      setFlipped(crossed);
+    }
+  });
+
+  return null;
+});
+
 export default memo(function GameRender({
   mode,
   onScore,
@@ -75,15 +88,10 @@ export default memo(function GameRender({
   p1Score: number;
   p2Score: number;
 }) {
-  // React 19: use() reads context imperatively — equivalent to
-  // useContext(GameStateDispatchContext) but works outside component top-level too.
   const dispatch = use(GameStateDispatchContext);
-
-  // Tracks if the camera has rotated to the opposite side of the court.
   const [flipped, setFlipped] = useState(false);
+  const orbitRef = useRef<OrbitControlsImpl>(null);
 
-  // We memoize the engine and AI instances to ensure they persist exactly once
-  // across the match lifecycle, even if the renderer re-mounts.
   const [engine, aiOpponent] = useMemo(() => {
     const engine = new PongEngine(onScore, mode.type);
     const aiOpponent =
@@ -91,11 +99,10 @@ export default memo(function GameRender({
     return [engine, aiOpponent];
   }, [onScore, mode]);
 
-  // Clean up engine resources when GameRender unmounts or restarts.
   useEffect(() => {
     return () => {
-      engine.dispose?.(); // Reverted to original method names
-      aiOpponent?.dispose?.();
+      engine.destroy?.();
+      aiOpponent?.destroy?.();
     };
   }, [engine, aiOpponent]);
 
@@ -106,15 +113,11 @@ export default memo(function GameRender({
     pausedRef.current = paused;
   }, [paused]);
 
-  // Input listeners are strictly scoped to the lifecycle of this match instance.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.repeat) return;
-
-      // UX GUARD: Don't move paddles if the user is typing in a UI input field.
       const target = e.target as HTMLElement;
       if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
-
       keys.current[e.key.toLowerCase()] = true;
     };
 
@@ -140,6 +143,7 @@ export default memo(function GameRender({
   return (
     <div className="w-full h-full rounded-xl overflow-hidden bg-transparent">
       <Canvas
+        // PCFShadowMap set explicitly; PCFSoftShadowMap rejected due to acne on paddle skirts.
         shadows={{ type: THREE.PCFShadowMap }}
         gl={{
           alpha: true,
@@ -165,8 +169,8 @@ export default memo(function GameRender({
 
         <ResponsiveCamera />
 
-        {/* 360 INTERACTIVE CAMERA CONTROLS */}
         <OrbitControls
+          ref={orbitRef}
           makeDefault
           enablePan={GameConfig.camera.controls.enablePan}
           maxPolarAngle={GameConfig.camera.controls.maxPolarAngle}
@@ -177,13 +181,9 @@ export default memo(function GameRender({
             MIDDLE: GameConfig.camera.controls.mouseButtons.middle,
             RIGHT: GameConfig.camera.controls.mouseButtons.right,
           }}
-          onChange={(e) => {
-            if (!e) return;
-            const azimuth = e.target.getAzimuthalAngle();
-            // Swaps scoreboard orientation if the camera crosses the court center-line (90 degrees).
-            setFlipped(Math.abs(azimuth) > Math.PI / 2);
-          }}
         />
+
+        <AzimuthTracker orbitRef={orbitRef} setFlipped={setFlipped} />
 
         <GameUpdate
           engine={engine}
@@ -213,7 +213,6 @@ export default memo(function GameRender({
           />
         </directionalLight>
 
-        {/* Dynamic Point Light Mapping from Config */}
         {GameConfig.render.lighting.points.map((light, i) => (
           <pointLight
             key={`fill-light-${i}`}
@@ -243,7 +242,6 @@ export default memo(function GameRender({
   );
 });
 
-// We'd prefer to not have a separate component for this, but useFrame can only be used in a child of Canvas.
 const GameUpdate = memo(function GameUpdate({
   engine,
   aiOpponent,

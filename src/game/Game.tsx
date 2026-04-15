@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { GameConfig } from "@/game/GameConfig";
 import {
   exitConfirmAction,
@@ -20,7 +20,6 @@ import GameRender from "@/game/3d/GameRender";
 export default function Game() {
   const [state, dispatch] = useGameState();
 
-  // Memoized scoring bridge injected into the 3D physics loop to trigger state transitions
   const onScore = useCallback(
     (player: 1 | 2) => {
       dispatch(player === 1 ? scoreP1Action() : scoreP2Action());
@@ -28,22 +27,29 @@ export default function Game() {
     [dispatch],
   );
 
-  // Global input orchestration for FSM transitions based on current context
+  // useReducer dispatch is stable, but we use a ref for state to allow listeners
+  // to read the current context without re-registering on every state change.
+  const stateRef = useRef(state);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Input suppression during critical dialog focus prevents illegal state transitions
-      if (state.exitPromptOpen) return;
+      const s = stateRef.current;
+
+      if (s.exitPromptOpen) return;
 
       if (e.code === GameConfig.ui.controls.togglePauseKey && !e.repeat) {
-        if (state.view !== "play") dispatch(startGameAction());
-        else if (state.paused) dispatch(resumeAction());
+        if (s.view !== "play") dispatch(startGameAction());
+        else if (s.paused) dispatch(resumeAction());
         else dispatch(pauseAction());
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [dispatch, state.paused, state.view, state.exitPromptOpen]);
+  }, [dispatch]);
 
   const onStartClick = useCallback(() => {
     dispatch(startGameAction());
@@ -94,7 +100,6 @@ export default function Game() {
     );
   }
 
-  // Provider pattern allows deep UI components to dispatch actions without prop-drilling
   return (
     <div className="relative h-full w-full">
       <GameStateDispatchContext value={dispatch}>

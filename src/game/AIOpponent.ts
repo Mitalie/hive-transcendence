@@ -8,9 +8,9 @@ export class AIOpponent {
 
   private reactionDelaySec: number;
   private errorMargin: number;
+  private mistakeIntervalSec: number;
+  private isInstant: boolean;
 
-  // Internal time accumulators ensure the AI logic freezes exactly when
-  // the physics engine delta drops to 0 (e.g., during a pause state).
   private timeSinceLastThought: number = 0;
   private timeSinceLastMistake: number = 0;
 
@@ -27,10 +27,10 @@ export class AIOpponent {
     this.engine = engine;
 
     const config = GameConfig.ai.difficulties[difficulty];
-    // Convert milliseconds to seconds once during initialization to
-    // optimize the frame-by-frame delta math loop.
     this.reactionDelaySec = config.reactionDelayMs / 1000;
     this.errorMargin = config.errorMargin;
+    this.mistakeIntervalSec = config.mistakeIntervalSec;
+    this.isInstant = difficulty === "hard";
   }
 
   public getInputs(delta: number): Record<string, boolean> {
@@ -38,58 +38,52 @@ export class AIOpponent {
     const ball = this.engine.ball;
     const paddle = this.engine.p2;
 
+    const isBallStationary = ball.vx === 0 && ball.vz === 0;
+
     this.timeSinceLastMistake += delta;
     this.timeSinceLastThought += delta;
 
-    // Recalculating mistakes on a strict interval prevents rapid vibration
-    // of the target coordinate every frame.
-    const mistakeIntervalSec = GameConfig.ai.mistakeUpdateIntervalMs / 1000;
-    if (this.timeSinceLastMistake > mistakeIntervalSec) {
+    if (this.timeSinceLastMistake > this.mistakeIntervalSec) {
       this.timeSinceLastMistake = 0;
       this.currentMistakeZ = (Math.random() - 0.5) * this.errorMargin;
       this.currentMistakeX = (Math.random() - 0.5) * this.errorMargin;
     }
 
-    // Simulates human reaction time by reading the ball's actual position
-    // only after the accumulated delta exceeds the reaction delay.
     if (this.timeSinceLastThought >= this.reactionDelaySec) {
       this.timeSinceLastThought = 0;
 
-      this.targetZ = ball.z + this.currentMistakeZ;
-      const isBallTooHigh = ball.y > GameConfig.paddle.height;
-
-      if (ball.x > 0) {
-        if (isBallTooHigh) {
-          this.targetX =
-            GameConfig.court.xLimit - GameConfig.ai.lobBackpedalOffset;
-        } else {
-          this.targetX = ball.x + this.currentMistakeX;
-        }
-      } else {
+      if (isBallStationary) {
+        this.targetZ = 0;
         this.targetX = GameConfig.player2.xPos;
+      } else {
+        this.targetZ = ball.z + this.currentMistakeZ;
+        const isBallTooHigh = ball.y > GameConfig.paddle.height;
+
+        if (ball.vx > 0 && ball.x > GameConfig.court.centerX) {
+          if (isBallTooHigh) {
+            this.targetX =
+              GameConfig.court.xLimit - GameConfig.ai.lobBackpedalOffset;
+          } else {
+            this.targetX = ball.x + this.currentMistakeX;
+          }
+        } else {
+          this.targetX = GameConfig.player2.xPos;
+        }
       }
     }
 
-    const lerpBase =
-      this.reactionDelaySec === 0
-        ? GameConfig.ai.lerpSpeed.fast
-        : GameConfig.ai.lerpSpeed.base;
+    const lerpBase = this.isInstant
+      ? GameConfig.ai.lerpSpeed.fast
+      : GameConfig.ai.lerpSpeed.base;
 
-    // Frame-rate independent lerp formula.
-    // Ensures the visual tracking speed remains mathematically identical
-    // regardless of monitor refresh rate variations (e.g., 60Hz vs 144Hz).
     const lerpFactor =
-      1 - Math.pow(1 - lerpBase, delta * GameConfig.paddleVisuals.fpsBase);
+      1 - Math.pow(1 - lerpBase, delta * GameConfig.ai.fpsBase);
 
     this.focusZ += (this.targetZ - this.focusZ) * lerpFactor;
     this.focusX += (this.targetX - this.focusX) * lerpFactor;
 
-    // Dynamically query Player 2's keybindings to ensure the AI seamlessly
-    // adapts to any global control remapping.
     const p2Keys = GameConfig.player2.controls;
 
-    // Deadzones prevent micro-stuttering when the focus coordinate is
-    // sufficiently close to the current paddle coordinate.
     if (this.focusZ > paddle.z + GameConfig.ai.deadzone.z)
       inputs[p2Keys.down] = true;
     else if (this.focusZ < paddle.z - GameConfig.ai.deadzone.z)
@@ -103,7 +97,5 @@ export class AIOpponent {
     return inputs;
   }
 
-  public destroy() {
-    // Teardown logic hook for future memory management
-  }
+  public destroy() {}
 }
