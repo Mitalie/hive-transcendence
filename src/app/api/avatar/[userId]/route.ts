@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 export async function GET(
-  _req: Request,
+  request: Request,
   { params }: { params: Promise<{ userId: string }> },
 ) {
   const { userId } = await params;
@@ -11,17 +12,43 @@ export async function GET(
     select: {
       avatarData: true,
       avatarMime: true,
+      avatarUrl: true,
+      image: true,
     },
   });
 
-  if (!user?.avatarData || !user.avatarMime) {
-    return new Response("Not found", { status: 404 });
+  if (!user) {
+    const response = NextResponse.redirect(
+      new URL("/images/user_icon.png", request.url),
+    );
+    response.headers.set("Cache-Control", "no-store");
+    return response;
   }
 
-  return new Response(user.avatarData, {
-    headers: {
-      "Content-Type": user.avatarMime,
-      "Cache-Control": "public, max-age=31536000, immutable",
-    },
-  });
+  if (user.avatarData && user.avatarMime) {
+    return new NextResponse(user.avatarData, {
+      headers: {
+        "Content-Type": user.avatarMime,
+        "Cache-Control": "no-store",
+      },
+    });
+  }
+
+  if (user.avatarUrl) {
+    const response = NextResponse.redirect(user.avatarUrl);
+    response.headers.set("Cache-Control", "no-store");
+    return response;
+  }
+
+  if (user.image) {
+    const response = NextResponse.redirect(user.image);
+    response.headers.set("Cache-Control", "no-store");
+    return response;
+  }
+
+  const response = NextResponse.redirect(
+    new URL("/images/user_icon.png", request.url),
+  );
+  response.headers.set("Cache-Control", "no-store");
+  return response;
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -12,8 +13,25 @@ import { useTranslation } from "react-i18next";
 
 export default function Header() {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const { t } = useTranslation();
+  const [avatarVersion, setAvatarVersion] = useState(0);
+
+  useEffect(() => {
+    const handleAvatarUpdated = () => {
+      setAvatarVersion((prev) => prev + 1);
+    };
+
+    window.addEventListener("avatar-updated", handleAvatarUpdated);
+    return () => {
+      window.removeEventListener("avatar-updated", handleAvatarUpdated);
+    };
+  }, []);
+
+  const avatarSrc =
+    status === "authenticated" && session.user?.id
+      ? `/api/avatar/${session.user.id}?v=${avatarVersion}`
+      : "/images/user_icon.png";
 
   return (
     <Bar>
@@ -63,16 +81,16 @@ export default function Header() {
         </NavButton>
 
         <NavButton href="/profile" active={pathname === "/profile"}>
-          <Image
-            src={session?.user?.image || "/images/user_icon.png"}
-            alt="user"
-            width={32}
-            height={32}
-            className={`
-              rounded-full cursor-pointer
-              ${!session?.user?.image ? "dark:invert" : ""}
-            `}
-          />
+          <span className="block w-8 h-8 shrink-0 rounded-full overflow-hidden">
+            <Image
+              unoptimized
+              src={avatarSrc}
+              alt="user"
+              width={32}
+              height={32}
+              className="w-full h-full object-cover"
+            />
+          </span>
         </NavButton>
 
         {/* Sign in/out button depending on session */}
