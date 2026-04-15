@@ -1,18 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Button from "@/components/Button";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { completeRegistrationProfileAction } from "@/actions/registration";
 
 export default function ProfileSetupPage() {
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const params = useSearchParams();
-  const userId = params.get("userId");
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -22,31 +20,32 @@ export default function ProfileSetupPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/registration/profile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, displayName }),
-      });
+      const pending = sessionStorage.getItem("pendingAuth");
 
-      if (!res.ok) {
-        const data = await res.json();
-        const key = data.error;
+      if (pending) {
+        const { email, password } = JSON.parse(pending);
+
+        const signInResult = await signIn("credentials", {
+          email,
+          password,
+          redirect: false,
+        });
+
+        if (!signInResult || signInResult.error) {
+          throw new Error(t("profile.errorUnexpected"));
+        }
+
+        sessionStorage.removeItem("pendingAuth");
+      }
+
+      const result = await completeRegistrationProfileAction(displayName);
+
+      if (!result.ok) {
+        const key = result.error;
         throw new Error(t(`apiErrors.${key}`, t("profile.errorFallback")));
       }
 
-      const pending = sessionStorage.getItem("pendingAuth");
-      if (pending) {
-        const { email, password } = JSON.parse(pending);
-        sessionStorage.removeItem("pendingAuth");
-        await signIn("credentials", {
-          email,
-          password,
-          redirect: true,
-          callbackUrl: "/",
-        });
-      } else {
-        router.push("/");
-      }
+      router.push("/");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);

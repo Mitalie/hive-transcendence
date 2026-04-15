@@ -1,7 +1,9 @@
 "use client";
+
 import { useState } from "react";
 import Button from "./Button";
 import { useTranslation } from "react-i18next";
+import { addPasswordAction } from "@/actions/account";
 
 export function AddPasswordForm() {
   const [password, setPassword] = useState("");
@@ -15,19 +17,15 @@ export function AddPasswordForm() {
     setLoading(true);
     setError("");
 
-    const res = await fetch("/api/auth/add-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
-    });
+    const result = await addPasswordAction(password);
 
-    if (!res.ok) {
-      const data = await res.json();
-      const key = data.error;
+    if (!result.ok) {
+      const key = result.error;
       setError(t(`apiErrors.${key}`, t("addPassword.errorFallback")));
     } else {
       setSuccess(true);
     }
+
     setLoading(false);
   };
 

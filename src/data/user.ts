@@ -6,11 +6,28 @@ import bcrypt from "bcrypt";
 export async function getCurrentUser() {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.email) return null;
+  if (!session?.user?.email) {
+    return null;
+  }
 
   return prisma.user.findUnique({
     where: { email: session.user.email },
-    include: { accounts: true },
+    select: {
+      id: true,
+      email: true,
+      displayName: true,
+      bio: true,
+      avatarUrl: true,
+      avatarMime: true,
+      updatedAt: true,
+      password: true,
+      accounts: {
+        select: {
+          id: true,
+          provider: true,
+        },
+      },
+    },
   });
 }
 
