@@ -94,8 +94,8 @@ export default memo(function GameRender({
   // Clean up engine resources when GameRender unmounts or restarts.
   useEffect(() => {
     return () => {
-      engine.destroy?.();
-      aiOpponent?.destroy?.();
+      engine.dispose?.(); // Reverted to original method names
+      aiOpponent?.dispose?.();
     };
   }, [engine, aiOpponent]);
 
@@ -140,15 +140,13 @@ export default memo(function GameRender({
   return (
     <div className="w-full h-full rounded-xl overflow-hidden bg-transparent">
       <Canvas
-        shadows
+        shadows={{ type: THREE.PCFShadowMap }}
         gl={{
           alpha: true,
           antialias: true,
           powerPreference: "high-performance",
         }}
         onCreated={({ gl }) => {
-          // PCFSoftShadowMap provides superior blurred edge quality for our court lighting.
-          gl.shadowMap.type = THREE.PCFSoftShadowMap;
           gl.setClearColor(0x000000, 0);
         }}
         camera={{

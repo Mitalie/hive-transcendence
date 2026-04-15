@@ -26,32 +26,74 @@ export class PongEngine {
     // during severe browser lag or background tab throttling.
     const safeDelta = Math.min(delta, GameConfig.physics.maxDelta);
 
+    // KINEMATICS: Paddles always process input regardless of game state.
+    if (this.mode === "classic") {
+      this.updateClassicPaddles(safeDelta, keys);
+    } else {
+      this.updateAdvancedPaddles(safeDelta, keys);
+    }
+
+    // DELAY STATE: Ball is out of bounds flying into the void.
     if (this.serveTimer > 0) {
       this.serveTimer -= safeDelta * 1000;
-      this.ball.y =
-        this.mode === "classic"
-          ? GameConfig.ball.radius
-          : GameConfig.ball.serveHeight;
+
+      this.ball.x += this.ball.vx * safeDelta;
+      this.ball.z += this.ball.vz * safeDelta;
+
+      if (this.mode === "advanced") {
+        this.ball.vy -= GameConfig.ball.gravity * safeDelta;
+        this.ball.y += this.ball.vy * safeDelta;
+        this.ball.vz += this.ball.spin * safeDelta;
+      }
+
+      if (this.serveTimer <= 0) {
+        this.serveTimer = 0;
+        this.executeServe();
+      }
       return;
     }
 
+    // ACTIVE STATE: Normal ball physics integration
     if (this.mode === "classic") {
-      this.updateClassicPhysics(safeDelta, keys);
+      this.updateClassicBall(safeDelta);
     } else {
-      this.updateAdvancedPhysics(safeDelta, keys);
+      this.updateAdvancedBall(safeDelta);
     }
+
+    // --- DYNAMIC RESOLUTION (PADDLES) ---
+    this.checkPaddle(
+      this.p1.z,
+      this.p1.x,
+      1,
+      this.p1.vz,
+      this.p1.vx,
+      safeDelta,
+    );
+    this.checkPaddle(
+      this.p2.z,
+      this.p2.x,
+      2,
+      this.p2.vz,
+      this.p2.vx,
+      safeDelta,
+    );
+
+    // --- STATIC RESOLUTION (WALLS & FLOOR) ---
+    this.resolveStaticBoundaries();
 
     // Goal boundary detection
     if (this.ball.x > GameConfig.court.xLimit) {
       this.onScore(1);
-      this.resetBall(2);
+      this.nextServeDirection = 2;
+      this.serveTimer = GameConfig.rules.serveDelay;
     } else if (this.ball.x < -GameConfig.court.xLimit) {
       this.onScore(2);
-      this.resetBall(1);
+      this.nextServeDirection = 1;
+      this.serveTimer = GameConfig.rules.serveDelay;
     }
   }
 
-  private updateClassicPhysics(delta: number, keys: Record<string, boolean>) {
+  private updateClassicPaddles(delta: number, keys: Record<string, boolean>) {
     const speed = GameConfig.paddle.maxVelocity;
     const zLimit = GameConfig.paddle.zLimit;
 
@@ -66,26 +108,9 @@ export class PongEngine {
 
     this.p1.z = Math.max(Math.min(this.p1.z, zLimit), -zLimit);
     this.p2.z = Math.max(Math.min(this.p2.z, zLimit), -zLimit);
-
-    this.ball.x += this.ball.vx * delta;
-    this.ball.z += this.ball.vz * delta;
-    this.ball.y = GameConfig.ball.radius;
-
-    this.checkPaddle(this.p1.z, this.p1.x, 1, 0, 0, delta);
-    this.checkPaddle(this.p2.z, this.p2.x, 2, 0, 0, delta);
-
-    // Directionally-aware static wall resolution
-    const effectiveZLimit = GameConfig.court.zLimit - GameConfig.ball.radius;
-    if (this.ball.z >= effectiveZLimit) {
-      this.ball.z = effectiveZLimit;
-      if (this.ball.vz > 0) this.ball.vz *= -1;
-    } else if (this.ball.z <= -effectiveZLimit) {
-      this.ball.z = -effectiveZLimit;
-      if (this.ball.vz < 0) this.ball.vz *= -1;
-    }
   }
 
-  private updateAdvancedPhysics(delta: number, keys: Record<string, boolean>) {
+  private updateAdvancedPaddles(delta: number, keys: Record<string, boolean>) {
     const {
       acceleration: accel,
       friction: fric,
@@ -96,7 +121,6 @@ export class PongEngine {
     const p1Keys = GameConfig.player1.controls;
     const p2Keys = GameConfig.player2.controls;
 
-    // --- PADDLE KINEMATICS ---
     if (keys[p1Keys.up]) this.p1.vz -= accel * delta;
     else if (keys[p1Keys.down]) this.p1.vz += accel * delta;
     else this.p1.vz *= 1 - fric * delta;
@@ -135,8 +159,15 @@ export class PongEngine {
       GameConfig.paddle.xMin,
       Math.min(GameConfig.paddle.xMax, this.p2.x + this.p2.vx * delta),
     );
+  }
 
-    // --- BALL KINEMATICS ---
+  private updateClassicBall(delta: number) {
+    this.ball.x += this.ball.vx * delta;
+    this.ball.z += this.ball.vz * delta;
+    this.ball.y = GameConfig.ball.radius;
+  }
+
+  private updateAdvancedBall(delta: number) {
     this.ball.x += this.ball.vx * delta;
     this.ball.z += this.ball.vz * delta;
     this.ball.vy -= GameConfig.ball.gravity * delta;
@@ -151,14 +182,11 @@ export class PongEngine {
 
     // Spin degrades naturally via simulated air friction.
     this.ball.spin *= 1 - GameConfig.ball.spinFriction * delta;
+  }
 
-    // --- DYNAMIC RESOLUTION (PADDLES) ---
-    this.checkPaddle(this.p1.z, this.p1.x, 1, this.p1.vz, this.p1.vx, delta);
-    this.checkPaddle(this.p2.z, this.p2.x, 2, this.p2.vz, this.p2.vx, delta);
-
-    // --- STATIC RESOLUTION (WALLS & FLOOR) ---
+  private resolveStaticBoundaries() {
     // Evaluated strictly after paddle collisions to guarantee boundaries cannot be breached.
-    if (this.ball.y <= GameConfig.ball.radius) {
+    if (this.mode === "advanced" && this.ball.y <= GameConfig.ball.radius) {
       this.ball.y = GameConfig.ball.radius;
       if (this.ball.vy < 0) {
         this.ball.vy = -this.ball.vy * GameConfig.ball.bounceFriction;
@@ -295,27 +323,34 @@ export class PongEngine {
   }
 
   private resetBall(targetPlayer: 1 | 2) {
-    this.ball = {
-      x: 0,
-      y:
-        this.mode === "classic"
-          ? GameConfig.ball.radius
-          : GameConfig.ball.serveHeight,
-      z: 0,
-      vx: 0,
-      vy: 0,
-      vz: 0,
-      spin: 0,
-    };
-
     this.serveTimer = GameConfig.rules.serveDelay;
     this.nextServeDirection = targetPlayer;
+    this.ball.x = 0;
+    this.ball.y =
+      this.mode === "classic"
+        ? GameConfig.ball.radius
+        : GameConfig.ball.serveHeight;
+    this.ball.z = 0;
+    this.ball.vx = 0;
+    this.ball.vy = 0;
+    this.ball.vz = 0;
+    this.ball.spin = 0;
+  }
 
-    // Serve velocities are pulled directly from configuration to ensure deterministic starts.
+  private executeServe() {
+    // Explicit in-place mutation to maintain reference across React frames.
+    this.ball.x = 0;
+    this.ball.y =
+      this.mode === "classic"
+        ? GameConfig.ball.radius
+        : GameConfig.ball.serveHeight;
+    this.ball.z = 0;
     this.ball.vx =
-      (targetPlayer === 1 ? -1 : 1) * GameConfig.ball.startVelocityX;
+      (this.nextServeDirection === 1 ? -1 : 1) * GameConfig.ball.startVelocityX;
     this.ball.vz =
       (Math.random() > 0.5 ? 1 : -1) * GameConfig.ball.startVelocityZ;
+    this.ball.vy = 0;
+    this.ball.spin = 0;
   }
 
   public destroy() {
