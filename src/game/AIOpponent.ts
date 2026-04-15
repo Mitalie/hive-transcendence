@@ -18,10 +18,10 @@ export class AIOpponent {
   private currentMistakeX: number = 0;
 
   private targetZ: number = 0;
-  private targetX: number = 0;
+  private targetX: number;
 
   private focusZ: number = 0;
-  private focusX: number = 0;
+  private focusX: number;
 
   constructor(engine: PongEngine, difficulty: AIDifficulty) {
     this.engine = engine;
@@ -31,6 +31,9 @@ export class AIOpponent {
     this.errorMargin = config.errorMargin;
     this.mistakeIntervalSec = config.mistakeIntervalSec;
     this.isInstant = difficulty === "hard";
+
+    this.targetX = GameConfig.player2.xPos;
+    this.focusX = GameConfig.player2.xPos;
   }
 
   public getInputs(delta: number): Record<string, boolean> {

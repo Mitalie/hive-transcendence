@@ -37,17 +37,19 @@ export class PongEngine {
     if (this.serveTimer > 0) {
       this.serveTimer -= safeDelta * 1000;
 
-      this.ball.x += this.ball.vx * safeDelta;
-      this.ball.z += this.ball.vz * safeDelta;
+      if (this.ball.vx !== 0 || this.ball.vz !== 0) {
+        this.ball.x += this.ball.vx * safeDelta;
+        this.ball.z += this.ball.vz * safeDelta;
 
-      if (this.mode === "advanced") {
-        this.ball.vy -= GameConfig.ball.gravity * safeDelta;
-        this.ball.y += this.ball.vy * safeDelta;
-        this.ball.vz += this.ball.spin * safeDelta;
-        this.ball.vz = Math.max(
-          Math.min(this.ball.vz, GameConfig.ball.maxZVelocity),
-          -GameConfig.ball.maxZVelocity,
-        );
+        if (this.mode === "advanced") {
+          this.ball.vy -= GameConfig.ball.gravity * safeDelta;
+          this.ball.y += this.ball.vy * safeDelta;
+          this.ball.vz += this.ball.spin * safeDelta;
+          this.ball.vz = Math.max(
+            Math.min(this.ball.vz, GameConfig.ball.maxZVelocity),
+            -GameConfig.ball.maxZVelocity,
+          );
+        }
       }
 
       if (this.serveTimer <= 0) {
@@ -72,16 +74,10 @@ export class PongEngine {
       this.onScore(1);
       this.nextServeDirection = 2;
       this.serveTimer = GameConfig.rules.serveDelay;
-      this.ball.vz = 0;
-      this.ball.vy = 0;
-      this.ball.spin = 0;
     } else if (this.ball.x < -GameConfig.court.xLimit) {
       this.onScore(2);
       this.nextServeDirection = 1;
       this.serveTimer = GameConfig.rules.serveDelay;
-      this.ball.vz = 0;
-      this.ball.vy = 0;
-      this.ball.spin = 0;
     }
   }
 
@@ -206,7 +202,10 @@ export class PongEngine {
     let hitFrontFace = false;
 
     // Continuous Collision Detection: Prevents tunneling by checking the interpolated trajectory against the X-plane.
-    if (Math.abs(dz) < hitD && Math.abs(dy) < hitH) {
+    if (
+      Math.abs(dz) < GameConfig.paddle.depth / 2 &&
+      Math.abs(dy) < GameConfig.paddle.height / 2
+    ) {
       const denom = this.ball.x - prevX;
       if (Math.abs(denom) > 0.0001) {
         if (
