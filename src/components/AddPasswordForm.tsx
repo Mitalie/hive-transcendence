@@ -60,7 +60,11 @@ export function AddPasswordForm() {
         </p>
       )}
 
-      <Button type="submit" disabled={loading} className="mt-1">
+      <Button
+        type="submit"
+        disabled={loading}
+        className="mt-1 bg-gradient-to-r from-blue-dark to-purple-dark text-white text-base"
+      >
         {loading ? t("addPassword.loading") : t("addPassword.submit")}
       </Button>
     </form>

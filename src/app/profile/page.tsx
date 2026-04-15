@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ProfileClient } from "./Profileclient";
+import { ProfileClient } from "../../components/profile/Profileclient";
 
 async function getProfileData(email: string) {
   const user = await prisma.user.findUnique({
@@ -52,13 +52,13 @@ async function getProfileData(email: string) {
       bio: user.bio,
       avatarUrl: user.avatarUrl,
       joinedAt: fmt(user.createdAt, {
-        day: "numeric",
-        month: "short",
+        day: "2-digit",
+        month: "2-digit",
         year: "numeric",
       }),
       lastActiveAt: fmt(user.lastActiveAt, {
-        day: "numeric",
-        month: "short",
+        day: "2-digit",
+        month: "2-digit",
         year: "numeric",
         hour: "2-digit",
         minute: "2-digit",
@@ -68,13 +68,15 @@ async function getProfileData(email: string) {
         score1: m.score1,
         score2: m.score2,
         player2: m.player2,
-        createdAt: fmt(m.createdAt, {
-          day: "numeric",
-          month: "short",
+        matchDate: fmt(m.createdAt, {
+          day: "2-digit",
+          month: "2-digit",
           year: "numeric",
+        }) as string,
+        matchTime: m.createdAt.toLocaleTimeString("en-GB", {
           hour: "2-digit",
           minute: "2-digit",
-        }) as string,
+        }),
       })),
     },
     stats: { totalMatches, wins, losses, draws, winRate },

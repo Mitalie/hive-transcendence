@@ -4,7 +4,9 @@
     "dark": "Tumma",
     "light": "Vaalea",
     "termsLink": "Käyttöehdot",
-    "privacyLink": "Tietosuojakäytäntö"
+    "termsLinkShort": "Ehdot",
+    "privacyLink": "Tietosuojakäytäntö",
+    "privacyLinkShort": "Tietosuoja"
   },
   "header": {
     "websitename": "Verkkosivuston Nimi",
@@ -167,7 +169,17 @@
     "account": {
       "title": "Tili",
       "displayName": "Näyttönimi",
-      "email": "Sähköposti"
+      "email": "Sähköposti",
+      "bio": "Bio",
+      "bioTooLong": "Bion on oltava enintään {{max}} merkkiä",
+      "avatarUrl": "Avatar-URL",
+      "uploadAvatar": "Lataa avatar",
+      "uploadAvatarHint": "Jos valitset tiedoston, sitä käytetään URL-osoitteen sijaan.",
+      "updateSuccess": "Profiili päivitetty onnistuneesti.",
+      "saving": "Tallennetaan...",
+      "saveChanges": "Tallenna muutokset",
+      "chooseFile": "Valitse tiedosto",
+      "noFileChosen": "Ei tiedostoa valittu"
     },
     "security": {
       "title": "Turvallisuus",
@@ -178,6 +190,14 @@
       "github": "GitHub",
       "emailMismatch": "GitHub-sähköpostisi ei vastaa tilisi sähköpostia. Käytä GitHub-tiliä, jolla on sama sähköpostiosoite.",
       "githubHint": "Yhdistääksesi GitHubin, kirjaudu sisään GitHub-tilillä, jolla on sama sähköpostiosoite kuin tililläsi."
+    },
+    "dangerZone": {
+      "title": "Poista tili",
+      "description": "Tilisi poistaminen on PERUUTTAMATONTA - jatka varoen",
+      "confirm": "Haluatko varmasti poistaa tilisi? Tätä toimintoa ei voi peruuttaa.",
+      "error": "Tilin poistaminen epäonnistui.",
+      "deleting": "Poistetaan...",
+      "deleteButton": "Poista tili"
     }
   },
   "addPassword": {
@@ -198,6 +218,7 @@
   },
   "profilePage": {
     "title": "Profiili",
+    "subtitle": "Käyttäjätietosi",
     "email": "Sähköposti",
     "username": "Käyttäjänimi",
     "name": "Nimi",
@@ -233,10 +254,12 @@
       "versus": "vs",
       "win": "Voitto",
       "loss": "Häviö",
-      "draw": "Tasapeli"
+      "draw": "Tasapeli",
+      "you": "Sinä",
+      "at": "klo"
     },
     "settingsLink": "Asetukset",
-    "startPlay": "Aloita peli",
+    "startPlay": "Pelaa!",
     "totalStat": "Kokonaistilastot",
     "achievements": "Saavutukset",
     "gameHistory": "Pelitilastot & historia"

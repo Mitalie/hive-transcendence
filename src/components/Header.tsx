@@ -1,11 +1,3 @@
-// Page Header
-
-/**
- * TODO
- * 1-the logo is a placeholder, need to be updated by our own logo
- * 2-the three right links counld be replaced by icon
- */
-
 "use client";
 
 import { usePathname } from "next/navigation";
@@ -23,39 +15,12 @@ export default function Header() {
   const { data: session } = useSession();
   const { t } = useTranslation();
 
-  const getTitle = () => {
-    switch (pathname) {
-      case "/":
-        return t("header.home");
-      case "/game":
-        return t("header.game");
-      case "/friends":
-        return t("header.friends");
-      case "/profile":
-        return t("header.profile");
-      case "/login":
-        return t("header.login");
-      case "/registration":
-        return t("header.registration");
-      case "/terms":
-        return t("header.terms_of_service");
-      case "/privacy":
-        return t("header.privacy");
-      case "/settings":
-        return t("header.settings");
-      case "/registration/profile":
-        return t("header.SetProfile");
-      default:
-        return t("header.default");
-    }
-  };
-
   return (
     <Bar>
-      {/* website logo and name */}
+      {/* Website logo and name */}
       <Link
         href="/"
-        className="flex items-center gap-3 no-underline text-inherit"
+        className="flex items-center gap-3 no-underline text-inherit shrink-0"
       >
         <Image
           src="/images/website_logo.png"
@@ -64,16 +29,29 @@ export default function Header() {
           height={32}
           className="dark:invert"
         />
-        <span className="text-2xl font-extrabold leading-none">
+        {/* Name hidden on small screens, visible from md up */}
+        <span className="hidden md:block text-2xl font-extrabold leading-none">
           {t("header.websitename")}
         </span>
       </Link>
 
-      {/* page name */}
-      <div className="text-xl leading-none">{getTitle()}</div>
+      {/* Play button */}
+      <Link href="/game" className="shrink-0">
+        <button className="px-4 sm:px-8 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-dark to-purple-dark hover:opacity-90 transition-opacity whitespace-nowrap">
+          <span className="hidden sm:inline">{t("profilePage.startPlay")}</span>
+          {/* Small screen: just a play icon */}
+          <svg
+            className="sm:hidden w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </button>
+      </Link>
 
-      {/* buttons */}
-      <div className="flex items-center gap-2.5">
+      {/* Nav buttons */}
+      <div className="flex items-center gap-1.5 sm:gap-2.5">
         <NavButton href="/friends" active={pathname === "/friends"}>
           <Image
             src="/images/friends_icon.png"
@@ -97,7 +75,7 @@ export default function Header() {
           />
         </NavButton>
 
-        {/* Signin/out button depending if logged in */}
+        {/* Sign in/out button depending on session */}
         {session ? <SignOutButton /> : <SignInButton />}
       </div>
     </Bar>

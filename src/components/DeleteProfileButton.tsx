@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { useTranslation } from "react-i18next";
 import Button from "./Button";
 import { deleteProfileAction } from "@/actions/account";
 
@@ -10,11 +11,10 @@ export function DeleteProfileButton() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete your account? This cannot be undone.",
-    );
+    const confirmed = window.confirm(t("settings.dangerZone.confirm"));
 
     if (!confirmed) {
       return;
@@ -26,7 +26,7 @@ export function DeleteProfileButton() {
     const result = await deleteProfileAction();
 
     if (!result.ok) {
-      setError("Failed to delete account.");
+      setError(t("settings.dangerZone.error"));
       setLoading(false);
       return;
     }
@@ -48,9 +48,11 @@ export function DeleteProfileButton() {
         type="button"
         disabled={loading}
         onClick={handleDelete}
-        className="bg-red-600 hover:bg-red-700"
+        className="bg-red-600 hover:bg-red-700 text-base"
       >
-        {loading ? "Deleting..." : "Delete account"}
+        {loading
+          ? t("settings.dangerZone.deleting")
+          : t("settings.dangerZone.deleteButton")}
       </Button>
     </div>
   );
