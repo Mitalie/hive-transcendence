@@ -11,7 +11,9 @@ export interface GameMode {
   opponent: GameOpponent;
 }
 
-export type GameSettings = Record<string, unknown>;
+// Strict interface that requires all properties to be explicitly defined.
+// Prevents dynamic injection of untyped configurations.
+export interface GameSettings {}
 
 export interface GameState {
   mode: GameMode;
@@ -26,7 +28,7 @@ export interface GameState {
 
 type GameStateAction =
   | { type: "SET_MODE"; mode: GameMode }
-  | { type: "SET_SETTINGS"; settings: GameSettings }
+  | { type: "SET_SETTINGS"; settings: Partial<GameSettings> }
   | { type: "START_GAME" }
   | { type: "SCORE_P1" }
   | { type: "SCORE_P2" }
@@ -43,7 +45,9 @@ export const setModeAction = (mode: GameMode): GameStateAction => ({
   type: "SET_MODE",
   mode,
 });
-export const setSettingsAction = (settings: GameSettings): GameStateAction => ({
+export const setSettingsAction = (
+  settings: Partial<GameSettings>,
+): GameStateAction => ({
   type: "SET_SETTINGS",
   settings,
 });
@@ -94,19 +98,20 @@ const gameStateReducer = (
         mode: { ...state.mode },
       };
     case "SCORE_P1":
-      if (state.view !== "play" || state.paused) return state;
+    case "SCORE_P2": {
+      // Unified scoring handles both players to prevent code duplication,
+      // naturally transitioning the view to "end" when limits are reached.
+      let { score1, score2 } = state;
+      if (action.type === "SCORE_P1") score1++;
+      if (action.type === "SCORE_P2") score2++;
+
       return {
         ...state,
-        score1: state.score1 + 1,
-        view: isWinningScore(state.score1, state.score2) ? "end" : state.view,
+        score1,
+        score2,
+        view: isWinningScore(score1, score2) ? "end" : state.view,
       };
-    case "SCORE_P2":
-      if (state.view !== "play" || state.paused) return state;
-      return {
-        ...state,
-        score2: state.score2 + 1,
-        view: isWinningScore(state.score2, state.score1) ? "end" : state.view,
-      };
+    }
     case "PAUSE":
       return { ...state, paused: true };
     case "RESUME":
@@ -142,7 +147,10 @@ const gameStateReducer = (
         settings: {},
       };
     default:
-      return state;
+      // Catch programmer mistakes to ensure we never silently dispatch unrecognized actions.
+      throw new Error(
+        `Unhandled action type: ${(action as { type: string }).type}`,
+      );
   }
 };
 
@@ -173,9 +181,10 @@ export const useGameState = () => {
     if (resultSaved.current) return;
     resultSaved.current = true;
 
+    // Dynamically formats the database identifier to distinguish human vs AI matches
     const opponentId =
       state.mode.opponent === "human"
-        ? "local-player-2"
+        ? "local-player-2" // FIXME - replace with actual opponent identifier when available (and localize AI names)
         : `ai-${state.mode.opponent}`;
 
     saveMatchAction({

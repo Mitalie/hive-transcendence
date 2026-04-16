@@ -1,24 +1,12 @@
 "use client";
 
-import {
-  useRef,
-  useEffect,
-  useMemo,
-  RefObject,
-  use,
-  memo,
-  useState,
-} from "react";
+import { useRef, useEffect, useMemo, RefObject, memo, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import { GameConfig } from "@/game/GameConfig";
-import {
-  GameMode,
-  GameStateDispatchContext,
-  pauseAction,
-} from "@/game/GameState";
+import { GameMode } from "@/game/GameState";
 import { PongEngine } from "@/game/PongEngine";
 import { AIOpponent } from "@/game/AIOpponent";
 import Ball from "@/game/3d/Ball";
@@ -35,6 +23,7 @@ const ResponsiveCamera = memo(function ResponsiveCamera() {
     const target = GameConfig.render.responsive.targetAspect;
     let calculatedFov = GameConfig.camera.fov;
 
+    // Dynamically calculate FOV adjustments for narrow viewports to keep the arena fully in frame
     if (aspect < target) {
       const zoomFactor = target / aspect;
       const baseFovRads = THREE.MathUtils.degToRad(GameConfig.camera.fov);
@@ -45,30 +34,6 @@ const ResponsiveCamera = memo(function ResponsiveCamera() {
     if (camera.fov !== calculatedFov) {
       camera.fov = calculatedFov;
       camera.updateProjectionMatrix();
-    }
-  });
-
-  return null;
-});
-
-const AzimuthTracker = memo(function AzimuthTracker({
-  orbitRef,
-  setFlipped,
-}: {
-  orbitRef: RefObject<OrbitControlsImpl | null>;
-  setFlipped: (val: boolean) => void;
-}) {
-  const flippedRef = useRef(false);
-
-  useFrame(() => {
-    if (!orbitRef.current) return;
-    const crossed =
-      Math.abs(orbitRef.current.getAzimuthalAngle()) >
-      GameConfig.camera.controls.flipAzimuthThreshold;
-
-    if (crossed !== flippedRef.current) {
-      flippedRef.current = crossed;
-      setFlipped(crossed);
     }
   });
 
@@ -88,7 +53,6 @@ export default memo(function GameRender({
   p1Score: number;
   p2Score: number;
 }) {
-  const dispatch = use(GameStateDispatchContext);
   const [flipped, setFlipped] = useState(false);
   const orbitRef = useRef<OrbitControlsImpl>(null);
 
@@ -99,19 +63,7 @@ export default memo(function GameRender({
     return [engine, aiOpponent];
   }, [onScore, mode]);
 
-  useEffect(() => {
-    return () => {
-      engine.destroy?.();
-      aiOpponent?.destroy?.();
-    };
-  }, [engine, aiOpponent]);
-
   const keys = useRef<Record<string, boolean>>({});
-
-  const pausedRef = useRef(paused);
-  useEffect(() => {
-    pausedRef.current = paused;
-  }, [paused]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -125,33 +77,24 @@ export default memo(function GameRender({
       keys.current[e.key.toLowerCase()] = false;
     };
 
-    const handleVisibilityChange = () => {
-      if (document.hidden && !pausedRef.current) dispatch(pauseAction());
-    };
-
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [dispatch]);
+  }, []);
 
   return (
     <div className="w-full h-full rounded-xl overflow-hidden bg-transparent">
       <Canvas
-        // PCFShadowMap set explicitly; PCFSoftShadowMap rejected due to acne on paddle skirts.
+        // PCFShadowMap set explicitly; PCFSoftShadowMap rejected due to rendering acne on paddle skirts.
         shadows={{ type: THREE.PCFShadowMap }}
         gl={{
           alpha: true,
           antialias: true,
           powerPreference: "high-performance",
-        }}
-        onCreated={({ gl }) => {
-          gl.setClearColor(0x000000, 0);
         }}
         camera={{
           position: GameConfig.camera.position,
@@ -181,9 +124,15 @@ export default memo(function GameRender({
             MIDDLE: GameConfig.camera.controls.mouseButtons.middle,
             RIGHT: GameConfig.camera.controls.mouseButtons.right,
           }}
+          onChange={(e) => {
+            if (e?.target) {
+              setFlipped(
+                Math.abs(e.target.getAzimuthalAngle()) >
+                  GameConfig.camera.controls.flipAzimuthThreshold,
+              );
+            }
+          }}
         />
-
-        <AzimuthTracker orbitRef={orbitRef} setFlipped={setFlipped} />
 
         <GameUpdate
           engine={engine}
@@ -254,7 +203,8 @@ const GameUpdate = memo(function GameUpdate({
   paused: boolean;
 }) {
   useFrame((_, delta) => {
-    if (paused) return;
+    // Silently freezes the physics loop if the game is paused or the browser tab is hidden
+    if (paused || document.hidden) return;
 
     const aiKeys = aiOpponent?.getInputs(delta) ?? {};
 
@@ -262,7 +212,7 @@ const GameUpdate = memo(function GameUpdate({
       ...keys.current,
       ...aiKeys,
     });
-  }, -1);
+  }, -1); // Priority -1 ensures this physics update runs before 3D meshes read the state
 
   return null;
 });

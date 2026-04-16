@@ -1,31 +1,112 @@
 "use client";
 
-import { useMemo, useEffect, memo, Suspense } from "react";
+import { memo, Suspense } from "react";
 import { Text3D, Center } from "@react-three/drei";
 import { GameConfig } from "@/game/GameConfig";
-import * as THREE from "three";
 
-const HALF_DEPTH = GameConfig.court.depth / 2;
-const HALF_WIDTH = GameConfig.court.width / 2;
-
-const WALL_Z_NEAR = -(
-  GameConfig.court.zLimit +
-  GameConfig.court.wallThickness / 2
-);
-const WALL_Z_FAR = GameConfig.court.zLimit + GameConfig.court.wallThickness / 2;
-
+// Base text configurations utilized by both the player scores and the "VS" text block
 const TEXT_PROPS = {
   font: GameConfig.arena.fontUrl,
   ...GameConfig.arena.textStyle,
 } as const;
 
-const ArenaStaticGeometry = memo(function ArenaStaticGeometry({
-  geoms,
-  mats,
-}: {
-  geoms: Record<string, THREE.BufferGeometry>;
-  mats: Record<string, THREE.Material>;
-}) {
+// SideWall abstracts the complex bounding box and top/side framing geometry to keep the parent clean
+const SideWall = memo(function SideWall({ z }: { z: number }) {
+  const HALF_WIDTH = GameConfig.court.width / 2;
+
+  return (
+    <group position={[0, GameConfig.court.wallHeight / 2, z]}>
+      <mesh>
+        <boxGeometry
+          args={[
+            GameConfig.court.width,
+            GameConfig.court.wallHeight,
+            GameConfig.court.wallThickness,
+          ]}
+        />
+        <meshStandardMaterial
+          color={GameConfig.arena.glassColor}
+          transparent
+          opacity={GameConfig.arena.glassOpacity}
+          depthWrite={false}
+        />
+      </mesh>
+
+      <mesh position={[0, GameConfig.court.wallHeight / 2, 0]}>
+        <boxGeometry
+          args={[
+            GameConfig.court.width,
+            GameConfig.court.frameThickness,
+            GameConfig.court.wallThickness +
+              GameConfig.arena.offsets.frameGeometryOversize,
+          ]}
+        />
+        <meshStandardMaterial
+          color={GameConfig.arena.frameColor}
+          emissive={GameConfig.arena.frameColor}
+          emissiveIntensity={GameConfig.arena.frameEmissiveIntensity}
+          transparent
+          opacity={GameConfig.arena.frameOpacity}
+          metalness={GameConfig.arena.frameMetalness}
+          roughness={GameConfig.arena.frameRoughness}
+          depthWrite={false}
+        />
+      </mesh>
+
+      <mesh position={[HALF_WIDTH, GameConfig.arena.offsets.vertFrameY, 0]}>
+        <boxGeometry
+          args={[
+            GameConfig.court.frameThickness,
+            GameConfig.court.wallHeight,
+            GameConfig.court.wallThickness +
+              GameConfig.arena.offsets.frameGeometryOversize,
+          ]}
+        />
+        <meshStandardMaterial
+          color={GameConfig.arena.frameColor}
+          emissive={GameConfig.arena.frameColor}
+          emissiveIntensity={GameConfig.arena.frameEmissiveIntensity}
+          transparent
+          opacity={GameConfig.arena.frameOpacity}
+          metalness={GameConfig.arena.frameMetalness}
+          roughness={GameConfig.arena.frameRoughness}
+          depthWrite={false}
+        />
+      </mesh>
+
+      <mesh position={[-HALF_WIDTH, GameConfig.arena.offsets.vertFrameY, 0]}>
+        <boxGeometry
+          args={[
+            GameConfig.court.frameThickness,
+            GameConfig.court.wallHeight,
+            GameConfig.court.wallThickness +
+              GameConfig.arena.offsets.frameGeometryOversize,
+          ]}
+        />
+        <meshStandardMaterial
+          color={GameConfig.arena.frameColor}
+          emissive={GameConfig.arena.frameColor}
+          emissiveIntensity={GameConfig.arena.frameEmissiveIntensity}
+          transparent
+          opacity={GameConfig.arena.frameOpacity}
+          metalness={GameConfig.arena.frameMetalness}
+          roughness={GameConfig.arena.frameRoughness}
+          depthWrite={false}
+        />
+      </mesh>
+    </group>
+  );
+});
+
+// Groups all non-interactive map geometries
+const ArenaStaticGeometry = memo(function ArenaStaticGeometry() {
+  const WALL_Z_NEAR = -(
+    GameConfig.court.zLimit +
+    GameConfig.court.wallThickness / 2
+  );
+  const WALL_Z_FAR =
+    GameConfig.court.zLimit + GameConfig.court.wallThickness / 2;
+
   return (
     <group>
       <mesh
@@ -35,101 +116,136 @@ const ArenaStaticGeometry = memo(function ArenaStaticGeometry({
           0,
         ]}
         receiveShadow
-        geometry={geoms.floor}
-        material={mats.floor}
-      />
+      >
+        <boxGeometry
+          args={[
+            GameConfig.court.width,
+            GameConfig.court.floorHeight,
+            GameConfig.court.depth,
+          ]}
+        />
+        <meshToonMaterial color={GameConfig.arena.floorColor} />
+      </mesh>
 
       <mesh
         position={[0, GameConfig.arena.offsets.net, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
-        geometry={geoms.net}
-        material={mats.net}
-      />
+      >
+        <planeGeometry
+          args={[GameConfig.court.netWidth, GameConfig.court.depth]}
+        />
+        <meshBasicMaterial
+          color={GameConfig.arena.netColor}
+          transparent
+          opacity={GameConfig.arena.netOpacity}
+        />
+      </mesh>
 
-      {[WALL_Z_NEAR, WALL_Z_FAR].map((z, i) => (
-        <group
-          key={`side-wall-${i}`}
-          position={[0, GameConfig.court.wallHeight / 2, z]}
-        >
-          <mesh geometry={geoms.wall} material={mats.glass} />
-
-          <mesh
-            position={[0, GameConfig.court.wallHeight / 2, 0]}
-            geometry={geoms.topFrame}
-            material={mats.frame}
-          />
-
-          <mesh
-            position={[HALF_WIDTH, GameConfig.arena.offsets.vertFrameY, 0]}
-            geometry={geoms.vertFrame}
-            material={mats.frame}
-          />
-
-          <mesh
-            position={[-HALF_WIDTH, GameConfig.arena.offsets.vertFrameY, 0]}
-            geometry={geoms.vertFrame}
-            material={mats.frame}
-          />
-        </group>
-      ))}
+      <SideWall z={WALL_Z_NEAR} />
+      <SideWall z={WALL_Z_FAR} />
     </group>
   );
 });
 
-const Scoreboard = memo(function Scoreboard({
+// A single side of the 3D scoreboard block.
+// Uses the 'flipped' prop to ensure colors and scores stay aligned with the player's perspective.
+const ScoreboardSide = memo(function ScoreboardSide({
   p1Score,
   p2Score,
   flipped,
-  mats,
+  side,
 }: {
   p1Score: number;
   p2Score: number;
   flipped: boolean;
-  mats: Record<string, THREE.Material>;
+  side: 1 | -1;
 }) {
   const displayScoreLeft = flipped ? p2Score : p1Score;
   const displayScoreRight = flipped ? p1Score : p2Score;
-  const matLeft = flipped ? mats.p2Text : mats.p1Text;
-  const matRight = flipped ? mats.p1Text : mats.p2Text;
+
+  const colorLeft = flipped ? GameConfig.colors.p2 : GameConfig.colors.p1;
+  const colorRight = flipped ? GameConfig.colors.p1 : GameConfig.colors.p2;
+
+  const HALF_DEPTH = GameConfig.court.depth / 2;
+  const HALF_WIDTH = GameConfig.court.width / 2;
 
   return (
+    <group
+      position={[
+        0,
+        -(GameConfig.court.floorHeight / 2) +
+          GameConfig.court.scoreboardHeightOffset,
+        (HALF_DEPTH + GameConfig.arena.offsets.scoreboardDepth) * side,
+      ]}
+      rotation={[0, side === -1 ? Math.PI : 0, 0]}
+    >
+      <group position={[-HALF_WIDTH / 2, 0, 0]}>
+        <Center>
+          <Text3D {...TEXT_PROPS}>
+            {String(displayScoreLeft).padStart(2, "0")}
+            <meshStandardMaterial
+              color={colorLeft}
+              emissive={colorLeft}
+              emissiveIntensity={GameConfig.arena.scoreboardEmissive}
+              toneMapped={false}
+            />
+          </Text3D>
+        </Center>
+      </group>
+
+      <group position={[0, 0, 0]}>
+        <Center>
+          <Text3D {...TEXT_PROPS}>
+            VS
+            <meshBasicMaterial
+              color={GameConfig.arena.vsTextColor}
+              toneMapped={false}
+            />
+          </Text3D>
+        </Center>
+      </group>
+
+      <group position={[HALF_WIDTH / 2, 0, 0]}>
+        <Center>
+          <Text3D {...TEXT_PROPS}>
+            {String(displayScoreRight).padStart(2, "0")}
+            <meshStandardMaterial
+              color={colorRight}
+              emissive={colorRight}
+              emissiveIntensity={GameConfig.arena.scoreboardEmissive}
+              toneMapped={false}
+            />
+          </Text3D>
+        </Center>
+      </group>
+    </group>
+  );
+});
+
+// Combines both visible sides of the scoreboard into a single component
+const Scoreboard = memo(function Scoreboard({
+  p1Score,
+  p2Score,
+  flipped,
+}: {
+  p1Score: number;
+  p2Score: number;
+  flipped: boolean;
+}) {
+  return (
     <Suspense fallback={null}>
-      {[1, -1].map((side) => (
-        <group
-          key={`scoreboard-${side}`}
-          position={[
-            0,
-            -(GameConfig.court.floorHeight / 2) +
-              GameConfig.court.scoreboardHeightOffset,
-            (HALF_DEPTH + GameConfig.arena.offsets.scoreboardDepth) * side,
-          ]}
-          rotation={[0, side === -1 ? Math.PI : 0, 0]}
-        >
-          <group position={[-HALF_WIDTH / 2, 0, 0]}>
-            <Center>
-              <Text3D {...TEXT_PROPS} material={matLeft}>
-                {String(displayScoreLeft).padStart(2, "0")}
-              </Text3D>
-            </Center>
-          </group>
-
-          <group position={[0, 0, 0]}>
-            <Center>
-              <Text3D {...TEXT_PROPS} material={mats.vsText}>
-                VS
-              </Text3D>
-            </Center>
-          </group>
-
-          <group position={[HALF_WIDTH / 2, 0, 0]}>
-            <Center>
-              <Text3D {...TEXT_PROPS} material={matRight}>
-                {String(displayScoreRight).padStart(2, "0")}
-              </Text3D>
-            </Center>
-          </group>
-        </group>
-      ))}
+      <ScoreboardSide
+        p1Score={p1Score}
+        p2Score={p2Score}
+        flipped={flipped}
+        side={1}
+      />
+      <ScoreboardSide
+        p1Score={p1Score}
+        p2Score={p2Score}
+        flipped={flipped}
+        side={-1}
+      />
     </Suspense>
   );
 });
@@ -143,98 +259,10 @@ export default memo(function Arena({
   p2Score: number;
   flipped: boolean;
 }) {
-  const geoms = useMemo(
-    () => ({
-      floor: new THREE.BoxGeometry(
-        GameConfig.court.width,
-        GameConfig.court.floorHeight,
-        GameConfig.court.depth,
-      ),
-      net: new THREE.PlaneGeometry(
-        GameConfig.court.netWidth,
-        GameConfig.court.depth,
-      ),
-      wall: new THREE.BoxGeometry(
-        GameConfig.court.width,
-        GameConfig.court.wallHeight,
-        GameConfig.court.wallThickness,
-      ),
-      topFrame: new THREE.BoxGeometry(
-        GameConfig.court.width,
-        GameConfig.court.frameThickness,
-        GameConfig.court.wallThickness +
-          GameConfig.arena.offsets.frameGeometryOversize,
-      ),
-      vertFrame: new THREE.BoxGeometry(
-        GameConfig.court.frameThickness,
-        GameConfig.court.wallHeight,
-        GameConfig.court.wallThickness +
-          GameConfig.arena.offsets.frameGeometryOversize,
-      ),
-    }),
-    [],
-  );
-
-  const mats = useMemo(
-    () => ({
-      floor: new THREE.MeshToonMaterial({ color: GameConfig.arena.floorColor }),
-      net: new THREE.MeshBasicMaterial({
-        color: GameConfig.arena.netColor,
-        transparent: true,
-        opacity: GameConfig.arena.netOpacity,
-      }),
-      p1Text: new THREE.MeshStandardMaterial({
-        color: GameConfig.colors.p1,
-        emissive: GameConfig.colors.p1,
-        emissiveIntensity: GameConfig.arena.scoreboardEmissive,
-        toneMapped: false,
-      }),
-      p2Text: new THREE.MeshStandardMaterial({
-        color: GameConfig.colors.p2,
-        emissive: GameConfig.colors.p2,
-        emissiveIntensity: GameConfig.arena.scoreboardEmissive,
-        toneMapped: false,
-      }),
-      vsText: new THREE.MeshBasicMaterial({
-        color: GameConfig.arena.vsTextColor,
-        toneMapped: false,
-      }),
-      glass: new THREE.MeshStandardMaterial({
-        color: GameConfig.arena.glassColor,
-        transparent: true,
-        opacity: GameConfig.arena.glassOpacity,
-        depthWrite: false,
-      }),
-      frame: new THREE.MeshStandardMaterial({
-        color: GameConfig.arena.frameColor,
-        emissive: GameConfig.arena.frameColor,
-        emissiveIntensity: GameConfig.arena.frameEmissiveIntensity,
-        transparent: true,
-        opacity: GameConfig.arena.frameOpacity,
-        metalness: GameConfig.arena.frameMetalness,
-        roughness: GameConfig.arena.frameRoughness,
-        depthWrite: false,
-      }),
-    }),
-    [],
-  );
-
-  useEffect(() => {
-    return () => {
-      Object.values(geoms).forEach((g) => g.dispose());
-      Object.values(mats).forEach((m) => m.dispose());
-    };
-  }, [geoms, mats]);
-
   return (
     <group>
-      <ArenaStaticGeometry geoms={geoms} mats={mats} />
-      <Scoreboard
-        p1Score={p1Score}
-        p2Score={p2Score}
-        flipped={flipped}
-        mats={mats}
-      />
+      <ArenaStaticGeometry />
+      <Scoreboard p1Score={p1Score} p2Score={p2Score} flipped={flipped} />
     </group>
   );
 });

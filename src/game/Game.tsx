@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect } from "react";
 import { GameConfig } from "@/game/GameConfig";
 import {
   exitConfirmAction,
@@ -27,29 +27,21 @@ export default function Game() {
     [dispatch],
   );
 
-  // useReducer dispatch is stable, but we use a ref for state to allow listeners
-  // to read the current context without re-registering on every state change.
-  const stateRef = useRef(state);
-  useEffect(() => {
-    stateRef.current = state;
-  }, [state]);
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const s = stateRef.current;
-
-      if (s.exitPromptOpen) return;
+      // Input suppression during critical dialog focus prevents illegal state transitions
+      if (state.exitPromptOpen) return;
 
       if (e.code === GameConfig.ui.controls.togglePauseKey && !e.repeat) {
-        if (s.view !== "play") dispatch(startGameAction());
-        else if (s.paused) dispatch(resumeAction());
+        if (state.view !== "play") dispatch(startGameAction());
+        else if (state.paused) dispatch(resumeAction());
         else dispatch(pauseAction());
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [dispatch]);
+  }, [dispatch, state.paused, state.view, state.exitPromptOpen]);
 
   const onStartClick = useCallback(() => {
     dispatch(startGameAction());
@@ -83,6 +75,7 @@ export default function Game() {
       >
         <ScoreBoard p1={state.score1} p2={state.score2} />
         <div className="m-auto flex flex-col gap-4">
+          {/* TODO: Add translations for these buttons */}
           <Button
             className="bg-btn-purple hover:bg-btn-purple-hover"
             onClick={onStartClick}

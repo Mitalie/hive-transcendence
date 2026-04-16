@@ -62,6 +62,7 @@ export default memo(function Ball({ ballData }: { ballData: BallData }) {
   );
 
   // Trail crashes the Three.js renderer if initialized with length <= 0.
+  // We bypass the wrapper entirely if trails are disabled in config.
   if (!GameConfig.ballVisuals.showTrail) {
     return ballMesh;
   }

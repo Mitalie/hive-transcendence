@@ -36,7 +36,7 @@ export default memo(function Paddle({
         metalness: GameConfig.paddleVisuals.metalness,
         toneMapped: false,
       }),
-      // Offsets the skirt so the visible base of the paddle rests on the floor plane.
+      // Offsets the extended skirt so the visible base of the paddle rests flush on the floor plane.
       verticalOffset: -(s / 2),
     };
   }, [color]);
@@ -57,27 +57,21 @@ export default memo(function Paddle({
       paddleData.z ?? 0,
     );
 
-    const tiltMultiplier = GameConfig.paddleVisuals.fpsBase * delta;
-
     groupRef.current.rotation.x =
-      (paddleData.vz ?? 0) *
-      GameConfig.paddleVisuals.tiltFactor *
-      tiltMultiplier;
+      (paddleData.vz ?? 0) * GameConfig.paddleVisuals.tiltFactor * delta;
 
     groupRef.current.rotation.z =
-      -(paddleData.vx ?? 0) *
-      GameConfig.paddleVisuals.tiltFactor *
-      tiltMultiplier;
+      -(paddleData.vx ?? 0) * GameConfig.paddleVisuals.tiltFactor * delta;
   });
 
   return (
     <group ref={groupRef}>
       <mesh
-        position={[0, verticalOffset, 0]}
         castShadow
-        receiveShadow={false}
+        receiveShadow
         geometry={geometry}
         material={material}
+        position={[0, verticalOffset, 0]}
       />
     </group>
   );

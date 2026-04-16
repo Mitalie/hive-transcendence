@@ -1,7 +1,9 @@
 import { GameConfig } from "@/game/GameConfig";
 import { GameType } from "@/game/GameState";
 
+// Helper constant to establish the vertical center of the paddle based on configured height.
 const PADDLE_Y = GameConfig.paddle.height / 2;
+// Pre-calculated effective Z limit to keep the ball's outer radius strictly within the court bounds.
 const EFFECTIVE_Z_LIMIT = GameConfig.court.zLimit - GameConfig.ball.radius;
 
 export class PongEngine {
@@ -22,7 +24,7 @@ export class PongEngine {
   }
 
   public update(delta: number, keys: Record<string, boolean>) {
-    // Clamping protects against Division-by-Zero and physics tunneling during frame drops.
+    // Clamping protects against Division-by-Zero and physics tunneling during extreme frame drops.
     const safeDelta = Math.max(
       0.0001,
       Math.min(delta, GameConfig.physics.maxDelta),
@@ -37,6 +39,8 @@ export class PongEngine {
     if (this.serveTimer > 0) {
       this.serveTimer -= safeDelta * 1000;
 
+      // Allow the ball to retain momentum and fall into the abyss after a point is scored.
+      // This prevents the ball from freezing mid-air while waiting for the next serve.
       if (this.ball.vx !== 0 || this.ball.vz !== 0) {
         this.ball.x += this.ball.vx * safeDelta;
         this.ball.z += this.ball.vz * safeDelta;
@@ -70,6 +74,7 @@ export class PongEngine {
 
     this.resolveStaticBoundaries();
 
+    // Goal line detection. Physics are suspended via the serveTimer once a boundary is crossed.
     if (this.ball.x > GameConfig.court.xLimit) {
       this.onScore(1);
       this.nextServeDirection = 2;
@@ -168,12 +173,14 @@ export class PongEngine {
   }
 
   private resolveStaticBoundaries() {
+    // Floor collision dampening for advanced mode gravity.
     if (this.mode === "advanced" && this.ball.y <= GameConfig.ball.radius) {
       this.ball.y = GameConfig.ball.radius;
       if (this.ball.vy < 0)
         this.ball.vy = -this.ball.vy * GameConfig.ball.bounceFriction;
     }
 
+    // Side wall inversions.
     if (this.ball.z >= EFFECTIVE_Z_LIMIT) {
       this.ball.z = EFFECTIVE_Z_LIMIT;
       if (this.ball.vz > 0) this.ball.vz *= -1;
@@ -201,7 +208,9 @@ export class PongEngine {
 
     let hitFrontFace = false;
 
-    // Continuous Collision Detection: Prevents tunneling by checking the interpolated trajectory against the X-plane.
+    // Continuous Collision Detection (CCD) prevents high-velocity tunneling by
+    // mathematically checking if the ball's trajectory crossed the paddle's X-plane
+    // within the current frame, gated by the paddle's physical Z/Y bounds.
     if (
       Math.abs(dz) < GameConfig.paddle.depth / 2 &&
       Math.abs(dy) < GameConfig.paddle.height / 2
@@ -223,7 +232,8 @@ export class PongEngine {
       }
     }
 
-    // Minkowski Penetration Resolver for non-CCD impacts.
+    // Minkowski Sum Penetration Resolver for non-CCD impacts (top, bottom, sides).
+    // Calculates overlapping volumes and resolves velocity along the axis of least penetration.
     if (
       Math.abs(dx) < hitW &&
       Math.abs(dy) < hitH &&
@@ -254,6 +264,7 @@ export class PongEngine {
       }
     }
 
+    // Apply specific logic for front-face hits (transferring momentum, applying spin, etc.)
     if (hitFrontFace) {
       const newVX =
         (player === 1 ? Math.abs(this.ball.vx) : -Math.abs(this.ball.vx)) +
@@ -266,6 +277,7 @@ export class PongEngine {
         player === 1
           ? paddle.x + hitW + GameConfig.physics.collisionNudge
           : paddle.x - hitW - GameConfig.physics.collisionNudge;
+
       const hitPoint = dz / (GameConfig.paddle.depth / 2);
       this.ball.vz += hitPoint * GameConfig.ball.deflectionBoost;
 
@@ -286,6 +298,7 @@ export class PongEngine {
     this.serveTimer = launch ? 0 : GameConfig.rules.serveDelay;
     this.nextServeDirection = targetPlayer;
 
+    // Center the ball while waiting for the launch delay to expire.
     this.ball.x = 0;
     this.ball.y =
       this.mode === "classic"

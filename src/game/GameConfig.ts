@@ -121,10 +121,10 @@ export const GameConfig = {
   },
 
   ai: {
-    fpsBase: 60,
     lobBackpedalOffset: 2,
     deadzone: { z: 0.3, x: 0.2 },
-    lerpSpeed: { base: 0.15, fast: 0.3 },
+    // Rates are processed as per-second variables for exponential decay
+    lerpSpeed: { base: 9.0, fast: 18.0 },
     difficulties: {
       easy: { reactionDelayMs: 400, errorMargin: 2.0, mistakeIntervalSec: 0.4 },
       medium: {
@@ -140,9 +140,10 @@ export const GameConfig = {
     emissiveIntensity: 0.4,
     roughness: 0.1,
     metalness: 0.5,
-    tiltFactor: -0.02,
+    // Multiplier derived from kinematic velocity (per-second rate) for physical leaning
+    tiltFactor: -1.2,
+    // Sub-floor geometry extension to conceal gaps during extreme X/Z rotations
     skirtExtension: 0.5,
-    fpsBase: 60,
   },
 
   ballVisuals: {

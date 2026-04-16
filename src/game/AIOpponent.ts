@@ -32,6 +32,7 @@ export class AIOpponent {
     this.mistakeIntervalSec = config.mistakeIntervalSec;
     this.isInstant = difficulty === "hard";
 
+    // Initialize to starting positions to prevent a rapid jerk on frame 1
     this.targetX = GameConfig.player2.xPos;
     this.focusX = GameConfig.player2.xPos;
   }
@@ -75,12 +76,12 @@ export class AIOpponent {
       }
     }
 
-    const lerpBase = this.isInstant
+    const lerpRate = this.isInstant
       ? GameConfig.ai.lerpSpeed.fast
       : GameConfig.ai.lerpSpeed.base;
 
-    const lerpFactor =
-      1 - Math.pow(1 - lerpBase, delta * GameConfig.ai.fpsBase);
+    // Frame-rate independent continuous exponential decay for smooth AI tracking
+    const lerpFactor = 1 - Math.exp(-lerpRate * delta);
 
     this.focusZ += (this.targetZ - this.focusZ) * lerpFactor;
     this.focusX += (this.targetX - this.focusX) * lerpFactor;
