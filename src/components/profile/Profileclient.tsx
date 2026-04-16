@@ -11,35 +11,35 @@ export function ProfileClient({ data }: { data: NonNullable<ProfileData> }) {
   const displayName =
     user.displayName || user.username || user.name || t("profilePage.title");
 
-  const recentMatches = user.matches.slice(0, 8);
+  const recentMatches = user.matches.slice(0, 20);
 
   return (
     <div className="flex-1 overflow-y-auto p-4 sm:p-6" suppressHydrationWarning>
-      <div className="flex flex-col lg:flex-row gap-4 max-w-7xl w-full mx-auto min-h-full">
+      <div className="flex flex-col lg:flex-row gap-6 w-full max-w-[1400px] mx-auto">
         {/* LEFT COLUMN */}
-        <div className="flex flex-col gap-4 lg:w-80 xl:w-96 shrink-0">
+        <div className="flex flex-col gap-4 w-full lg:w-[420px] lg:shrink-0">
           {/* Title card with avatar */}
-          <div className="bg-card rounded-2xl border border-purple-light p-6 shadow-xl flex flex-col items-center gap-3 lg:flex-row lg:gap-4">
-            <div className="w-16 h-16 rounded-xl border-2 border-purple-light bg-purple-light/20 flex items-center justify-center shrink-0 overflow-hidden">
+          <div className="bg-card rounded-2xl border border-purple-light p-6 shadow-xl flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+            <div className="w-20 h-20 rounded-xl border-2 border-purple-light bg-purple-light/20 flex items-center justify-center shrink-0 overflow-hidden">
               {user.avatarUrl ? (
                 <Image
                   src={user.avatarUrl}
                   alt={displayName}
-                  width={64}
-                  height={64}
+                  width={80}
+                  height={80}
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="text-xl font-bold text-text/50">
+                <span className="text-2xl font-bold text-text/50">
                   {displayName.charAt(0).toUpperCase()}
                 </span>
               )}
             </div>
-            <div className="text-center lg:text-left">
-              <h1 className="text-2xl font-bold text-text">
+            <div className="text-center sm:text-left">
+              <h1 className="text-3xl font-bold text-text">
                 {t("profilePage.title")}
               </h1>
-              <p className="text-sm text-text/50 mt-1">
+              <p className="text-base text-text/50 mt-1">
                 {t("profilePage.subtitle")}
               </p>
             </div>
@@ -49,10 +49,10 @@ export function ProfileClient({ data }: { data: NonNullable<ProfileData> }) {
           <div className="bg-card rounded-2xl border border-purple-light p-6 shadow-xl flex flex-col gap-4">
             <div className="flex items-center justify-between gap-2">
               <div className="flex-1 min-w-0 flex flex-col items-center text-center">
-                <p className="text-lg font-bold text-text truncate w-full text-center">
+                <p className="text-xl font-bold text-text truncate w-full text-center">
                   {displayName}
                 </p>
-                <p className="text-sm text-text/50 truncate w-full text-center">
+                <p className="text-base text-text/50 truncate w-full text-center">
                   {user.email || "-"}
                 </p>
               </div>
@@ -83,10 +83,10 @@ export function ProfileClient({ data }: { data: NonNullable<ProfileData> }) {
 
             {/* Bio */}
             <div className="border-t border-purple-light pt-4">
-              <p className="text-xs font-semibold uppercase tracking-widest text-text/40 mb-1">
+              <p className="text-sm font-semibold uppercase tracking-widest text-text/40 mb-1">
                 {t("profilePage.bio")}
               </p>
-              <p className="text-sm text-text/70 break-words whitespace-pre-wrap">
+              <p className="text-base text-text/70 break-words whitespace-pre-wrap">
                 {user.bio || t("profilePage.noBio")}
               </p>
             </div>
@@ -94,7 +94,7 @@ export function ProfileClient({ data }: { data: NonNullable<ProfileData> }) {
 
           {/* Total stats */}
           <div className="bg-card rounded-2xl border border-purple-light p-6 shadow-xl flex flex-col gap-3">
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-text/40">
+            <h2 className="text-base font-semibold uppercase tracking-widest text-text/40">
               {t("profilePage.totalStat")}
             </h2>
             <Row
@@ -103,7 +103,6 @@ export function ProfileClient({ data }: { data: NonNullable<ProfileData> }) {
             />
             <Row label={t("profilePage.stats.wins")} value={stats.wins} />
             <Row label={t("profilePage.stats.losses")} value={stats.losses} />
-            <Row label={t("profilePage.stats.draws")} value={stats.draws} />
             <Row
               label={t("profilePage.stats.winRate")}
               value={`${stats.winRate}%`}
@@ -125,66 +124,71 @@ export function ProfileClient({ data }: { data: NonNullable<ProfileData> }) {
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className="flex-1 flex flex-col bg-card rounded-2xl border border-purple-light p-6 shadow-xl min-h-64 min-w-0">
-          {" "}
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-text/40 mb-4 shrink-0">
+        <div className="flex-1 flex flex-col bg-card rounded-2xl border border-purple-light p-6 sm:p-10 shadow-xl min-w-0 lg:h-fit lg:max-h-[calc(100vh-10rem)]">
+          <h2 className="text-base font-semibold uppercase tracking-widest text-text/40 mb-5 shrink-0">
             {t("profilePage.recentMatches.title")}
           </h2>
-          <div className="flex-1 flex flex-col gap-2 overflow-y-auto min-h-0">
+          <div className="flex flex-col gap-3 lg:overflow-y-auto lg:min-h-0 pr-1">
             {recentMatches.length === 0 ? (
-              <p className="text-sm text-text/50">
+              <p className="text-base text-text/50">
                 {t("profilePage.recentMatches.noMatches")}
               </p>
             ) : (
               recentMatches.map((match) => {
-                const resultKey =
-                  match.score1 > match.score2
-                    ? "win"
-                    : match.score1 < match.score2
-                      ? "loss"
-                      : "draw";
+                const resultKey = match.score1 > match.score2 ? "win" : "loss";
 
                 return (
                   <div
                     key={match.id}
-                    className="flex items-center justify-between rounded-xl border border-purple-light px-4 py-3 gap-3 shrink-0"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-xl border border-purple-light px-4 py-3 sm:px-5 sm:py-4 gap-2 sm:gap-3"
                   >
-                    <div className="flex flex-col gap-0.5 min-w-0">
-                      <p className="text-sm font-semibold text-text truncate">
+                    {/* Top row on mobile: player name + date */}
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <p className="text-sm sm:text-base font-semibold text-text">
                         {t("profilePage.recentMatches.you")}
                         <span className="text-text/40 mx-1.5 font-normal">
                           {t("profilePage.recentMatches.versus")}
                         </span>
                         {match.player2}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-text/40">
-                        <span>{match.matchDate}</span>
-                        <span className="text-text/20">·</span>
-                        <span>{match.matchTime}</span>
+                      <div className="flex items-center gap-2 text-xs sm:text-sm text-text/40">
+                        <span className="hidden sm:inline">
+                          {match.matchDate}
+                        </span>
+                        <span className="hidden sm:inline text-text/20">·</span>
+                        <span className="hidden sm:inline">
+                          {match.matchTime}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                      <div className="flex items-center gap-1 bg-text/5 rounded-lg px-3 py-1.5">
-                        <span className="text-sm font-bold text-text">
-                          {match.score1}
-                        </span>
-                        <span className="text-text/30 text-xs mx-0.5">—</span>
-                        <span className="text-sm font-bold text-text">
-                          {match.score2}
+                    {/* Bottom row on mobile: score + badge */}
+                    <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 sm:shrink-0 w-full sm:w-auto">
+                      <span className="text-xs text-text/40 sm:hidden">
+                        {match.matchDate}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 bg-text/5 rounded-lg px-3 py-1.5 sm:px-4 sm:py-2">
+                          <span className="text-sm sm:text-base font-bold text-text">
+                            {match.score1}
+                          </span>
+                          <span className="text-text/30 text-xs sm:text-sm mx-1">
+                            —
+                          </span>
+                          <span className="text-sm sm:text-base font-bold text-text">
+                            {match.score2}
+                          </span>
+                        </div>
+                        <span
+                          className={`rounded-full px-3 py-1 sm:px-4 sm:py-1.5 text-xs sm:text-sm font-semibold ${
+                            resultKey === "win"
+                              ? "bg-green-500/10 text-green-600"
+                              : "bg-red-500/10 text-red-500"
+                          }`}
+                        >
+                          {t(`profilePage.recentMatches.${resultKey}`)}
                         </span>
                       </div>
-                      <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                          resultKey === "win"
-                            ? "bg-green-500/10 text-green-600"
-                            : resultKey === "loss"
-                              ? "bg-red-500/10 text-red-500"
-                              : "bg-text/5 text-text/50"
-                        }`}
-                      >
-                        {t(`profilePage.recentMatches.${resultKey}`)}
-                      </span>
                     </div>
                   </div>
                 );
@@ -199,7 +203,7 @@ export function ProfileClient({ data }: { data: NonNullable<ProfileData> }) {
 
 function Row({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="flex items-center justify-between text-sm">
+    <div className="flex items-center justify-between text-base">
       <span className="text-text/60">{label}</span>
       <span className="font-semibold text-text">{value}</span>
     </div>

@@ -20,7 +20,9 @@ export function EditProfileForm({
   avatarUrl,
 }: EditProfileFormProps) {
   const [nameValue, setNameValue] = useState(displayName ?? "");
-  const [bioValue, setBioValue] = useState(bio ?? "");
+  const [bioValue, setBioValue] = useState(() =>
+    (bio ?? "").replace(/\r\n/g, "\n"),
+  );
   const [avatarValue, setAvatarValue] = useState(avatarUrl ?? "");
   const [fileValue, setFileValue] = useState<File | null>(null);
   const [error, setError] = useState("");
@@ -103,7 +105,7 @@ export function EditProfileForm({
         </div>
         <textarea
           value={bioValue}
-          onChange={(e) => setBioValue(e.target.value)}
+          onChange={(e) => setBioValue(e.target.value.replace(/\r\n/g, "\n"))}
           rows={4}
           className={`w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border placeholder:text-text/40 focus:outline-none focus:ring-2 transition-all resize-none ${
             bioTooLong

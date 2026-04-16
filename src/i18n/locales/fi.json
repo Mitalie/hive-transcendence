@@ -162,6 +162,7 @@
     "title": "Asetukset",
     "subtitle": "Hallinnoi tilin asetuksia",
     "notSet": "Ei asetettu",
+    "backToProfile": "Takaisin profiiliin",
     "badge": {
       "connected": "Yhdistetty",
       "notSet": "Ei asetettu"
@@ -231,7 +232,6 @@
       "totalMatches": "Ottelut yhteensä",
       "wins": "Voitot",
       "losses": "Häviöt",
-      "draws": "Tasapelit",
       "winRate": "Voittoprosentti"
     },
     "friendshipStats": {
@@ -242,19 +242,15 @@
     },
     "accountDetails": {
       "title": "Tilin tiedot",
-      "displayName": "Näyttönimi",
-      "avatarUrl": "Avatar-URL",
-      "lastActive": "Viimeksi aktiivinen",
-      "joined": "Liittynyt"
+      "displayName": "Näyttönimi"
     },
     "recentMatches": {
-      "title": "Viimeisimmät ottelut",
+      "title": "Viimeisimmät ottelut - Näytetään 20 viimeisintä ottelua",
       "seeAll": "Näytä kaikki",
       "noMatches": "Ei pelattuja otteluita.",
       "versus": "vs",
       "win": "Voitto",
       "loss": "Häviö",
-      "draw": "Tasapeli",
       "you": "Sinä",
       "at": "klo"
     },

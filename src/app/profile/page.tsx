@@ -2,7 +2,8 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ProfileClient } from "../../components/profile/Profileclient";
+import { ProfileClient } from "@/components/profile/Profileclient";
+import { getMatchStatsByUserId } from "@/data/matchHistory";
 
 async function getProfileData(email: string) {
   const user = await prisma.user.findUnique({
@@ -10,7 +11,7 @@ async function getProfileData(email: string) {
     include: {
       matches: {
         orderBy: { createdAt: "desc" },
-        take: 10,
+        take: 20,
       },
       sentFriendRequests: true,
       receivedFriendRequests: true,
@@ -19,12 +20,7 @@ async function getProfileData(email: string) {
 
   if (!user) return null;
 
-  const wins = user.matches.filter((m) => m.score1 > m.score2).length;
-  const losses = user.matches.filter((m) => m.score1 < m.score2).length;
-  const draws = user.matches.filter((m) => m.score1 === m.score2).length;
-  const totalMatches = user.matches.length;
-  const winRate =
-    totalMatches === 0 ? "0.0" : ((wins / totalMatches) * 100).toFixed(1);
+  const stats = await getMatchStatsByUserId(user.id);
 
   const acceptedFriends = await prisma.friendship.count({
     where: {
@@ -39,7 +35,6 @@ async function getProfileData(email: string) {
     where: { status: "PENDING", addresseeId: user.id },
   });
 
-  // Format all dates server-side with a fixed locale to avoid hydration mismatch
   const fmt = (date: Date | null, opts: Intl.DateTimeFormatOptions) =>
     date ? date.toLocaleDateString("en-GB", opts) : null;
 
@@ -79,7 +74,7 @@ async function getProfileData(email: string) {
         }),
       })),
     },
-    stats: { totalMatches, wins, losses, draws, winRate },
+    stats,
     friendshipStats: { acceptedFriends, pendingSent, pendingReceived },
   };
 }
@@ -89,9 +84,7 @@ export type ProfileData = Awaited<ReturnType<typeof getProfileData>>;
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) redirect("/login");
-
   const data = await getProfileData(session.user.email);
   if (!data) redirect("/login");
-
   return <ProfileClient data={data} />;
 }

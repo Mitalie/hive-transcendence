@@ -168,6 +168,7 @@
     "title": "Settings",
     "subtitle": "Manage your account preferences",
     "notSet": "Not set",
+    "backToProfile": "Back to profile",
     "badge": {
       "connected": "Connected",
       "notSet": "Not set"
@@ -237,7 +238,6 @@
       "totalMatches": "Total matches",
       "wins": "Wins",
       "losses": "Losses",
-      "draws": "Draws",
       "winRate": "Win rate"
     },
     "friendshipStats": {
@@ -248,19 +248,15 @@
     },
     "accountDetails": {
       "title": "Account details",
-      "displayName": "Display name",
-      "avatarUrl": "Avatar URL",
-      "lastActive": "Last active",
-      "joined": "Joined"
+      "displayName": "Display name"
     },
     "recentMatches": {
-      "title": "Recent matches",
+      "title": "Recent matches - Latest 20 matches are displayed",
       "seeAll": "See all",
       "noMatches": "No matches played yet.",
       "versus": "vs",
       "win": "Win",
       "loss": "Loss",
-      "draw": "Draw",
       "you": "You",
       "at": "at"
     },

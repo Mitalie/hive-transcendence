@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/data/user";
-import { SettingsClient } from "../../components/settings/settingsClient";
+import { SettingsClient } from "@/components/settings/settingsClient";
 
 export default async function SettingsPage({
   searchParams,

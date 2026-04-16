@@ -162,6 +162,7 @@
     "title": "设置",
     "subtitle": "管理您的账户偏好",
     "notSet": "未设置",
+    "backToProfile": "返回个人主页",
     "badge": {
       "connected": "已连接",
       "notSet": "未设置"
@@ -231,7 +232,6 @@
       "totalMatches": "总对战次数",
       "wins": "胜场",
       "losses": "败场",
-      "draws": "平局",
       "winRate": "胜率"
     },
     "friendshipStats": {
@@ -242,19 +242,15 @@
     },
     "accountDetails": {
       "title": "账户详情",
-      "displayName": "显示名称",
-      "avatarUrl": "头像链接",
-      "lastActive": "最后活跃时间",
-      "joined": "注册时间"
+      "displayName": "显示名称"
     },
     "recentMatches": {
-      "title": "最近对战",
+      "title": "最近对局 - 显示最近20场对局",
       "seeAll": "查看全部",
       "noMatches": "暂无对战记录。",
-      "versus": "vs",
+      "versus": "对",
       "win": "胜",
       "loss": "负",
-      "draw": "平",
       "you": "你",
       "at": ""
     },
