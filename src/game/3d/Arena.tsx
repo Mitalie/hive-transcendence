@@ -151,23 +151,24 @@ const ArenaStaticGeometry = memo(function ArenaStaticGeometry() {
 });
 
 // A single side of the 3D scoreboard block.
-// Uses the 'flipped' prop to ensure colors and scores stay aligned with the player's perspective.
+// Uses the 'side' prop to statically align text with the global X-axis player positions.
 const ScoreboardSide = memo(function ScoreboardSide({
   p1Score,
   p2Score,
-  flipped,
   side,
 }: {
   p1Score: number;
   p2Score: number;
-  flipped: boolean;
   side: 1 | -1;
 }) {
-  const displayScoreLeft = flipped ? p2Score : p1Score;
-  const displayScoreRight = flipped ? p1Score : p2Score;
+  // Derive the visual layout directly from the physical face
+  const isBackFace = side === -1;
 
-  const colorLeft = flipped ? GameConfig.colors.p2 : GameConfig.colors.p1;
-  const colorRight = flipped ? GameConfig.colors.p1 : GameConfig.colors.p2;
+  const displayScoreLeft = isBackFace ? p2Score : p1Score;
+  const displayScoreRight = isBackFace ? p1Score : p2Score;
+
+  const colorLeft = isBackFace ? GameConfig.colors.p2 : GameConfig.colors.p1;
+  const colorRight = isBackFace ? GameConfig.colors.p1 : GameConfig.colors.p2;
 
   const HALF_DEPTH = GameConfig.court.depth / 2;
   const HALF_WIDTH = GameConfig.court.width / 2;
@@ -237,20 +238,10 @@ const Scoreboard = memo(function Scoreboard({
     <group>
       {/* Wrapping each side in its own Suspense prevents visual "pop-in" asymmetry during font loading */}
       <Suspense fallback={null}>
-        <ScoreboardSide
-          p1Score={p1Score}
-          p2Score={p2Score}
-          flipped={false}
-          side={1}
-        />
+        <ScoreboardSide p1Score={p1Score} p2Score={p2Score} side={1} />
       </Suspense>
       <Suspense fallback={null}>
-        <ScoreboardSide
-          p1Score={p1Score}
-          p2Score={p2Score}
-          flipped={true}
-          side={-1}
-        />
+        <ScoreboardSide p1Score={p1Score} p2Score={p2Score} side={-1} />
       </Suspense>
     </group>
   );

@@ -75,9 +75,8 @@ export const restoreDefaultsAction = (): GameStateAction => ({
 });
 
 function isWinningScore(mine: number, theirs: number): boolean {
-  const next = mine + 1;
-  if (!GameConfig.rules.winByTwo) return next >= GameConfig.rules.winLimit;
-  return next >= GameConfig.rules.winLimit && next - theirs >= 2;
+  if (!GameConfig.rules.winByTwo) return mine >= GameConfig.rules.winLimit;
+  return mine >= GameConfig.rules.winLimit && mine - theirs >= 2;
 }
 
 const gameStateReducer = (

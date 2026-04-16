@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect, memo } from "react";
+import { useRef, memo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { PaddleData } from "@/game/PongEngine";
@@ -17,36 +17,12 @@ export default memo(function Paddle({
 }) {
   const groupRef = useRef<THREE.Group>(null!);
 
-  const { geometry, material, verticalOffset } = useMemo(() => {
-    const h = GameConfig.paddle.height;
-    const s = GameConfig.paddleVisuals.skirtExtension;
-    const totalHeight = h + s;
+  const h = GameConfig.paddle.height;
+  const s = GameConfig.paddleVisuals.skirtExtension;
+  const totalHeight = h + s;
 
-    return {
-      geometry: new THREE.BoxGeometry(
-        GameConfig.paddle.width,
-        totalHeight,
-        GameConfig.paddle.depth,
-      ),
-      material: new THREE.MeshStandardMaterial({
-        color: color,
-        emissive: color,
-        emissiveIntensity: GameConfig.paddleVisuals.emissiveIntensity,
-        roughness: GameConfig.paddleVisuals.roughness,
-        metalness: GameConfig.paddleVisuals.metalness,
-        toneMapped: false,
-      }),
-      // Offsets the extended skirt so the visible base of the paddle rests flush on the floor plane.
-      verticalOffset: -(s / 2),
-    };
-  }, [color]);
-
-  useEffect(() => {
-    return () => {
-      geometry.dispose();
-      material.dispose();
-    };
-  }, [geometry, material]);
+  // Offsets the extended skirt so the visible base of the paddle rests flush on the floor plane.
+  const verticalOffset = -(s / 2);
 
   useFrame((_, delta) => {
     if (!groupRef.current || !paddleData) return;
@@ -66,13 +42,19 @@ export default memo(function Paddle({
 
   return (
     <group ref={groupRef}>
-      <mesh
-        castShadow
-        receiveShadow
-        geometry={geometry}
-        material={material}
-        position={[0, verticalOffset, 0]}
-      />
+      <mesh castShadow receiveShadow position={[0, verticalOffset, 0]}>
+        <boxGeometry
+          args={[GameConfig.paddle.width, totalHeight, GameConfig.paddle.depth]}
+        />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={GameConfig.paddleVisuals.emissiveIntensity}
+          roughness={GameConfig.paddleVisuals.roughness}
+          metalness={GameConfig.paddleVisuals.metalness}
+          toneMapped={false}
+        />
+      </mesh>
     </group>
   );
 });
