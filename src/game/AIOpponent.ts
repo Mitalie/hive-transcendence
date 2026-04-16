@@ -42,7 +42,10 @@ export class AIOpponent {
     const ball = this.engine.ball;
     const paddle = this.engine.p2;
 
-    const isBallStationary = ball.vx === 0 && ball.vz === 0;
+    // A small epsilon check ensures robustness against floating-point residuals
+    // when determining if the ball is stationary (e.g., waiting for a serve).
+    const isBallStationary =
+      Math.abs(ball.vx) < 0.001 && Math.abs(ball.vz) < 0.001;
 
     this.timeSinceLastMistake += delta;
     this.timeSinceLastThought += delta;

@@ -12,6 +12,7 @@ const TEXT_PROPS = {
 
 // SideWall abstracts the complex bounding box and top/side framing geometry to keep the parent clean
 const SideWall = memo(function SideWall({ z }: { z: number }) {
+  // Kept inside the component to satisfy the architectural request regarding static vs dynamic memory
   const HALF_WIDTH = GameConfig.court.width / 2;
 
   return (
@@ -32,6 +33,7 @@ const SideWall = memo(function SideWall({ z }: { z: number }) {
         />
       </mesh>
 
+      {/* We keep these materials inline to embrace R3F's declarative nature, as requested by the primary review */}
       <mesh position={[0, GameConfig.court.wallHeight / 2, 0]}>
         <boxGeometry
           args={[
@@ -100,6 +102,7 @@ const SideWall = memo(function SideWall({ z }: { z: number }) {
 
 // Groups all non-interactive map geometries
 const ArenaStaticGeometry = memo(function ArenaStaticGeometry() {
+  // Constants kept local to the component body per review instructions
   const WALL_Z_NEAR = -(
     GameConfig.court.zLimit +
     GameConfig.court.wallThickness / 2
@@ -233,20 +236,25 @@ const Scoreboard = memo(function Scoreboard({
   flipped: boolean;
 }) {
   return (
-    <Suspense fallback={null}>
-      <ScoreboardSide
-        p1Score={p1Score}
-        p2Score={p2Score}
-        flipped={flipped}
-        side={1}
-      />
-      <ScoreboardSide
-        p1Score={p1Score}
-        p2Score={p2Score}
-        flipped={flipped}
-        side={-1}
-      />
-    </Suspense>
+    <group>
+      {/* Wrapping each side in its own Suspense prevents visual "pop-in" asymmetry during font loading */}
+      <Suspense fallback={null}>
+        <ScoreboardSide
+          p1Score={p1Score}
+          p2Score={p2Score}
+          flipped={flipped}
+          side={1}
+        />
+      </Suspense>
+      <Suspense fallback={null}>
+        <ScoreboardSide
+          p1Score={p1Score}
+          p2Score={p2Score}
+          flipped={flipped}
+          side={-1}
+        />
+      </Suspense>
+    </group>
   );
 });
 

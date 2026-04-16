@@ -38,9 +38,6 @@ export const GameConfig = {
 
   arena: {
     floorColor: "#2d2d3d",
-    bezelColor: "#88889a",
-    bezelRoughness: 0.1,
-    bezelMetalness: 0.9,
     netColor: "#ffffff",
     netOpacity: 0.3,
     glassColor: "#ffffff",

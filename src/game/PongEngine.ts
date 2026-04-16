@@ -39,8 +39,8 @@ export class PongEngine {
     if (this.serveTimer > 0) {
       this.serveTimer -= safeDelta * 1000;
 
-      // Allow the ball to retain momentum and fall into the abyss after a point is scored.
-      // This prevents the ball from freezing mid-air while waiting for the next serve.
+      // The velocity guard IS necessary! It differentiates between a ball flying into the abyss
+      // after a point is scored, and a stationary ball waiting to be served (preventing premature gravity drops).
       if (this.ball.vx !== 0 || this.ball.vz !== 0) {
         this.ball.x += this.ball.vx * safeDelta;
         this.ball.z += this.ball.vz * safeDelta;

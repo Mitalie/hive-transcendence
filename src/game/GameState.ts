@@ -12,8 +12,11 @@ export interface GameMode {
 }
 
 // Strict interface that requires all properties to be explicitly defined.
-// Prevents dynamic injection of untyped configurations.
-export interface GameSettings {}
+// Temporarily uses a 'never' placeholder to satisfy ESLint's no-empty-object-type
+// rule without needing a suppression comment, while strictly rejecting unknown properties.
+export interface GameSettings {
+  _placeholder?: never;
+}
 
 export interface GameState {
   mode: GameMode;
@@ -105,11 +108,15 @@ const gameStateReducer = (
       if (action.type === "SCORE_P1") score1++;
       if (action.type === "SCORE_P2") score2++;
 
+      // Check both players — either reaching the limit ends the game
       return {
         ...state,
         score1,
         score2,
-        view: isWinningScore(score1, score2) ? "end" : state.view,
+        view:
+          isWinningScore(score1, score2) || isWinningScore(score2, score1)
+            ? "end"
+            : state.view,
       };
     }
     case "PAUSE":
@@ -184,8 +191,8 @@ export const useGameState = () => {
     // Dynamically formats the database identifier to distinguish human vs AI matches
     const opponentId =
       state.mode.opponent === "human"
-        ? "local-player-2" // FIXME - replace with actual opponent identifier when available (and localize AI names)
-        : `ai-${state.mode.opponent}`;
+        ? GameConfig.matchHistory.localPlayer2Id
+        : `${GameConfig.matchHistory.aiPrefix}${state.mode.opponent}`;
 
     saveMatchAction({
       player2: opponentId,

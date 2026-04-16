@@ -56,6 +56,8 @@ export default memo(function GameRender({
   const [flipped, setFlipped] = useState(false);
   const orbitRef = useRef<OrbitControlsImpl>(null);
 
+  // onScore is strictly dependent on a stable dispatcher in the parent,
+  // so it is safe to include in the dependency array without triggering mid-game resets.
   const [engine, aiOpponent] = useMemo(() => {
     const engine = new PongEngine(onScore, mode.type);
     const aiOpponent =
