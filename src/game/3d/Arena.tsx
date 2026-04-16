@@ -229,11 +229,9 @@ const ScoreboardSide = memo(function ScoreboardSide({
 const Scoreboard = memo(function Scoreboard({
   p1Score,
   p2Score,
-  flipped,
 }: {
   p1Score: number;
   p2Score: number;
-  flipped: boolean;
 }) {
   return (
     <group>
@@ -242,7 +240,7 @@ const Scoreboard = memo(function Scoreboard({
         <ScoreboardSide
           p1Score={p1Score}
           p2Score={p2Score}
-          flipped={flipped}
+          flipped={false}
           side={1}
         />
       </Suspense>
@@ -250,7 +248,7 @@ const Scoreboard = memo(function Scoreboard({
         <ScoreboardSide
           p1Score={p1Score}
           p2Score={p2Score}
-          flipped={flipped}
+          flipped={true}
           side={-1}
         />
       </Suspense>
@@ -261,16 +259,14 @@ const Scoreboard = memo(function Scoreboard({
 export default memo(function Arena({
   p1Score,
   p2Score,
-  flipped,
 }: {
   p1Score: number;
   p2Score: number;
-  flipped: boolean;
 }) {
   return (
     <group>
       <ArenaStaticGeometry />
-      <Scoreboard p1Score={p1Score} p2Score={p2Score} flipped={flipped} />
+      <Scoreboard p1Score={p1Score} p2Score={p2Score} />
     </group>
   );
 });

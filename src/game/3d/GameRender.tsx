@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useMemo, RefObject, memo, useState } from "react";
+import { useRef, useEffect, useMemo, RefObject, memo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
@@ -53,7 +53,6 @@ export default memo(function GameRender({
   p1Score: number;
   p2Score: number;
 }) {
-  const [flipped, setFlipped] = useState(false);
   const orbitRef = useRef<OrbitControlsImpl>(null);
 
   // onScore is strictly dependent on a stable dispatcher in the parent,
@@ -126,14 +125,6 @@ export default memo(function GameRender({
             MIDDLE: GameConfig.camera.controls.mouseButtons.middle,
             RIGHT: GameConfig.camera.controls.mouseButtons.right,
           }}
-          onChange={(e) => {
-            if (e?.target) {
-              setFlipped(
-                Math.abs(e.target.getAzimuthalAngle()) >
-                  GameConfig.camera.controls.flipAzimuthThreshold,
-              );
-            }
-          }}
         />
 
         <GameUpdate
@@ -173,7 +164,7 @@ export default memo(function GameRender({
           />
         ))}
 
-        <Arena p1Score={p1Score} p2Score={p2Score} flipped={flipped} />
+        <Arena p1Score={p1Score} p2Score={p2Score} />
 
         <Ball ballData={engine.ball} />
 
