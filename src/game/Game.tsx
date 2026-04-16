@@ -33,6 +33,7 @@ export default function Game() {
       if (state.exitPromptOpen) return;
 
       if (e.code === GameConfig.ui.controls.togglePauseKey && !e.repeat) {
+        e.preventDefault();
         if (state.view !== "play") dispatch(startGameAction());
         else if (state.paused) dispatch(resumeAction());
         else dispatch(pauseAction());
