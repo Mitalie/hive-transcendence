@@ -162,7 +162,12 @@
     "submit": "CONTINUE",
     "loading": "Saving...",
     "errorFallback": "Profile setup failed",
-    "errorUnexpected": "An unexpected error occurred during registration"
+    "errorUnexpected": "An unexpected error occurred during registration",
+    "avatarLabel": "Avatar",
+    "avatarDefault": "Use default avatar",
+    "avatarGithub": "Use my GitHub avatar",
+    "avatarUpload": "Upload an image",
+    "reselectUpload": "Please select your image."
   },
   "settings": {
     "title": "Settings",
@@ -216,12 +221,19 @@
     "success": "Password added! You can now log in with email too."
   },
   "apiErrors": {
-    "missingFields": "Missing fields",
-    "userNotFound": "User not found",
-    "displayNameTaken": "Display name is already taken",
-    "passwordTooShort": "Password too short",
-    "userAlreadyExists": "User already exists",
-    "unauthorized": "Unauthorized"
+    "missingFields": "Please fill in all required fields.",
+    "userNotFound": "User not found.",
+    "displayNameTaken": "This display name is already taken.",
+    "passwordTooShort": "Password must be at least 6 characters.",
+    "userAlreadyExists": "An account with this email already exists.",
+    "unauthorized": "You must be logged in to do this.",
+    "displayNameTooLong": "Display name is too long.",
+    "bioTooLong": "Bio must be {{max}} characters or fewer.",
+    "avatarUrlTooLong": "Avatar URL is too long.",
+    "internalServerError": "An internal server error occurred.",
+    "invalidImageUrl": "The image URL is invalid or unreachable.",
+    "fileTooLarge": "Image is too large. Please choose a file under 2MB.",
+    "errorUnexpected": "An unexpected error occurred. Please try again."
   },
   "profilePage": {
     "title": "Profile",

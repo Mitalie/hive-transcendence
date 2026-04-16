@@ -15,14 +15,24 @@ export default function Header() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const { t } = useTranslation();
-  const [avatarVersion, setAvatarVersion] = useState(0);
+
+  const [avatarVersion, setAvatarVersion] = useState(() => {
+    if (typeof window === "undefined") {
+      return 0;
+    }
+
+    const stored = sessionStorage.getItem("avatarVersion");
+    return stored ? Number(stored) : 0;
+  });
 
   useEffect(() => {
     // Header stays mounted while the current user updates their avatar in
-    // settings or during profile setup. Bumping a local version changes the
-    // avatar URL so the latest stored avatar is fetched immediately.
+    // settings or during profile setup. We persist the version so avatar
+    // refreshes also survive full page navigations.
     const handleAvatarUpdated = () => {
-      setAvatarVersion((prev) => prev + 1);
+      const nextVersion = Date.now();
+      sessionStorage.setItem("avatarVersion", String(nextVersion));
+      setAvatarVersion(nextVersion);
     };
 
     window.addEventListener("avatar-updated", handleAvatarUpdated);

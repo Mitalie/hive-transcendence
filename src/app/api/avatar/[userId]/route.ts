@@ -1,8 +1,27 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { readFile } from "fs/promises";
+import path from "path";
+
+async function getDefaultAvatar() {
+  const filePath = path.join(
+    process.cwd(),
+    "public",
+    "images",
+    "user_icon.png",
+  );
+  const fileBuffer = await readFile(filePath);
+
+  return new NextResponse(fileBuffer, {
+    headers: {
+      "Content-Type": "image/png",
+      "Cache-Control": "no-store",
+    },
+  });
+}
 
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ userId: string }> },
 ) {
   const { userId } = await params;
@@ -24,9 +43,5 @@ export async function GET(
     });
   }
 
-  return NextResponse.redirect(new URL("/images/user_icon.png", request.url), {
-    headers: {
-      "Cache-Control": "no-store",
-    },
-  });
+  return getDefaultAvatar();
 }

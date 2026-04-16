@@ -156,7 +156,12 @@
     "submit": "继续",
     "loading": "保存中...",
     "errorFallback": "资料设置失败",
-    "errorUnexpected": "注册过程中发生意外错误"
+    "errorUnexpected": "注册过程中发生意外错误",
+    "avatarLabel": "头像",
+    "avatarDefault": "使用默认头像",
+    "avatarGithub": "使用我的 GitHub 头像",
+    "avatarUpload": "上传图片",
+    "reselectUpload": "请先选择一张图片。"
   },
   "settings": {
     "title": "设置",
@@ -210,12 +215,19 @@
     "success": "密码已添加！您现在也可以使用邮箱登录。"
   },
   "apiErrors": {
-    "missingFields": "缺少必填字段",
-    "userNotFound": "用户不存在",
-    "displayNameTaken": "该显示名称已被使用",
-    "passwordTooShort": "密码太短",
-    "userAlreadyExists": "用户已存在",
-    "unauthorized": "未授权"
+    "missingFields": "请填写所有必填字段。",
+    "userNotFound": "找不到该用户。",
+    "displayNameTaken": "该显示名称已被使用。",
+    "passwordTooShort": "密码至少需要 6 个字符。",
+    "userAlreadyExists": "该邮箱已注册账户。",
+    "unauthorized": "请先登录再执行此操作。",
+    "displayNameTooLong": "显示名称过长。",
+    "bioTooLong": "简介不能超过 {{max}} 个字符。",
+    "avatarUrlTooLong": "头像链接过长。",
+    "internalServerError": "服务器内部错误。",
+    "invalidImageUrl": "图片链接无效或无法访问。",
+    "fileTooLarge": "图片太大，请选择小于 2MB 的文件。",
+    "errorUnexpected": "发生意外错误，请重试。"
   },
   "profilePage": {
     "title": "个人资料",

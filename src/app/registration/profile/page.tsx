@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import Button from "@/components/Button";
 import { useTranslation } from "react-i18next";
@@ -14,6 +14,7 @@ export default function ProfileSetupPage() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const { t } = useTranslation();
   const { data: session } = useSession();
@@ -26,6 +27,7 @@ export default function ProfileSetupPage() {
 
     if (choice !== "upload") {
       setAvatarFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -147,22 +149,50 @@ export default function ProfileSetupPage() {
             </label>
 
             {avatarChoice === "upload" && (
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => {
-                  setAvatarFile(e.target.files?.[0] ?? null);
-                  setError("");
-                }}
-                className="text-sm text-text"
-              />
+              <div className="flex flex-col gap-1 pl-5">
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-4 py-2 rounded-lg text-sm border border-purple-light bg-button text-text/70 hover:text-text transition-colors shrink-0"
+                  >
+                    {t("settings.account.chooseFile")}
+                  </button>
+                  <span className="text-sm text-text/50 truncate">
+                    {avatarFile
+                      ? avatarFile.name
+                      : t("settings.account.noFileChosen")}
+                  </span>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+
+                    const maxSize = 5 * 1024 * 1024; // 5 MB
+
+                    if (file.size > maxSize) {
+                      setError("Image is too large. Maximum size is 5 MB.");
+                      e.target.value = "";
+                      return;
+                    }
+
+                    setError("");
+                    setAvatarFile(file);
+                  }}
+                />
+              </div>
             )}
           </div>
 
           <Button
             type="submit"
             disabled={loading}
-            className="bg-gradient-to-r from-blue-dark to-purple-dark mt-1 text-white"
+            className="bg-gradient-to-r from-blue-dark to-purple-dark mt-1 text-white text-xl"
           >
             {loading ? t("profile.loading") : t("profile.submit")}
           </Button>

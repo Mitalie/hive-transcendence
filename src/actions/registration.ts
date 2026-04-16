@@ -11,7 +11,7 @@ function toPrismaBytes(arrayBuffer: ArrayBuffer): Uint8Array<ArrayBuffer> {
   return new Uint8Array(arrayBuffer);
 }
 
-const MAX_AVATAR_SIZE = 2 * 1024 * 1024;
+const MAX_AVATAR_SIZE = 5 * 1024 * 1024;
 
 async function importExternalAvatar(imageUrl: string) {
   const response = await fetch(imageUrl, {
