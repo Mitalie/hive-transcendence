@@ -9,6 +9,9 @@ export const apiErrors = {
   bioTooLong: "bioTooLong",
   avatarUrlTooLong: "avatarUrlTooLong",
   internalServerError: "internalServerError",
+  invalidImageUrl: "invalidImageUrl",
+  fileTooLarge: "fileTooLarge",
+  errorUnexpected: "errorUnexpected",
 } as const;
 
 export type ApiErrorKey = keyof typeof apiErrors;

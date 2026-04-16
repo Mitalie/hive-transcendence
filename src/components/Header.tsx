@@ -18,6 +18,9 @@ export default function Header() {
   const [avatarVersion, setAvatarVersion] = useState(0);
 
   useEffect(() => {
+    // Header stays mounted while the current user updates their avatar in
+    // settings or during profile setup. Bumping a local version changes the
+    // avatar URL so the latest stored avatar is fetched immediately.
     const handleAvatarUpdated = () => {
       setAvatarVersion((prev) => prev + 1);
     };
@@ -83,7 +86,6 @@ export default function Header() {
         <NavButton href="/profile" active={pathname === "/profile"}>
           <span className="block w-8 h-8 shrink-0 rounded-full overflow-hidden">
             <Image
-              unoptimized
               src={avatarSrc}
               alt="user"
               width={32}

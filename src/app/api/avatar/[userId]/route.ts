@@ -12,43 +12,21 @@ export async function GET(
     select: {
       avatarData: true,
       avatarMime: true,
-      avatarUrl: true,
-      image: true,
     },
   });
 
-  if (!user) {
-    const response = NextResponse.redirect(
-      new URL("/images/user_icon.png", request.url),
-    );
-    response.headers.set("Cache-Control", "no-store");
-    return response;
-  }
-
-  if (user.avatarData && user.avatarMime) {
+  if (user?.avatarData && user.avatarMime) {
     return new NextResponse(user.avatarData, {
       headers: {
         "Content-Type": user.avatarMime,
-        "Cache-Control": "no-store",
+        "Cache-Control": "public, max-age=31536000, immutable",
       },
     });
   }
 
-  if (user.avatarUrl) {
-    const response = NextResponse.redirect(user.avatarUrl);
-    response.headers.set("Cache-Control", "no-store");
-    return response;
-  }
-
-  if (user.image) {
-    const response = NextResponse.redirect(user.image);
-    response.headers.set("Cache-Control", "no-store");
-    return response;
-  }
-
-  const response = NextResponse.redirect(
-    new URL("/images/user_icon.png", request.url),
-  );
-  response.headers.set("Cache-Control", "no-store");
-  return response;
+  return NextResponse.redirect(new URL("/images/user_icon.png", request.url), {
+    headers: {
+      "Cache-Control": "no-store",
+    },
+  });
 }

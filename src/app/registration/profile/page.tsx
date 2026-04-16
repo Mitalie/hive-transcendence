@@ -1,18 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Button from "@/components/Button";
-import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { completeRegistrationProfileAction } from "@/actions/registration";
 
+type AvatarChoice = "default" | "github" | "upload";
+
 export default function ProfileSetupPage() {
   const [displayName, setDisplayName] = useState("");
+  const [avatarChoice, setAvatarChoice] = useState<AvatarChoice>("default");
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+
   const { t } = useTranslation();
+  const { data: session } = useSession();
+
+  const showGithubOption = !!session?.user?.image;
+
+  const handleAvatarChoice = (choice: AvatarChoice) => {
+    setAvatarChoice(choice);
+    setError("");
+
+    if (choice !== "upload") {
+      setAvatarFile(null);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,39 +35,42 @@ export default function ProfileSetupPage() {
     setLoading(true);
 
     try {
-      const pending = sessionStorage.getItem("pendingAuth");
+      const trimmedDisplayName = displayName.trim();
 
-      if (pending) {
-        const { email, password } = JSON.parse(pending);
-
-        const signInResult = await signIn("credentials", {
-          email,
-          password,
-          redirect: false,
-        });
-
-        if (!signInResult || signInResult.error) {
-          throw new Error(t("profile.errorUnexpected"));
-        }
-
-        sessionStorage.removeItem("pendingAuth");
+      if (!trimmedDisplayName) {
+        throw new Error(
+          t("apiErrors.missingFields", t("profile.errorFallback")),
+        );
       }
 
-      const result = await completeRegistrationProfileAction(displayName);
+      if (avatarChoice === "upload" && !avatarFile) {
+        throw new Error(
+          t("profile.reselectUpload", "Please select your image."),
+        );
+      }
+
+      const formData = new FormData();
+      formData.append("displayName", trimmedDisplayName);
+      formData.append("avatarChoice", avatarChoice);
+
+      if (avatarChoice === "upload" && avatarFile) {
+        formData.append("avatarFile", avatarFile);
+      }
+
+      const result = await completeRegistrationProfileAction(formData);
 
       if (!result.ok) {
-        const key = result.error;
-        throw new Error(t(`apiErrors.${key}`, t("profile.errorFallback")));
+        throw new Error(
+          t(`apiErrors.${result.error}`, t("profile.errorFallback")),
+        );
       }
 
-      router.push("/");
+      window.dispatchEvent(new Event("avatar-updated"));
+      window.location.href = "/";
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError(t("profile.errorUnexpected"));
-      }
-    } finally {
+      setError(
+        err instanceof Error ? err.message : t("profile.errorUnexpected"),
+      );
       setLoading(false);
     }
   };
@@ -86,6 +104,59 @@ export default function ProfileSetupPage() {
               className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-purple-light placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-purple-light transition-all"
               required
             />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-medium text-text/70">
+              {t("profile.avatarLabel", "Avatar")}
+            </p>
+
+            <label className="flex items-center gap-2 text-sm text-text">
+              <input
+                type="radio"
+                name="avatarChoice"
+                value="default"
+                checked={avatarChoice === "default"}
+                onChange={() => handleAvatarChoice("default")}
+              />
+              {t("profile.avatarDefault", "Use default avatar")}
+            </label>
+
+            {showGithubOption && (
+              <label className="flex items-center gap-2 text-sm text-text">
+                <input
+                  type="radio"
+                  name="avatarChoice"
+                  value="github"
+                  checked={avatarChoice === "github"}
+                  onChange={() => handleAvatarChoice("github")}
+                />
+                {t("profile.avatarGithub", "Use my GitHub avatar")}
+              </label>
+            )}
+
+            <label className="flex items-center gap-2 text-sm text-text">
+              <input
+                type="radio"
+                name="avatarChoice"
+                value="upload"
+                checked={avatarChoice === "upload"}
+                onChange={() => handleAvatarChoice("upload")}
+              />
+              {t("profile.avatarUpload", "Upload an image")}
+            </label>
+
+            {avatarChoice === "upload" && (
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  setAvatarFile(e.target.files?.[0] ?? null);
+                  setError("");
+                }}
+                className="text-sm text-text"
+              />
+            )}
           </div>
 
           <Button
