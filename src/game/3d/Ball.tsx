@@ -1,26 +1,65 @@
-import { useRef } from "react";
+import { useRef, memo } from "react";
 import { useFrame } from "@react-three/fiber";
+import { Trail } from "@react-three/drei";
 import * as THREE from "three";
 import { BallData } from "@/game/PongEngine";
 import { GameConfig } from "@/game/GameConfig";
 
-export default function Ball({ ballData }: { ballData: BallData }) {
+export default memo(function Ball({ ballData }: { ballData: BallData }) {
   const meshRef = useRef<THREE.Mesh>(null!);
 
-  useFrame(() => {
-    // 3D Position mapping
-    meshRef.current.position.x = ballData.x;
-    meshRef.current.position.y = ballData.y; // The gravity bounce!
-    meshRef.current.position.z = ballData.z;
+  useFrame((_, delta) => {
+    if (!meshRef.current) return;
 
-    // Visual Magnus Spin (Ball physically rolls in the air)
-    meshRef.current.rotation.x += ballData.spin * 0.05;
+    meshRef.current.position.set(ballData.x, ballData.y, ballData.z);
+
+    meshRef.current.rotation.x +=
+      ballData.spin * delta * GameConfig.ballVisuals.visualSpinMultiplier;
+    meshRef.current.rotation.z -=
+      ballData.vx * delta * GameConfig.ballVisuals.visualSpinMultiplier;
   });
 
-  return (
-    <mesh ref={meshRef} position={[0, 0, 0]}>
-      <sphereGeometry args={[GameConfig.ball.radius, 16, 16]} />
-      <meshStandardMaterial color="white" />
+  const ballMesh = (
+    <mesh ref={meshRef} castShadow receiveShadow>
+      <sphereGeometry
+        args={[
+          GameConfig.ball.radius,
+          GameConfig.ballVisuals.segments,
+          GameConfig.ballVisuals.segments,
+        ]}
+      />
+      <meshStandardMaterial
+        color={GameConfig.ballVisuals.color}
+        roughness={GameConfig.ballVisuals.roughness}
+        metalness={GameConfig.ballVisuals.metalness}
+        emissive={GameConfig.ballVisuals.emissive}
+        emissiveIntensity={GameConfig.ballVisuals.emissiveIntensity}
+      />
+      {GameConfig.ballVisuals.showGlow && (
+        <pointLight
+          color={GameConfig.ballVisuals.emissive}
+          intensity={GameConfig.ballVisuals.glowIntensity}
+          distance={GameConfig.ballVisuals.glowDistance}
+        />
+      )}
     </mesh>
   );
-}
+
+  // Trail crashes the Three.js renderer if initialized with length <= 0.
+  // We bypass the wrapper entirely if trails are disabled in config.
+  if (!GameConfig.ballVisuals.showTrail) {
+    return ballMesh;
+  }
+
+  return (
+    <Trail
+      width={GameConfig.ball.radius * 2}
+      color={GameConfig.ballVisuals.trailColor}
+      length={GameConfig.ballVisuals.trailLength}
+      decay={GameConfig.ballVisuals.trailDecay}
+      attenuation={(t) => t * t}
+    >
+      {ballMesh}
+    </Trail>
+  );
+});

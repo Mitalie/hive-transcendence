@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
+import { GameConfig } from "@/game/GameConfig";
 import {
   exitConfirmAction,
   GameStateDispatchContext,
@@ -28,8 +29,11 @@ export default function Game() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Input suppression during critical dialog focus prevents illegal state transitions
       if (state.exitPromptOpen) return;
-      if (e.code === "Space" && !e.repeat) {
+
+      if (e.code === GameConfig.ui.controls.togglePauseKey && !e.repeat) {
+        e.preventDefault();
         if (state.view !== "play") dispatch(startGameAction());
         else if (state.paused) dispatch(resumeAction());
         else dispatch(pauseAction());
@@ -50,7 +54,10 @@ export default function Game() {
 
   if (state.view === "start") {
     return (
-      <div className="relative h-full w-full rounded-xl bg-[#050505] grid">
+      <div
+        className="relative h-full w-full rounded-xl grid"
+        style={{ backgroundColor: GameConfig.ui.backgroundColor }}
+      >
         <Button
           className="bg-btn-purple hover:bg-btn-purple-hover m-auto"
           onClick={onStartClick}
@@ -63,20 +70,26 @@ export default function Game() {
 
   if (state.view === "end") {
     return (
-      <div className="relative h-full w-full rounded-xl bg-[#050505] grid">
+      <div
+        className="relative h-full w-full rounded-xl grid"
+        style={{ backgroundColor: GameConfig.ui.backgroundColor }}
+      >
         <ScoreBoard p1={state.score1} p2={state.score2} />
-        <Button
-          className="bg-btn-purple hover:bg-btn-purple-hover m-auto"
-          onClick={onStartClick}
-        >
-          Play Again
-        </Button>
-        <Button
-          className="bg-btn-blue hover:bg-btn-blue-hover m-auto"
-          onClick={onExitClick}
-        >
-          Return to Menu
-        </Button>
+        <div className="m-auto flex flex-col gap-4">
+          {/* TODO: Add translations for these buttons */}
+          <Button
+            className="bg-btn-purple hover:bg-btn-purple-hover"
+            onClick={onStartClick}
+          >
+            Play Again
+          </Button>
+          <Button
+            className="bg-btn-blue hover:bg-btn-blue-hover"
+            onClick={onExitClick}
+          >
+            Return to Menu
+          </Button>
+        </div>
       </div>
     );
   }
@@ -84,7 +97,13 @@ export default function Game() {
   return (
     <div className="relative h-full w-full">
       <GameStateDispatchContext value={dispatch}>
-        <GameRender onScore={onScore} mode={state.mode} paused={state.paused} />
+        <GameRender
+          onScore={onScore}
+          mode={state.mode}
+          paused={state.paused}
+          p1Score={state.score1}
+          p2Score={state.score2}
+        />
         <GameUI state={state} />
       </GameStateDispatchContext>
     </div>

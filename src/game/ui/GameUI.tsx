@@ -15,6 +15,7 @@ export default function GameUI({ state }: { state: GameState }) {
 
   return (
     <>
+      {/* HUD overlay interactivity is suppressed when exit modals are active */}
       <div
         className={`absolute top-[15px] left-[15px] right-[15px] flex items-center justify-between z-10
                  ${exitPromptOpen ? "pointer-events-none opacity-50" : ""}`}
@@ -28,10 +29,11 @@ export default function GameUI({ state }: { state: GameState }) {
         <GameSettingButton open={menuOpen} />
       </div>
 
+      {/* Pointer-events-none allows background 3D OrbitControls to remain active during pause */}
       {state.paused && (
-        <div className="absolute inset-0 flex justify-center items-center bg-black/50 rounded-xl">
+        <div className="absolute inset-0 flex justify-center items-center bg-black/50 rounded-xl pointer-events-none">
           <div
-            className="flex items-center justify-center w-32 h-32 bg-card rounded-2xl text-7xl select-none cursor-pointer"
+            className="flex items-center justify-center w-32 h-32 bg-card rounded-2xl text-7xl select-none cursor-pointer pointer-events-auto shadow-2xl transition-transform hover:scale-105 active:scale-95"
             onClick={() => dispatch(resumeAction())}
           >
             ▶
