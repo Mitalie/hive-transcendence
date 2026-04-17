@@ -27,7 +27,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Runs before React hydration to prevent dark mode flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                if (localStorage.getItem('transcendence:darkMode') === 'true') {
+                  document.documentElement.classList.add('dark');
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
       <body
         className={`bg-gradient-to-br from-purple-light to-blue-light ${geistSans.variable} ${geistMono.variable}`}
       >

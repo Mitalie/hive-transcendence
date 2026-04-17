@@ -1,16 +1,30 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Bar from "@/components/Bar";
 import { useTranslation } from "react-i18next";
 import Button from "@/components/Button";
 import Link from "next/link";
+import { useLocalStorage } from "@/hooks/Uselocalstorage";
+
+const STORAGE_KEYS = {
+  DARK_MODE: "transcendence:darkMode",
+  LANGUAGE: "transcendence:language",
+} as const;
 
 export default function Footer() {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useLocalStorage(STORAGE_KEYS.DARK_MODE, false);
+  const [savedLang, setSavedLang] = useLocalStorage(STORAGE_KEYS.LANGUAGE, "");
+
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (savedLang && savedLang !== i18n.language) {
+      i18n.changeLanguage(savedLang);
+    }
+  }, [i18n, savedLang]);
 
   useEffect(() => {
     if (dark) {
@@ -19,6 +33,14 @@ export default function Footer() {
       document.documentElement.classList.remove("dark");
     }
   }, [dark]);
+
+  const handleToggleDark = () => setDark(!dark);
+
+  const handleChangeLanguage = (code: string) => {
+    i18n.changeLanguage(code);
+    setSavedLang(code);
+    setOpen(false);
+  };
 
   const languages = Object.keys(i18n.options.resources || {}).map((code) => ({
     code,
@@ -41,7 +63,6 @@ export default function Footer() {
     <Bar className="gap-2.5">
       {/* LEFT: label + links */}
       <div className="flex items-center gap-4 text-sm font-sans min-w-0">
-        {/* Copyright label — hidden on very small screens */}
         <span className="hidden sm:block shrink-0">{t("footer.label")}</span>
 
         <Link href="/terms" className="hover:underline shrink-0">
@@ -63,7 +84,6 @@ export default function Footer() {
             className="bg-btn-blue hover:bg-btn-blue-hover flex items-center gap-1.5"
             onClick={() => setOpen(!open)}
           >
-            {/* On small screens show a globe icon, on sm+ show the language label */}
             <svg
               className="w-4 h-4 shrink-0"
               fill="none"
@@ -85,10 +105,7 @@ export default function Footer() {
               {languages.map((lang) => (
                 <li
                   key={lang.code}
-                  onClick={() => {
-                    i18n.changeLanguage(lang.code);
-                    setOpen(false);
-                  }}
+                  onClick={() => handleChangeLanguage(lang.code)}
                   className={`
                     px-4 py-2 text-sm cursor-pointer
                     hover:bg-btn-blue-hover
@@ -104,31 +121,31 @@ export default function Footer() {
 
         {/* Dark mode toggle */}
         <Button
-          onClick={() => setDark(!dark)}
+          onClick={handleToggleDark}
           className="bg-btn-blue hover:bg-btn-blue-hover flex items-center gap-1.5"
         >
-          {/* Icon always visible */}
-          {dark ? (
-            <svg
-              className="w-4 h-4 shrink-0"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707m12.728 0-.707-.707M6.343 6.343l-.707-.707M12 5a7 7 0 100 14A7 7 0 0012 5z" />
-            </svg>
-          ) : (
-            <svg
-              className="w-4 h-4 shrink-0"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
-            </svg>
-          )}
-          {/* Label hidden on small screens */}
-          <span className="hidden sm:inline">
-            {dark ? t("footer.light") : t("footer.dark")}
+          {/* Sun icon */}
+          <svg
+            className="w-4 h-4 shrink-0 hidden dark:block"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707m12.728 0-.707-.707M6.343 6.343l-.707-.707M12 5a7 7 0 100 14A7 7 0 0012 5z" />
+          </svg>
+          {/* Moon icon */}
+          <svg
+            className="w-4 h-4 shrink-0 block dark:hidden"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
+          </svg>
+
+          {/* Labels */}
+          <span className="hidden sm:inline dark:hidden">
+            {t("footer.dark")}
           </span>
+          <span className="hidden sm:dark:inline">{t("footer.light")}</span>
         </Button>
       </div>
     </Bar>
