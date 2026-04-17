@@ -1,10 +1,12 @@
-import { useRef } from "react";
+import { useRef, memo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { PaddleData } from "@/game/PongEngine";
 import { GameConfig } from "@/game/GameConfig";
 
-export default function Paddle({
+const PADDLE_Y = GameConfig.paddle.height / 2;
+
+export default memo(function Paddle({
   paddleData,
   initialX,
   color,
@@ -13,29 +15,46 @@ export default function Paddle({
   initialX: number;
   color: string;
 }) {
-  const meshRef = useRef<THREE.Mesh>(null!);
+  const groupRef = useRef<THREE.Group>(null!);
 
-  useFrame(() => {
-    // Map 3D Position
-    meshRef.current.position.x = paddleData.x;
-    meshRef.current.position.z = paddleData.z;
+  const h = GameConfig.paddle.height;
+  const s = GameConfig.paddleVisuals.skirtExtension;
+  const totalHeight = h + s;
 
-    // Visual Juice: Lean into the direction of movement (Pitch & Roll)
-    meshRef.current.rotation.x = paddleData.vz * -0.02; // Leans side to side
-    meshRef.current.rotation.z = paddleData.vx * -0.02; // Leans forward/backward!
+  // Offsets the extended skirt so the visible base of the paddle rests flush on the floor plane.
+  const verticalOffset = -(s / 2);
+
+  useFrame((_, delta) => {
+    if (!groupRef.current || !paddleData) return;
+
+    groupRef.current.position.set(
+      paddleData.x ?? initialX,
+      paddleData.y ?? PADDLE_Y,
+      paddleData.z ?? 0,
+    );
+
+    groupRef.current.rotation.x =
+      (paddleData.vz ?? 0) * GameConfig.paddleVisuals.tiltFactor * delta;
+
+    groupRef.current.rotation.z =
+      -(paddleData.vx ?? 0) * GameConfig.paddleVisuals.tiltFactor * delta;
   });
 
   return (
-    // Pass the initial position so it spawns in the right place
-    <mesh ref={meshRef} position={[initialX, 0, 0]}>
-      <boxGeometry
-        args={[
-          GameConfig.paddle.width,
-          GameConfig.paddle.height,
-          GameConfig.paddle.depth,
-        ]}
-      />
-      <meshStandardMaterial color={color} />
-    </mesh>
+    <group ref={groupRef}>
+      <mesh castShadow receiveShadow position={[0, verticalOffset, 0]}>
+        <boxGeometry
+          args={[GameConfig.paddle.width, totalHeight, GameConfig.paddle.depth]}
+        />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={GameConfig.paddleVisuals.emissiveIntensity}
+          roughness={GameConfig.paddleVisuals.roughness}
+          metalness={GameConfig.paddleVisuals.metalness}
+          toneMapped={false}
+        />
+      </mesh>
+    </group>
   );
-}
+});

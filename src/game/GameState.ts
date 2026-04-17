@@ -6,16 +6,16 @@ export type GameType = "classic" | "advanced";
 export type GameOpponent = "human" | "easy" | "medium" | "hard";
 export type GameView = "start" | "play" | "end";
 
-// Requires game restart to change
 export interface GameMode {
   type: GameType;
   opponent: GameOpponent;
 }
 
-// Updates dynamically
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+// Strict interface that requires all properties to be explicitly defined.
+// Temporarily uses a 'never' placeholder to satisfy ESLint's no-empty-object-type
+// rule without needing a suppression comment, while strictly rejecting unknown properties.
 export interface GameSettings {
-  // TODO - remove eslint comment above when adding first entry here
+  _placeholder?: never;
 }
 
 export interface GameState {
@@ -31,7 +31,7 @@ export interface GameState {
 
 type GameStateAction =
   | { type: "SET_MODE"; mode: GameMode }
-  | { type: "SET_SETTINGS"; settings: GameSettings }
+  | { type: "SET_SETTINGS"; settings: Partial<GameSettings> }
   | { type: "START_GAME" }
   | { type: "SCORE_P1" }
   | { type: "SCORE_P2" }
@@ -41,13 +41,16 @@ type GameStateAction =
   | { type: "CLOSE_MENU" }
   | { type: "EXIT_PROMPT" }
   | { type: "EXIT_CANCEL" }
-  | { type: "EXIT_CONFIRM" };
+  | { type: "EXIT_CONFIRM" }
+  | { type: "RESTORE_DEFAULTS" };
 
 export const setModeAction = (mode: GameMode): GameStateAction => ({
   type: "SET_MODE",
   mode,
 });
-export const setSettingsAction = (settings: GameSettings): GameStateAction => ({
+export const setSettingsAction = (
+  settings: Partial<GameSettings>,
+): GameStateAction => ({
   type: "SET_SETTINGS",
   settings,
 });
@@ -67,55 +70,90 @@ export const exitCancelAction = (): GameStateAction => ({
 export const exitConfirmAction = (): GameStateAction => ({
   type: "EXIT_CONFIRM",
 });
+export const restoreDefaultsAction = (): GameStateAction => ({
+  type: "RESTORE_DEFAULTS",
+});
 
-const checkWinCondition = (score1: number, score2: number): boolean => {
-  const { winLimit, winByTwo } = GameConfig.rules;
-  const limitReached = Math.max(score1, score2) >= winLimit;
-  const winMargin = !winByTwo || Math.abs(score1 - score2) >= 2;
-  return limitReached && winMargin;
-};
+function isWinningScore(mine: number, theirs: number): boolean {
+  if (!GameConfig.rules.winByTwo) return mine >= GameConfig.rules.winLimit;
+  return mine >= GameConfig.rules.winLimit && mine - theirs >= 2;
+}
 
 const gameStateReducer = (
-  prev: GameState,
+  state: GameState,
   action: GameStateAction,
 ): GameState => {
   switch (action.type) {
     case "SET_MODE":
-      return { ...prev, mode: action.mode };
+      return { ...state, mode: action.mode };
     case "SET_SETTINGS":
-      return { ...prev, settings: action.settings };
+      return { ...state, settings: { ...state.settings, ...action.settings } };
     case "START_GAME":
       return {
-        ...prev,
+        ...state,
         view: "play",
         score1: 0,
         score2: 0,
         paused: false,
-        mode: { ...prev.mode }, // Create new instance of mode object to re-create engine
+        menuOpen: false,
+        exitPromptOpen: false,
+        mode: { ...state.mode },
       };
     case "SCORE_P1":
-    case "SCORE_P2":
-      let { score1, score2 } = prev;
+    case "SCORE_P2": {
+      // Unified scoring handles both players to prevent code duplication,
+      // naturally transitioning the view to "end" when limits are reached.
+      let { score1, score2 } = state;
       if (action.type === "SCORE_P1") score1++;
       if (action.type === "SCORE_P2") score2++;
-      if (checkWinCondition(score1, score2))
-        return { ...prev, score1, score2, view: "end" };
-      return { ...prev, score1, score2 };
+
+      // Check both players — either reaching the limit ends the game
+      return {
+        ...state,
+        score1,
+        score2,
+        view:
+          isWinningScore(score1, score2) || isWinningScore(score2, score1)
+            ? "end"
+            : state.view,
+      };
+    }
     case "PAUSE":
-      return { ...prev, paused: true };
+      return { ...state, paused: true };
     case "RESUME":
-      return { ...prev, paused: false, menuOpen: false };
+      return {
+        ...state,
+        paused: false,
+        menuOpen: false,
+        exitPromptOpen: false,
+      };
     case "OPEN_MENU":
-      return { ...prev, paused: true, menuOpen: true };
+      return { ...state, paused: true, menuOpen: true };
     case "CLOSE_MENU":
-      return { ...prev, menuOpen: false };
+      return { ...state, menuOpen: false };
     case "EXIT_PROMPT":
-      return { ...prev, paused: true, exitPromptOpen: true };
+      return { ...state, exitPromptOpen: true, paused: true };
     case "EXIT_CANCEL":
-      return { ...prev, exitPromptOpen: false };
+      return { ...state, exitPromptOpen: false };
     case "EXIT_CONFIRM":
-      return { ...prev, view: "start", exitPromptOpen: false };
+      return {
+        ...state,
+        view: "start",
+        exitPromptOpen: false,
+        menuOpen: false,
+        paused: false,
+      };
+    case "RESTORE_DEFAULTS":
+      return {
+        ...state,
+        mode: {
+          type: GameConfig.defaults.mode as GameType,
+          opponent: GameConfig.defaults.opponent as GameOpponent,
+        },
+        settings: {},
+      };
     default:
+      // Catch programmer mistakes to ensure we never silently dispatch unrecognized actions.
       throw new Error(
         `Unhandled action type: ${(action as { type: string }).type}`,
       );
@@ -124,8 +162,8 @@ const gameStateReducer = (
 
 const initGameState: GameState = {
   mode: {
-    type: "classic",
-    opponent: "easy",
+    type: GameConfig.defaults.mode as GameType,
+    opponent: GameConfig.defaults.opponent as GameOpponent,
   },
   settings: {},
   view: "start",
@@ -139,23 +177,30 @@ const initGameState: GameState = {
 export const useGameState = () => {
   const [state, dispatch] = useReducer(gameStateReducer, initGameState);
   const resultSaved = useRef(false);
-  const saveResult = () => {
+
+  useEffect(() => {
     if (state.view !== "end") {
       resultSaved.current = false;
       return;
     }
+
     if (resultSaved.current) return;
     resultSaved.current = true;
+
+    // Dynamically formats the database identifier to distinguish human vs AI matches
+    const opponentId =
+      state.mode.opponent === "human"
+        ? GameConfig.matchHistory.localPlayer2Id
+        : `${GameConfig.matchHistory.aiPrefix}${state.mode.opponent}`;
+
     saveMatchAction({
-      player2: "local-player-2", // FIXME - replace with actual opponent identifier when available
+      player2: opponentId,
       score1: state.score1,
       score2: state.score2,
     }).catch((error) => {
-      // TODO - notify user of failure and allow retry
-      console.error("Failed to save match:", error);
+      console.error("Match History API Failure", error);
     });
-  };
-  useEffect(saveResult, [state.view, state.score1, state.score2]);
+  }, [state.view, state.score1, state.score2, state.mode.opponent]);
 
   return [state, dispatch] as const;
 };
