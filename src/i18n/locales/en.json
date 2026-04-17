@@ -4,8 +4,10 @@
     "dark": "Dark",
     "light": "Light",
     "label": "© 2026 Transcendence",
-    "privacyLink": "Privacy Policy",
     "termsLink": "Terms of Service",
+    "termsLinkShort": "Terms",
+    "privacyLink": "Privacy Policy",
+    "privacyLinkShort": "Privacy",
     "languageLabel": {
       "en": "English",
       "fi": "Suomi",
@@ -166,6 +168,7 @@
     "title": "Settings",
     "subtitle": "Manage your account preferences",
     "notSet": "Not set",
+    "backToProfile": "Back to profile",
     "badge": {
       "connected": "Connected",
       "notSet": "Not set"
@@ -173,7 +176,17 @@
     "account": {
       "title": "Account",
       "displayName": "Display name",
-      "email": "Email"
+      "email": "Email",
+      "bio": "Bio",
+      "bioTooLong": "Bio must be {{max}} characters or fewer",
+      "avatarUrl": "Avatar URL",
+      "uploadAvatar": "Upload avatar",
+      "uploadAvatarHint": "If you select a file, it will be used instead of the URL.",
+      "updateSuccess": "Profile updated successfully.",
+      "saving": "Saving...",
+      "saveChanges": "Save changes",
+      "chooseFile": "Choose file",
+      "noFileChosen": "No file chosen"
     },
     "security": {
       "title": "Security",
@@ -184,6 +197,14 @@
       "github": "GitHub",
       "emailMismatch": "Your GitHub email doesn't match your account email. Please use a GitHub account with the same email address.",
       "githubHint": "To link GitHub, sign in with a GitHub account that uses the same email address as your account."
+    },
+    "dangerZone": {
+      "title": "Delete Account",
+      "description": "Deleting your account is IRREVERSIBLE, proceed with causion",
+      "confirm": "Are you sure you want to delete your account? This cannot be undone.",
+      "error": "Failed to delete account.",
+      "deleting": "Deleting...",
+      "deleteButton": "Delete account"
     }
   },
   "addPassword": {
@@ -201,5 +222,48 @@
     "passwordTooShort": "Password too short",
     "userAlreadyExists": "User already exists",
     "unauthorized": "Unauthorized"
+  },
+  "profilePage": {
+    "title": "Profile",
+    "subtitle": "Your user information",
+    "email": "Email",
+    "username": "Username",
+    "name": "Name",
+    "bio": "Bio",
+    "noBio": "No bio added yet.",
+    "matchHistory": "Match history",
+    "friends": "Friends",
+    "stats": {
+      "title": "Stats",
+      "totalMatches": "Total matches",
+      "wins": "Wins",
+      "losses": "Losses",
+      "winRate": "Win rate"
+    },
+    "friendshipStats": {
+      "title": "Friendship stats",
+      "accepted": "Accepted friends",
+      "pendingSent": "Pending sent",
+      "pendingReceived": "Pending received"
+    },
+    "accountDetails": {
+      "title": "Account details",
+      "displayName": "Display name"
+    },
+    "recentMatches": {
+      "title": "Recent matches - Latest 20 matches are displayed",
+      "seeAll": "See all",
+      "noMatches": "No matches played yet.",
+      "versus": "vs",
+      "win": "Win",
+      "loss": "Loss",
+      "you": "You",
+      "at": "at"
+    },
+    "settingsLink": "Settings",
+    "startPlay": "Play!",
+    "totalStat": "Total Stats",
+    "achievements": "Achievements",
+    "gameHistory": "Game Stats & History"
   }
 }

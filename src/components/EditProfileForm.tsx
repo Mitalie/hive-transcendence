@@ -12,13 +12,17 @@ interface EditProfileFormProps {
   avatarUrl: string | null;
 }
 
+const BIO_MAX = 150;
+
 export function EditProfileForm({
   displayName,
   bio,
   avatarUrl,
 }: EditProfileFormProps) {
   const [nameValue, setNameValue] = useState(displayName ?? "");
-  const [bioValue, setBioValue] = useState(bio ?? "");
+  const [bioValue, setBioValue] = useState(() =>
+    (bio ?? "").replace(/\r\n/g, "\n"),
+  );
   const [avatarValue, setAvatarValue] = useState(avatarUrl ?? "");
   const [fileValue, setFileValue] = useState<File | null>(null);
   const [error, setError] = useState("");
@@ -27,6 +31,8 @@ export function EditProfileForm({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
   const { t } = useTranslation();
+
+  const bioTooLong = bioValue.length > BIO_MAX;
 
   const clearSelectedFile = () => {
     setFileValue(null);
@@ -37,6 +43,12 @@ export function EditProfileForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (bioTooLong) {
+      setError(t("settings.account.bioTooLong", { max: BIO_MAX }));
+      return;
+    }
+
     setLoading(true);
     setError("");
     setSuccess(false);
@@ -79,17 +91,39 @@ export function EditProfileForm({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-text/70">Bio</label>
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium text-text/70">
+            {t("settings.account.bio")}
+          </label>
+          <span
+            className={`text-xs tabular-nums ${
+              bioTooLong ? "text-red-500" : "text-text/40"
+            }`}
+          >
+            {bioValue.length} / {BIO_MAX}
+          </span>
+        </div>
         <textarea
           value={bioValue}
-          onChange={(e) => setBioValue(e.target.value)}
+          onChange={(e) => setBioValue(e.target.value.replace(/\r\n/g, "\n"))}
           rows={4}
-          className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-purple-light placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-purple-light transition-all resize-none"
+          className={`w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border placeholder:text-text/40 focus:outline-none focus:ring-2 transition-all resize-none ${
+            bioTooLong
+              ? "border-red-500/60 focus:ring-red-500/30"
+              : "border-purple-light focus:ring-purple-light"
+          }`}
         />
+        {bioTooLong && (
+          <p className="text-xs text-red-500">
+            {t("settings.account.bioTooLong", { max: BIO_MAX })}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-text/70">Avatar URL</label>
+        <label className="text-sm font-medium text-text/70">
+          {t("settings.account.avatarUrl")}
+        </label>
         <input
           type="text"
           value={avatarValue}
@@ -103,12 +137,25 @@ export function EditProfileForm({
 
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-text/70">
-          Upload avatar
+          {t("settings.account.uploadAvatar")}
         </label>
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="px-4 py-2 rounded-lg text-sm border border-purple-light bg-button text-text/70 hover:text-text transition-colors shrink-0"
+          >
+            {t("settings.account.chooseFile")}
+          </button>
+          <span className="text-sm text-text/50 truncate">
+            {fileValue ? fileValue.name : t("settings.account.noFileChosen")}
+          </span>
+        </div>
         <input
           ref={fileInputRef}
           type="file"
           accept="image/*"
+          className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0] ?? null;
             setFileValue(file);
@@ -116,10 +163,9 @@ export function EditProfileForm({
               setAvatarValue("");
             }
           }}
-          className="w-full text-sm text-text"
         />
         <p className="text-xs text-text/50">
-          If you select a file, it will be used instead of the URL.
+          {t("settings.account.uploadAvatarHint")}
         </p>
       </div>
 
@@ -131,12 +177,18 @@ export function EditProfileForm({
 
       {success && (
         <p className="text-green-600 text-sm bg-green-500/10 rounded-lg py-2 px-3 border border-green-500/20">
-          Profile updated successfully.
+          {t("settings.account.updateSuccess")}
         </p>
       )}
 
-      <Button type="submit" disabled={loading} className="mt-1">
-        {loading ? "Saving..." : "Save changes"}
+      <Button
+        type="submit"
+        disabled={loading || bioTooLong}
+        className="mt-1 bg-gradient-to-r from-blue-dark to-purple-dark text-white text-base"
+      >
+        {loading
+          ? t("settings.account.saving")
+          : t("settings.account.saveChanges")}
       </Button>
     </form>
   );

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { AddPasswordForm } from "@/components/AddPasswordForm";
 import { EditProfileForm } from "@/components/EditProfileForm";
 import { DeleteProfileButton } from "@/components/DeleteProfileButton";
+import Link from "next/link";
 
 interface SettingsClientUser {
   id: string;
@@ -32,6 +33,28 @@ export function SettingsClient({ user, error }: SettingsClientProps) {
   return (
     <div className="flex-1 h-full flex flex-col overflow-y-auto p-4 sm:p-8">
       <div className="w-full max-w-3xl mx-auto bg-card rounded-2xl p-6 sm:p-10 flex flex-col gap-6 shadow-xl my-auto">
+        {/* Back button */}
+        <Link
+          href="/profile"
+          className="flex items-center gap-2 text-text/40 hover:text-text transition-colors w-fit"
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          <span className="text-sm font-medium">
+            {t("settings.backToProfile")}
+          </span>
+        </Link>
         <div>
           <h1 className="text-2xl font-semibold text-text">
             {t("settings.title")}

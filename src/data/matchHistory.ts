@@ -61,7 +61,6 @@ export async function getMatchStatsByUserId(player1Id: string) {
 
   const wins = matches.filter((match) => match.score1 > match.score2).length;
   const losses = matches.filter((match) => match.score1 < match.score2).length;
-  const draws = matches.filter((match) => match.score1 === match.score2).length;
   const totalMatches = matches.length;
 
   const winRate =
@@ -71,7 +70,6 @@ export async function getMatchStatsByUserId(player1Id: string) {
     totalMatches,
     wins,
     losses,
-    draws,
     winRate,
   };
 }
