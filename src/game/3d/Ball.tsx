@@ -7,6 +7,7 @@ import { GameConfig } from "@/game/GameConfig";
 
 export default memo(function Ball({ ballData }: { ballData: BallData }) {
   const meshRef = useRef<THREE.Mesh>(null!);
+  const matRef = useRef<THREE.MeshStandardMaterial>(null!);
 
   useFrame((_, delta) => {
     if (!meshRef.current) return;
@@ -17,6 +18,12 @@ export default memo(function Ball({ ballData }: { ballData: BallData }) {
       ballData.spin * delta * GameConfig.ballVisuals.visualSpinMultiplier;
     meshRef.current.rotation.z -=
       ballData.vx * delta * GameConfig.ballVisuals.visualSpinMultiplier;
+
+    // Real-time color preview: sync material color/emissive from GameConfig every frame
+    if (matRef.current) {
+      matRef.current.color.set(GameConfig.ballVisuals.color);
+      matRef.current.emissive.set(GameConfig.ballVisuals.emissive);
+    }
   });
 
   const ballMesh = (
@@ -29,6 +36,7 @@ export default memo(function Ball({ ballData }: { ballData: BallData }) {
         ]}
       />
       <meshStandardMaterial
+        ref={matRef}
         color={GameConfig.ballVisuals.color}
         roughness={GameConfig.ballVisuals.roughness}
         metalness={GameConfig.ballVisuals.metalness}

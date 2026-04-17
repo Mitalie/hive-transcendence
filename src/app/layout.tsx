@@ -32,14 +32,17 @@ export default async function RootLayout({
       >
         <Providers initialLang={lang}>
           <div className="h-screen flex flex-col">
-            <div className="pt-5 px-5">
+            {/* header */}
+            <div className="pt-5 px-5 z-100">
               <Header />
             </div>
             <div className="text-text text-3xl flex-1 flex flex-col justify-center mx-5 my-3 rounded-xl text-center overflow-hidden">
               {children}
             </div>
-            <div className="pb-5 px-5">
-              <Footer initialDark={dark} />
+
+            {/* footer */}
+            <div className="pb-5 px-5 z-100">
+              <Footer />
             </div>
           </div>
         </Providers>

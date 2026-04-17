@@ -232,5 +232,9 @@ export const GameConfig = {
   matchHistory: {
     localPlayer2Id: "local-player-2",
     aiPrefix: "ai-",
+    // Set by Game.tsx when the user confirms setup, read by useGameState on game end.
+    // For human opponent: the guest's name entered in setup.
+    // For AI opponent: "AI-easy" / "AI-medium" / "AI-hard".
+    currentPlayer2: "",
   },
 };

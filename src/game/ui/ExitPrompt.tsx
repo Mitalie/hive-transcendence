@@ -1,4 +1,5 @@
 import { use } from "react";
+import { useTranslation } from "react-i18next";
 import {
   exitCancelAction,
   exitConfirmAction,
@@ -8,29 +9,39 @@ import Button from "@/components/Button";
 
 export default function ExitModal({
   exitPromptOpen,
+  onConfirm,
 }: {
   exitPromptOpen: boolean;
+  /** Called after dispatching exitConfirmAction — use to reset local UI state */
+  onConfirm?: () => void;
 }) {
+  // Hooks must be called unconditionally — before any early return.
+  const dispatch = use(GameStateDispatchContext);
+  const { t } = useTranslation();
+
   if (!exitPromptOpen) return null;
 
-  const dispatch = use(GameStateDispatchContext);
-
   return (
-    <div className="absolute inset-0 flex justify-center items-center rounded-xl">
-      <div className="bg-card p-[30px] text-center rounded-xl shadow-lg">
-        <p className="mb-5 text-3xl">Are you sure you want to end the game?</p>
-        <div className="flex gap-2.5 justify-center">
+    <div className="absolute inset-0 flex justify-center items-center rounded-xl z-30 pointer-events-none">
+      <div className="bg-card/80 backdrop-blur-sm rounded-2xl shadow-2xl flex flex-col items-center gap-5 px-10 py-8 select-none pointer-events-auto">
+        <span className="text-3xl font-bold tracking-wide text-text">
+          {t("game.exit.title")}
+        </span>
+        <div className="flex gap-3">
           <Button
-            className="bg-blue-dark hover:bg-purple-dark"
+            className="w-48 py-3 bg-btn-purple hover:bg-btn-purple-hover font-semibold"
             onClick={() => dispatch(exitCancelAction())}
           >
-            Return to Game
+            {t("game.exit.keepPlaying")}
           </Button>
           <Button
-            className="bg-btn-blue hover:bg-btn-blue-hover"
-            onClick={() => dispatch(exitConfirmAction())}
+            className="w-48 py-3 bg-btn-purple-hover hover:opacity-90 font-semibold"
+            onClick={() => {
+              dispatch(exitConfirmAction());
+              onConfirm?.();
+            }}
           >
-            End Game
+            {t("game.exit.endGame")}
           </Button>
         </div>
       </div>

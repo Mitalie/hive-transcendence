@@ -112,16 +112,6 @@
       }
     }
   },
-  "gamecontrols": {
-    "start": "Start",
-    "pause": "Pause",
-    "end": "end",
-    "continue": "continue"
-  },
-  "gamesetting": {
-    "settingbtn": "Setting",
-    "title": "GameSetting"
-  },
   "auth": {
     "signIn": "Sign In",
     "signOut": "Sign out",
@@ -340,6 +330,82 @@
       "removeConfirmText": "Remove {{name}} from friends?",
       "removeConfirm": "Remove",
       "removeCancel": "Cancel"
+    }
+  },
+  "game": {
+    "setup": {
+      "gameMode": "Game Mode",
+      "classic": "Classic",
+      "classicDesc": "2D side-scrolling",
+      "advanced": "Advanced",
+      "advancedDesc": "3D physics with spin",
+      "opponent": "Opponent",
+      "ai": "AI",
+      "aiDesc": "Challenge the computer",
+      "guest": "Guest",
+      "guestDesc": "Play with a friend",
+      "difficulty": "Difficulty",
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "player2Name": "Player 2 Name",
+      "player2Placeholder": "Enter a name to continue...",
+      "winScore": "Win Score",
+      "startPlay": "Start Play",
+      "loginToUnlock": "Log in to unlock more game modes"
+    },
+    "lobby": {
+      "readyToPlay": "Ready to play",
+      "player1": "Player 1",
+      "player2": "Player 2",
+      "vs": "VS",
+      "classicMode": "Classic Mode",
+      "advancedMode": "Advanced Mode",
+      "back": "← Back",
+      "enterCourt": "Enter Court →",
+      "aiLabel": "AI · Easy",
+      "aiEasy": "Easy",
+      "aiMedium": "Medium",
+      "aiHard": "Hard",
+      "you": "You"
+    },
+    "play": {
+      "ready": "Ready?",
+      "clickOrSpace": "Click or press Space",
+      "paused": "Paused",
+      "continue": "Continue",
+      "endGame": "End Game"
+    },
+    "exit": {
+      "title": "End the game?",
+      "keepPlaying": "Keep Playing",
+      "endGame": "End Game"
+    },
+    "end": {
+      "gameOver": "Game Over",
+      "wins": "Wins!",
+      "playAgain": "Play Again",
+      "mainMenu": "Main Menu",
+      "loginToSave": "Log in to save your match history"
+    },
+    "settings": {
+      "title": "Game Settings",
+      "tabColors": "Colors",
+      "tabPhysics": "Physics",
+      "p1Color": "P1 Color",
+      "p2Color": "P2 Color",
+      "floor": "Floor",
+      "net": "Net",
+      "glassWalls": "Glass Walls",
+      "ball": "Ball",
+      "ballSpeed": "Ball Speed",
+      "ballGravity": "Ball Gravity",
+      "ballBounce": "Ball Bounce",
+      "ballSpin": "Ball Spin",
+      "paddleSpeed": "Paddle Speed",
+      "reset": "Reset",
+      "apply": "Apply",
+      "close": "✕"
     }
   }
 }
