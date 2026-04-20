@@ -156,7 +156,12 @@
     "submit": "JATKA",
     "loading": "Tallennetaan...",
     "errorFallback": "Profiilin luonti epäonnistui",
-    "errorUnexpected": "Rekisteröinnin aikana tapahtui odottamaton virhe"
+    "errorUnexpected": "Rekisteröinnin aikana tapahtui odottamaton virhe",
+    "avatarLabel": "Avatar",
+    "avatarDefault": "Käytä oletusavataria",
+    "avatarGithub": "Käytä GitHub-avatariani",
+    "avatarUpload": "Lataa kuva",
+    "reselectUpload": "Valitse kuva ennen jatkamista."
   },
   "settings": {
     "title": "Asetukset",
@@ -210,12 +215,19 @@
     "success": "Salasana lisätty! Voit nyt kirjautua myös sähköpostilla."
   },
   "apiErrors": {
-    "missingFields": "Puuttuvat kentät",
-    "userNotFound": "Käyttäjää ei löydy",
-    "displayNameTaken": "Näyttönimi on jo käytössä",
-    "passwordTooShort": "Salasana on liian lyhyt",
-    "userAlreadyExists": "Käyttäjä on jo olemassa",
-    "unauthorized": "Ei käyttöoikeutta"
+    "missingFields": "Täytä kaikki vaaditut kentät.",
+    "userNotFound": "Käyttäjää ei löydy.",
+    "displayNameTaken": "Tämä näyttönimi on jo käytössä.",
+    "passwordTooShort": "Salasanan on oltava vähintään 6 merkkiä pitkä.",
+    "userAlreadyExists": "Tällä sähköpostiosoitteella on jo tili.",
+    "unauthorized": "Sinun täytyy olla kirjautunut sisään tehdäksesi tämän.",
+    "displayNameTooLong": "Näyttönimi on liian pitkä.",
+    "bioTooLong": "Bion on oltava enintään {{max}} merkkiä.",
+    "avatarUrlTooLong": "Avatar-URL on liian pitkä.",
+    "internalServerError": "Palvelimella tapahtui sisäinen virhe.",
+    "invalidImageUrl": "Kuvan URL-osoite on virheellinen tai se ei ole saavutettavissa.",
+    "fileTooLarge": "Kuva on liian suuri. Valitse alle 2 Mt:n tiedosto.",
+    "errorUnexpected": "Odottamaton virhe. Yritä uudelleen."
   },
   "profilePage": {
     "title": "Profiili",

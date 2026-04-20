@@ -5,6 +5,7 @@ import { AddPasswordForm } from "@/components/AddPasswordForm";
 import { EditProfileForm } from "@/components/EditProfileForm";
 import { DeleteProfileButton } from "@/components/DeleteProfileButton";
 import Link from "next/link";
+import Image from "next/image";
 
 interface SettingsClientUser {
   id: string;
@@ -26,9 +27,7 @@ interface SettingsClientProps {
 export function SettingsClient({ user, error }: SettingsClientProps) {
   const { t } = useTranslation();
 
-  const avatarSrc = user.hasStoredAvatar
-    ? `/api/avatar/${user.id}?v=${user.avatarVersion}`
-    : null;
+  const avatarSrc = `/api/avatar/${user.id}?v=${user.avatarVersion}`;
 
   return (
     <div className="flex-1 h-full flex flex-col overflow-y-auto p-4 sm:p-8">
@@ -63,23 +62,15 @@ export function SettingsClient({ user, error }: SettingsClientProps) {
         </div>
 
         <div className="flex items-center gap-4">
-          {avatarSrc ? (
-            <>
-              {/* We intentionally use <img> here because avatarSrc points to a
-                  versioned internal avatar API route, and plain img keeps this
-                  settings preview simple without needing next/image. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={avatarSrc}
-                alt={user.displayName ?? "User avatar"}
-                className="h-20 w-20 rounded-full object-cover border border-purple-light"
-              />
-            </>
-          ) : (
-            <div className="h-20 w-20 rounded-full border border-purple-light bg-button flex items-center justify-center text-2xl font-semibold text-text/70">
-              {(user.displayName ?? user.email ?? "?").charAt(0).toUpperCase()}
-            </div>
-          )}
+          <span className="relative block w-20 h-20 rounded-full overflow-hidden shrink-0 border border-purple-light">
+            <Image
+              unoptimized
+              src={avatarSrc}
+              alt={user.displayName ?? "User avatar"}
+              fill
+              className="object-cover"
+            />
+          </span>
 
           <div className="flex flex-col">
             <span className="text-lg font-semibold text-text">

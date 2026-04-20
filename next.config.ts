@@ -8,6 +8,14 @@ const nextConfig: NextConfig = {
         hostname: "avatars.githubusercontent.com",
       },
     ],
+    localPatterns: [
+      {
+        pathname: "/images/**",
+      },
+      {
+        pathname: "/api/avatar/**",
+      },
+    ],
   },
 
   experimental: {

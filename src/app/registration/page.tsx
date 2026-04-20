@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import Button from "@/components/Button";
 import { signIn } from "next-auth/react";
 import { useTranslation } from "react-i18next";
@@ -13,7 +12,6 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,29 +27,29 @@ export default function RegisterPage() {
         throw new Error(t(`apiErrors.${key}`, t("registration.errorFallback")));
       }
 
-      sessionStorage.setItem(
-        "pendingAuth",
-        JSON.stringify({ email, password }),
-      );
+      const signInResult = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (!signInResult || signInResult.error) {
+        throw new Error(t("registration.errorUnexpected"));
+      }
 
       if (result.needsProfile === false) {
-        sessionStorage.removeItem("pendingAuth");
-        await signIn("credentials", {
-          email,
-          password,
-          redirect: true,
-          callbackUrl: "/",
-        });
-      } else {
-        router.push("/registration/profile");
+        window.location.href = "/";
+        return;
       }
+
+      window.location.href = "/registration/profile";
+      return;
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
         setError(t("registration.errorUnexpected"));
       }
-    } finally {
       setLoading(false);
     }
   };

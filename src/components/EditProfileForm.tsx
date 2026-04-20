@@ -71,6 +71,7 @@ export function EditProfileForm({
       setSuccess(true);
       clearSelectedFile();
       router.refresh();
+      window.dispatchEvent(new Event("avatar-updated"));
     }
 
     setLoading(false);
