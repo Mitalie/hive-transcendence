@@ -26,7 +26,7 @@
   "home": {
     "welcome": "Tervetuloa <Verkkosivuston nimi>",
     "intro": "Tämä on lyhyt esittely verkkosivustosta.",
-    "startgame": "Aloita toisto"
+    "startgame": "Pelaa"
   },
   "terms": {
     "title": "Käyttöehdot",
@@ -267,7 +267,6 @@
       "at": "klo"
     },
     "settingsLink": "Asetukset",
-    "startPlay": "Pelaa!",
     "totalStat": "Kokonaistilastot",
     "achievements": "Saavutukset",
     "gameHistory": "Pelitilastot & historia"

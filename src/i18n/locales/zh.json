@@ -21,12 +21,12 @@
     "settings": "账户设置",
     "SetProfile": "资料设置",
     "default": "默认页面",
-    "play": "开始"
+    "play": "开始玩!"
   },
   "home": {
     "welcome": "欢迎来到 <网站名称>",
     "intro": "这里是网站简介。",
-    "startgame": "开始游戏"
+    "startgame": "开始玩"
   },
   "terms": {
     "title": "服务条款",
@@ -267,7 +267,6 @@
       "at": ""
     },
     "settingsLink": "设置",
-    "startPlay": "玩!",
     "totalStat": "总统计",
     "achievements": "成就",
     "gameHistory": "游戏统计与历史"

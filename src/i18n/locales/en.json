@@ -27,12 +27,12 @@
     "settings": "Account Settings",
     "SetProfile": "Profile Setup",
     "default": "Default Page Title",
-    "play": "Play"
+    "play": "Play!"
   },
   "home": {
     "welcome": "Welcome to <Website Name>",
     "intro": "This is a brief introduction to the website.",
-    "startgame": "Start Play"
+    "startgame": "Play"
   },
   "terms": {
     "title": "Terms of Service",
@@ -273,7 +273,6 @@
       "at": "at"
     },
     "settingsLink": "Settings",
-    "startPlay": "Play!",
     "totalStat": "Total Stats",
     "achievements": "Achievements",
     "gameHistory": "Game Stats & History"
