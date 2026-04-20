@@ -16,7 +16,7 @@ services:
           "mariadb-admin",
           "ping",
           "-h",
-          "localhost",
+          "127.0.0.1",
           "-uroot",
           "-p${MARIADB_ROOT_PASSWORD}",
         ]

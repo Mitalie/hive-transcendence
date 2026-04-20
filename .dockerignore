@@ -1,0 +1,28 @@
+# .dockerignore
+
+# Dependencies: Prevents copying local OS-specific binaries into the Linux container
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Next.js build output: Ensures the container builds a fresh version
+.next
+out
+
+# Git and environment: Keeps the image clean and prevents leaking secrets in image layers
+.git
+.gitignore
+.devcontainer
+.env
+
+# Optional: Speeds up the "Sending build context to Docker daemon" step
+README.md
+docs/
+*.md
+
+# Docker-related files: Prevents the container from containing its own blueprints
+docker/
+docker-compose.yml
+mariadb.yml

@@ -1,7 +1,11 @@
-# docker-compose fragment to be extended by either standalone or devcontainer config
+# standalone MariaDB fragment matching the main docker-compose configuration
 services:
   mariadb:
-    image: mariadb:latest
+    # Pin to LTS (11.4.x) to ensure compatibility with Prisma's authentication driver
+    image: mariadb:lts
+
+    # Added command to reduce log noise from aborted Prisma sync connections
+    command: ["mariadbd", "--log-warnings=1"]
 
     environment:
       - MARIADB_ROOT_PASSWORD
@@ -10,6 +14,5 @@ services:
       - MARIADB_PASSWORD
 
     volumes:
-      # NAMED VOLUME: Saves database data permanently to the host machine.
-      # Without this, all users and stats would be wiped every time Docker shuts down.
+      # Persistent volume for MariaDB data
       - transcendence_mariadb_data:/var/lib/mysql
