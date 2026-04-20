@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import Button from "./Button";
 import { updateProfileAction } from "@/actions/account";
+import { checkUsernameAvailableAction } from "@/actions/registration";
 
 interface EditProfileFormProps {
   displayName: string | null;
@@ -28,11 +29,31 @@ export function EditProfileForm({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(
+    null,
+  );
+  const [checkingUsername, setCheckingUsername] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
   const { t } = useTranslation();
 
   const bioTooLong = bioValue.length > BIO_MAX;
+
+  useEffect(() => {
+    if (!nameValue.trim() || nameValue.trim() === (displayName ?? "").trim()) {
+      setUsernameAvailable(null);
+      return;
+    }
+    setCheckingUsername(true);
+    const timeout = setTimeout(async () => {
+      const { available } = await checkUsernameAvailableAction(
+        nameValue.trim(),
+      );
+      setUsernameAvailable(available);
+      setCheckingUsername(false);
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [nameValue, displayName]);
 
   const clearSelectedFile = () => {
     setFileValue(null);
@@ -48,6 +69,8 @@ export function EditProfileForm({
       setError(t("settings.account.bioTooLong", { max: BIO_MAX }));
       return;
     }
+
+    if (checkingUsername || usernameAvailable === false) return;
 
     setLoading(true);
     setError("");
@@ -66,7 +89,11 @@ export function EditProfileForm({
 
     if (!result.ok) {
       const key = result.error;
-      setError(t(`apiErrors.${key}`, t("profile.errorFallback")));
+      if (key === "DISPLAY_NAME_TAKEN") {
+        setError(t("profile.usernameTaken"));
+      } else {
+        setError(t(`apiErrors.${key}`, t("profile.errorFallback")));
+      }
     } else {
       setSuccess(true);
       clearSelectedFile();
@@ -77,11 +104,13 @@ export function EditProfileForm({
     setLoading(false);
   };
 
+  const nameChanged = nameValue.trim() !== (displayName ?? "").trim();
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-text/70">
-          {t("settings.account.displayName")}
+          {t("settings.account.userName")}
         </label>
         <input
           type="text"
@@ -89,6 +118,23 @@ export function EditProfileForm({
           onChange={(e) => setNameValue(e.target.value)}
           className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-purple-light placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-purple-light transition-all"
         />
+        {nameChanged && nameValue.trim() && (
+          <p
+            className={`text-xs mt-0.5 ${
+              checkingUsername
+                ? "text-text/40"
+                : usernameAvailable
+                  ? "text-green-500"
+                  : "text-red-500"
+            }`}
+          >
+            {checkingUsername
+              ? t("profile.usernameChecking")
+              : usernameAvailable
+                ? t("profile.usernameAvailable")
+                : t("profile.usernameTaken")}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-1">
@@ -184,7 +230,12 @@ export function EditProfileForm({
 
       <Button
         type="submit"
-        disabled={loading || bioTooLong}
+        disabled={
+          loading ||
+          bioTooLong ||
+          checkingUsername ||
+          usernameAvailable === false
+        }
         className="mt-1 bg-gradient-to-r from-blue-dark to-purple-dark text-white text-base"
       >
         {loading

@@ -1,10 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Button from "@/components/Button";
 import { useTranslation } from "react-i18next";
-import { completeRegistrationProfileAction } from "@/actions/registration";
+import {
+  completeRegistrationProfileAction,
+  checkUsernameAvailableAction,
+} from "@/actions/registration";
 
 type AvatarChoice = "default" | "github" | "upload";
 
@@ -14,6 +17,10 @@ export default function ProfileSetupPage() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(
+    null,
+  );
+  const [checkingUsername, setCheckingUsername] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const { t } = useTranslation();
@@ -31,8 +38,25 @@ export default function ProfileSetupPage() {
     }
   };
 
+  useEffect(() => {
+    if (!displayName.trim()) {
+      setUsernameAvailable(null);
+      return;
+    }
+    setCheckingUsername(true);
+    const timeout = setTimeout(async () => {
+      const { available } = await checkUsernameAvailableAction(
+        displayName.trim(),
+      );
+      setUsernameAvailable(available);
+      setCheckingUsername(false);
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [displayName]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!usernameAvailable) return;
     setError("");
     setLoading(true);
 
@@ -70,9 +94,13 @@ export default function ProfileSetupPage() {
       window.dispatchEvent(new Event("avatar-updated"));
       window.location.href = "/";
     } catch (err: unknown) {
-      setError(
-        err instanceof Error ? err.message : t("profile.errorUnexpected"),
-      );
+      if (err instanceof Error && err.message.includes("Unique constraint")) {
+        setError(t("profile.usernameTaken"));
+      } else {
+        setError(
+          err instanceof Error ? err.message : t("profile.errorUnexpected"),
+        );
+      }
       setLoading(false);
     }
   };
@@ -96,16 +124,33 @@ export default function ProfileSetupPage() {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-text/70">
-              {t("profile.displayNameLabel")}
+              {t("profile.userNameLabel")}
             </label>
             <input
               type="text"
-              placeholder={t("profile.displayNamePlaceholder")}
+              placeholder={t("profile.userNamePlaceholder")}
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-purple-light placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-purple-light transition-all"
               required
             />
+            {displayName.trim() && (
+              <p
+                className={`text-xs mt-0.5 ${
+                  checkingUsername
+                    ? "text-text/40"
+                    : usernameAvailable
+                      ? "text-green-500"
+                      : "text-red-500"
+                }`}
+              >
+                {checkingUsername
+                  ? t("profile.usernameChecking")
+                  : usernameAvailable
+                    ? t("profile.usernameAvailable")
+                    : t("profile.usernameTaken")}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -191,7 +236,7 @@ export default function ProfileSetupPage() {
 
           <Button
             type="submit"
-            disabled={loading}
+            disabled={loading || !usernameAvailable || checkingUsername}
             className="bg-gradient-to-r from-blue-dark to-purple-dark mt-1 text-white text-xl"
           >
             {loading ? t("profile.loading") : t("profile.submit")}

@@ -151,8 +151,11 @@
   "profile": {
     "title": "Luo profiilisi",
     "subtitle": "Valitse, miten sinut näytetään muille",
-    "displayNameLabel": "Näyttönimi",
-    "displayNamePlaceholder": "Kirjoita näyttönimesi",
+    "userNameLabel": "Käyttäjänimi",
+    "userNamePlaceholder": "Kirjoita käyttäjänimesi",
+    "usernameChecking": "Tarkistetaan...",
+    "usernameAvailable": "✓ Käyttäjänimi on saatavilla",
+    "usernameTaken": "✗ Käyttäjänimi on jo käytössä",
     "submit": "JATKA",
     "loading": "Tallennetaan...",
     "errorFallback": "Profiilin luonti epäonnistui",
@@ -174,7 +177,7 @@
     },
     "account": {
       "title": "Tili",
-      "displayName": "Näyttönimi",
+      "userName": "Käyttäjänimi",
       "email": "Sähköposti",
       "bio": "Bio",
       "bioTooLong": "Bion on oltava enintään {{max}} merkkiä",

@@ -168,3 +168,12 @@ export async function completeRegistrationProfileAction(formData: FormData) {
     return { ok: false, error: apiErrors.errorUnexpected };
   }
 }
+
+export async function checkUsernameAvailableAction(
+  username: string,
+): Promise<{ available: boolean }> {
+  const existing = await prisma.user.findUnique({
+    where: { displayName: username },
+  });
+  return { available: !existing };
+}
