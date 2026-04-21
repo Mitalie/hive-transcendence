@@ -52,6 +52,8 @@ export async function getFriendshipBetweenUsers(
 const userDisplayFields = {
   id: true,
   displayName: true,
+  name: true,
+  username: true,
 } as const;
 
 export async function getPendingFriendRequestsByUserId(userId: string) {

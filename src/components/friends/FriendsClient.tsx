@@ -9,7 +9,7 @@ import DiscoverUserCard from "./DiscoverUserCard";
 import FriendProfile from "./FriendProfile";
 import { searchUsersForFriendRequest } from "@/actions/users";
 
-type Person = { id: string; label: string };
+type Person = { id: string; label: string; avatarUrl?: string | null };
 type ActiveTab = "friends" | "incoming" | "sent";
 
 interface FriendsClientProps {
@@ -90,7 +90,7 @@ export function FriendsClient({
     }
     setIsSearching(true);
     const results = await searchUsersForFriendRequest(trimmed);
-    setSearchResults(results);
+    setSearchResults(results.map((u) => ({ ...u, avatarUrl: `/api/avatar/${u.id}` })));
     setIsSearching(false);
   }, []);
 
@@ -144,6 +144,7 @@ export function FriendsClient({
     setSelectedId(p.id);
     setSelectedFromSearch(false);
     setSearch("");
+    setSearchResults([]);
   };
 
   const selectFromSearch = (p: Person) => {
@@ -200,6 +201,7 @@ export function FriendsClient({
                 key={f.id}
                 friendshipId={f.id}
                 label={f.label}
+                avatarUrl={f.avatarUrl}
                 onSelect={() => selectFromList(f)}
                 isSelected={selectedId === f.id}
               />
@@ -222,6 +224,7 @@ export function FriendsClient({
                 key={f.id}
                 friendshipId={f.id}
                 label={f.label}
+                avatarUrl={f.avatarUrl}
                 variant="incoming"
                 isSelected={selectedId === f.id}
                 onViewProfile={() => selectFromList(f)}
@@ -247,6 +250,7 @@ export function FriendsClient({
                 key={f.id}
                 friendshipId={f.id}
                 label={f.label}
+                avatarUrl={f.avatarUrl}
                 variant="sent"
                 isSelected={selectedId === f.id}
                 onViewProfile={() => selectFromList(f)}
@@ -368,6 +372,7 @@ export function FriendsClient({
                       key={u.id}
                       userId={u.id}
                       label={u.label}
+                      avatarUrl={`/api/avatar/${u.id}`}
                       isSelected={selectedId === u.id}
                       onSelect={() => selectFromSearch(u)}
                       onSuccess={() => {

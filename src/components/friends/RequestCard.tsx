@@ -14,6 +14,7 @@ type RequestCardVariant = "incoming" | "sent";
 type Props = {
   friendshipId: string;
   label: string;
+  avatarUrl?: string | null;
   isSelected: boolean;
   variant: RequestCardVariant;
   onViewProfile: () => void;
@@ -23,6 +24,7 @@ type Props = {
 export default function RequestCard({
   friendshipId,
   label,
+  avatarUrl,
   isSelected,
   variant,
   onViewProfile,
@@ -81,6 +83,7 @@ export default function RequestCard({
     <div className="flex flex-col gap-1">
       <PersonCard
         label={label}
+        avatarUrl={avatarUrl}
         isSelected={isSelected}
         onClick={onViewProfile}
         actions={actions}

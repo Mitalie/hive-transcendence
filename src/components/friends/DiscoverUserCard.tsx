@@ -8,6 +8,7 @@ import PersonCard from "./PersonCard";
 type Props = {
   userId: string;
   label: string;
+  avatarUrl?: string | null;
   isSelected?: boolean;
   onSelect?: () => void;
   onSuccess?: () => void;
@@ -16,6 +17,7 @@ type Props = {
 export default function DiscoverUserCard({
   userId,
   label,
+  avatarUrl,
   isSelected = false,
   onSelect,
   onSuccess,
@@ -40,6 +42,7 @@ export default function DiscoverUserCard({
     <div className="flex flex-col gap-1">
       <PersonCard
         label={label}
+        avatarUrl={avatarUrl}
         isSelected={isSelected}
         onClick={onSelect}
         actions={

@@ -71,6 +71,8 @@ export async function updateProfileAction(formData: FormData) {
 
     revalidatePath("/settings");
     revalidatePath("/profile");
+    revalidatePath("/friends");
+    revalidatePath(`/api/avatar/${session.user.id}`, "page");
 
     return { ok: true };
   } catch {
@@ -93,6 +95,7 @@ export async function deleteProfileAction() {
     revalidatePath("/");
     revalidatePath("/settings");
     revalidatePath("/profile");
+    revalidatePath("/friends");
 
     return { ok: true };
   } catch (error) {

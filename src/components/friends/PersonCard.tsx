@@ -4,6 +4,7 @@ import UserAvatar from "./UserAvatar";
 
 type Props = {
   label: string;
+  avatarUrl?: string | null;
   sublabel?: string;
   isSelected?: boolean;
   online?: boolean;
@@ -13,6 +14,7 @@ type Props = {
 
 export default function PersonCard({
   label,
+  avatarUrl,
   sublabel,
   isSelected = false,
   online,
@@ -28,7 +30,7 @@ export default function PersonCard({
       } ${isSelected ? "bg-purple-light/10 border-purple-dark" : "hover:bg-purple-light/10"}`}
     >
       <div className="flex items-center gap-3 min-w-0 flex-1">
-        <UserAvatar label={label} size="sm" />
+        <UserAvatar label={label} avatarUrl={avatarUrl} size="sm" />
         <div className="flex flex-col min-w-0">
           <div className="flex items-center gap-1.5 min-w-0">
             <p className="font-medium text-text text-sm truncate">{label}</p>

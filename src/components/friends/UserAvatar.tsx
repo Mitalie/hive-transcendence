@@ -2,10 +2,11 @@
 
 type Props = {
   label: string;
+  avatarUrl?: string | null;
   size?: "sm" | "md" | "lg";
 };
 
-export default function UserAvatar({ label, size = "md" }: Props) {
+export default function UserAvatar({ label, avatarUrl, size = "md" }: Props) {
   const sizes = {
     sm: "w-7 h-7 text-xs",
     md: "w-9 h-9 text-sm",
@@ -13,12 +14,10 @@ export default function UserAvatar({ label, size = "md" }: Props) {
   };
 
   return (
-    <div
-      className={`${sizes[size]} shrink-0 rounded-full bg-gradient-to-br from-blue-dark to-purple-dark flex items-center justify-center`}
-    >
-      <span className="text-white font-bold select-none leading-none">
-        {label.charAt(0).toUpperCase()}
-      </span>
-    </div>
+    <img
+      src={avatarUrl ?? ""}
+      alt={label}
+      className={`${sizes[size]} shrink-0 rounded-full object-cover`}
+    />
   );
 }
