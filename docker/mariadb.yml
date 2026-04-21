@@ -16,3 +16,12 @@ services:
     volumes:
       # Persistent volume for MariaDB data
       - transcendence_mariadb_data:/var/lib/mysql
+
+    healthcheck:
+      # Using 127.0.0.1 instead of localhost forces a TCP check,
+      # ensuring Docker waits for the REAL server, not the temp socket server.
+      test: mariadb-admin ping -h 127.0.0.1 -u root -p$$MARIADB_ROOT_PASSWORD
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s

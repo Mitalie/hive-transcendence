@@ -5,15 +5,12 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-COPY package.json package-lock.json* ./
+COPY package.json package-lock.json ./
 COPY prisma ./prisma/
 
 RUN npm ci
 
 COPY . .
-
-# Generate Prisma Client for the container architecture
-RUN npx prisma generate
 
 RUN npm run build
 
