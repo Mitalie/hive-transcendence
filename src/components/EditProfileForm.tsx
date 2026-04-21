@@ -15,6 +15,38 @@ interface EditProfileFormProps {
 
 const BIO_MAX = 150;
 
+function useUsernameCheck(nameValue: string, originalName: string | null) {
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean>(true);
+  const [checkingUsername, setCheckingUsername] = useState(false);
+
+  useEffect(() => {
+    const trimmed = nameValue.trim();
+    const isUnchanged = trimmed === (originalName ?? "").trim();
+
+    if (!trimmed || isUnchanged) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const timeout = setTimeout(async () => {
+      setCheckingUsername(true);
+      const { available } = await checkUsernameAvailableAction(trimmed);
+      if (!cancelled) {
+        setUsernameAvailable(available);
+        setCheckingUsername(false);
+      }
+    }, 500);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
+  }, [nameValue, originalName]);
+
+  return { usernameAvailable, checkingUsername };
+}
+
 export function EditProfileForm({
   displayName,
   bio,
@@ -29,31 +61,17 @@ export function EditProfileForm({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(
-    null,
-  );
-  const [checkingUsername, setCheckingUsername] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
   const { t } = useTranslation();
 
-  const bioTooLong = bioValue.length > BIO_MAX;
+  const { usernameAvailable, checkingUsername } = useUsernameCheck(
+    nameValue,
+    displayName,
+  );
 
-  useEffect(() => {
-    if (!nameValue.trim() || nameValue.trim() === (displayName ?? "").trim()) {
-      setUsernameAvailable(null);
-      return;
-    }
-    setCheckingUsername(true);
-    const timeout = setTimeout(async () => {
-      const { available } = await checkUsernameAvailableAction(
-        nameValue.trim(),
-      );
-      setUsernameAvailable(available);
-      setCheckingUsername(false);
-    }, 500);
-    return () => clearTimeout(timeout);
-  }, [nameValue, displayName]);
+  const bioTooLong = bioValue.length > BIO_MAX;
+  const nameChanged = nameValue.trim() !== (displayName ?? "").trim();
 
   const clearSelectedFile = () => {
     setFileValue(null);
@@ -70,7 +88,7 @@ export function EditProfileForm({
       return;
     }
 
-    if (checkingUsername || usernameAvailable === false) return;
+    if (checkingUsername || (nameChanged && !usernameAvailable)) return;
 
     setLoading(true);
     setError("");
@@ -89,7 +107,7 @@ export function EditProfileForm({
 
     if (!result.ok) {
       const key = result.error;
-      if (key === "DISPLAY_NAME_TAKEN") {
+      if (key === "displayNameTaken") {
         setError(t("profile.usernameTaken"));
       } else {
         setError(t(`apiErrors.${key}`, t("profile.errorFallback")));
@@ -98,13 +116,10 @@ export function EditProfileForm({
       setSuccess(true);
       clearSelectedFile();
       router.refresh();
-      window.dispatchEvent(new Event("avatar-updated"));
     }
 
     setLoading(false);
   };
-
-  const nameChanged = nameValue.trim() !== (displayName ?? "").trim();
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -234,7 +249,7 @@ export function EditProfileForm({
           loading ||
           bioTooLong ||
           checkingUsername ||
-          usernameAvailable === false
+          (nameChanged && !usernameAvailable)
         }
         className="mt-1 bg-gradient-to-r from-blue-dark to-purple-dark text-white text-base"
       >
