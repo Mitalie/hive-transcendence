@@ -52,7 +52,15 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     session: async ({ session, token }) => {
+      const user = await prisma.user.findUnique({
+        where: { id: token.userId },
+        select: {
+          updatedAt: true,
+        },
+      });
+
       session.user.id = token.userId;
+      session.user.avatarVersion = user?.updatedAt.getTime();
       return session;
     },
   },

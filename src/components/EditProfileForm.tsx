@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import Button from "./Button";
 import { updateProfileAction } from "@/actions/account";
+import { useSession } from "next-auth/react";
 
 interface EditProfileFormProps {
   displayName: string | null;
@@ -31,6 +32,7 @@ export function EditProfileForm({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
   const { t } = useTranslation();
+  const { update: updateSession } = useSession();
 
   const bioTooLong = bioValue.length > BIO_MAX;
 
@@ -71,7 +73,7 @@ export function EditProfileForm({
       setSuccess(true);
       clearSelectedFile();
       router.refresh();
-      window.dispatchEvent(new Event("avatar-updated"));
+      updateSession();
     }
 
     setLoading(false);
