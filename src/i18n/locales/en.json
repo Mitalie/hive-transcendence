@@ -292,6 +292,7 @@
   "friends": {
     "title": "Friends",
     "subtitle": "Manage your friends and requests.",
+    "lastUpdated": "Last updated: {{time}}",
     "stats": {
       "friends": "Friends",
       "incoming": "Incoming requests",

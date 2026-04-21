@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-type UserResult = { id: string; label: string; email?: string };
+type UserResult = { id: string; label: string };
 
 export async function searchUsersForFriendRequest(
   keyword: string,
@@ -35,28 +35,15 @@ export async function searchUsersForFriendRequest(
     where: {
       AND: [
         { id: { notIn: excludedArray } },
-        {
-          OR: [
-            { displayName: { contains: trimmed } },
-            { email: { contains: trimmed } },
-          ],
-        },
+        { displayName: { startsWith: trimmed } },
       ],
     },
-    select: { id: true, displayName: true, email: true },
-    take: 100,
+    select: { id: true, displayName: true },
+    take: 20,
   });
 
-  const lower = trimmed.toLowerCase();
-  const filtered = users.filter(
-    (u) =>
-      u.displayName?.toLowerCase().includes(lower) ||
-      u.email?.toLowerCase().includes(lower),
-  );
-
-  return filtered.slice(0, 20).map((u) => ({
+  return users.map((u) => ({
     id: u.id,
-    label: u.displayName || u.email || "Unknown user",
-    email: u.email ?? undefined,
+    label: u.displayName ?? "Unknown user",
   }));
 }

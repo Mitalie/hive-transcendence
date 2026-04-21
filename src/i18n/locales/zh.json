@@ -286,6 +286,7 @@
   "friends": {
     "title": "好友",
     "subtitle": "管理您的好友和请求。",
+    "lastUpdated": "更新于：{{time}}",
     "stats": {
       "friends": "好友",
       "incoming": "收到的请求",

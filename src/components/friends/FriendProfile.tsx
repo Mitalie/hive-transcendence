@@ -22,7 +22,7 @@ type Stats = {
 };
 
 type Props = {
-  friend: { id: string; label: string; email?: string };
+  friend: { id: string; label: string };
   isFriend?: boolean;
   onClose: () => void;
   stats?: Stats;

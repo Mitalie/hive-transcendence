@@ -9,7 +9,7 @@ import DiscoverUserCard from "./DiscoverUserCard";
 import FriendProfile from "./FriendProfile";
 import { searchUsersForFriendRequest } from "@/actions/users";
 
-type Person = { id: string; label: string; email?: string };
+type Person = { id: string; label: string };
 type ActiveTab = "friends" | "incoming" | "sent";
 
 interface FriendsClientProps {
@@ -74,13 +74,14 @@ export function FriendsClient({
   const [isSearching, setIsSearching] = useState(false);
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const searchRef = useRef(search);
+  useEffect(() => { searchRef.current = search; }, [search]);
+
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const refreshButtonRef = useRef<HTMLButtonElement>(null);
-  const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [lastUpdatedTime, setLastUpdatedTime] = useState<string | null>(null);
 
   const friendIds = new Set(friends.map((f) => f.id));
 
-  // Refresh
   const runSearch = useCallback(async (keyword: string) => {
     const trimmed = keyword.trim();
     if (trimmed === "") {
@@ -95,38 +96,20 @@ export function FriendsClient({
 
   const doRefresh = useCallback(() => {
     setIsRefreshing(true);
+    setLastUpdatedTime(new Date().toLocaleTimeString());
     router.refresh();
-    if (refreshButtonRef.current) {
-      refreshButtonRef.current.title = `Last updated: ${new Date().toLocaleTimeString()}`;
-    }
-    runSearch(search);
+    runSearch(searchRef.current);
     setTimeout(() => setIsRefreshing(false), 800);
-  }, [router, runSearch, search]);
-
-  const scheduleRefreshRef = useRef<() => void>(() => {});
-
-  const scheduleRefresh = useCallback(() => {
-    if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
-    refreshTimerRef.current = setTimeout(() => {
-      doRefresh();
-      scheduleRefreshRef.current();
-    }, REFRESH_INTERVAL_MS);
-  }, [doRefresh]);
+  }, [router, runSearch]);
 
   useEffect(() => {
-    scheduleRefreshRef.current = scheduleRefresh;
-  }, [scheduleRefresh]);
-
-  useEffect(() => {
-    scheduleRefresh();
-    return () => {
-      if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
-    };
-  }, [scheduleRefresh]);
+    if (isRefreshing) return;
+    const timeout = setTimeout(doRefresh, REFRESH_INTERVAL_MS);
+    return () => clearTimeout(timeout);
+  }, [doRefresh, isRefreshing]);
 
   const handleManualRefresh = () => {
     doRefresh();
-    scheduleRefresh();
   };
 
   // Search effect (debounced, triggered by typing)
@@ -134,15 +117,7 @@ export function FriendsClient({
     if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
 
     const trimmed = search.trim();
-    if (trimmed === "") {
-      searchDebounceRef.current = setTimeout(() => {
-        setSearchResults([]);
-        setIsSearching(false);
-      }, 0);
-      return () => {
-        if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
-      };
-    }
+    if (trimmed === "") return;
 
     searchDebounceRef.current = setTimeout(() => {
       setIsSearching(true);
@@ -184,6 +159,10 @@ export function FriendsClient({
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
+    if (value.trim() === "") {
+      setSearchResults([]);
+      setIsSearching(false);
+    }
     if (!selectedFromSearch) {
       setSelectedId(null);
     } else if (value !== search) {
@@ -273,7 +252,7 @@ export function FriendsClient({
                 onViewProfile={() => selectFromList(f)}
                 onSuccess={() => {
                   doRefresh();
-                  runSearch(search);
+                  runSearch(searchRef.current);
                 }}
               />
             ))}
@@ -302,10 +281,10 @@ export function FriendsClient({
             </div>
             {/* Refresh button */}
             <button
-              ref={refreshButtonRef}
               type="button"
               onClick={handleManualRefresh}
               disabled={isRefreshing}
+              title={lastUpdatedTime ? t("friends.lastUpdated", { time: lastUpdatedTime }) : undefined}
               className="shrink-0 mt-1 rounded-lg p-2 text-text/50 hover:text-text hover:bg-purple-light/20 transition-colors disabled:opacity-40"
             >
               <svg
@@ -393,7 +372,7 @@ export function FriendsClient({
                       onSelect={() => selectFromSearch(u)}
                       onSuccess={() => {
                         doRefresh();
-                        runSearch(search);
+                        runSearch(searchRef.current);
                       }}
                     />
                   ))}
