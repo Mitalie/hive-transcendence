@@ -24,7 +24,7 @@ export default function Footer({ initialDark }: { initialDark: boolean }) {
     }
   }, [dark]);
 
-  const languages = ["en", "fi", "zh"].map((code) => ({
+  const languages = Object.keys(i18n.options.resources || {}).map((code) => ({
     code,
     label: t(`footer.languageLabel.${code}`, code),
   }));

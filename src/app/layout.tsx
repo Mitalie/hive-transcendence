@@ -26,11 +26,11 @@ export default async function RootLayout({
   const lang = cookieStore.get("lang")?.value ?? "en";
 
   return (
-    <html lang={lang} className={dark ? "dark" : ""}>
+    <html className={dark ? "dark" : ""}>
       <body
         className={`bg-gradient-to-br from-purple-light to-blue-light ${geistSans.variable} ${geistMono.variable}`}
       >
-        <Providers lang={lang}>
+        <Providers initialLang={lang}>
           <div className="h-screen flex flex-col">
             <div className="pt-5 px-5">
               <Header />
