@@ -72,7 +72,6 @@ export function FriendsClient({
 
   const [searchResults, setSearchResults] = useState<Person[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const searchRef = useRef(search);
   useEffect(() => {
@@ -118,18 +117,16 @@ export function FriendsClient({
 
   // Search effect (debounced, triggered by typing)
   useEffect(() => {
-    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
-
     const trimmed = search.trim();
     if (trimmed === "") return;
 
-    searchDebounceRef.current = setTimeout(() => {
+    const debounceTimeout = setTimeout(() => {
       setIsSearching(true);
       runSearch(trimmed);
     }, 300);
 
     return () => {
-      if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+      clearTimeout(debounceTimeout);
     };
   }, [search, runSearch]);
 
