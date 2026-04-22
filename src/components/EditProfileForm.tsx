@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import Button from "./Button";
 import { updateProfileAction } from "@/actions/account";
-import { useSession } from "next-auth/react";
+import { checkUsernameAvailableAction } from "@/actions/registration";
 
 interface EditProfileFormProps {
   displayName: string | null;
@@ -14,6 +14,38 @@ interface EditProfileFormProps {
 }
 
 const BIO_MAX = 150;
+
+function useUsernameCheck(nameValue: string, originalName: string | null) {
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean>(true);
+  const [checkingUsername, setCheckingUsername] = useState(false);
+
+  useEffect(() => {
+    const trimmed = nameValue.trim();
+    const isUnchanged = trimmed === (originalName ?? "").trim();
+
+    if (!trimmed || isUnchanged) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const timeout = setTimeout(async () => {
+      setCheckingUsername(true);
+      const { available } = await checkUsernameAvailableAction(trimmed);
+      if (!cancelled) {
+        setUsernameAvailable(available);
+        setCheckingUsername(false);
+      }
+    }, 500);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
+  }, [nameValue, originalName]);
+
+  return { usernameAvailable, checkingUsername };
+}
 
 export function EditProfileForm({
   displayName,
@@ -34,7 +66,13 @@ export function EditProfileForm({
   const { t } = useTranslation();
   const { update: updateSession } = useSession();
 
+  const { usernameAvailable, checkingUsername } = useUsernameCheck(
+    nameValue,
+    displayName,
+  );
+
   const bioTooLong = bioValue.length > BIO_MAX;
+  const nameChanged = nameValue.trim() !== (displayName ?? "").trim();
 
   const clearSelectedFile = () => {
     setFileValue(null);
@@ -50,6 +88,8 @@ export function EditProfileForm({
       setError(t("settings.account.bioTooLong", { max: BIO_MAX }));
       return;
     }
+
+    if (checkingUsername || (nameChanged && !usernameAvailable)) return;
 
     setLoading(true);
     setError("");
@@ -68,12 +108,15 @@ export function EditProfileForm({
 
     if (!result.ok) {
       const key = result.error;
-      setError(t(`apiErrors.${key}`, t("profile.errorFallback")));
+      if (key === "displayNameTaken") {
+        setError(t("profile.usernameTaken"));
+      } else {
+        setError(t(`apiErrors.${key}`, t("profile.errorFallback")));
+      }
     } else {
       setSuccess(true);
       clearSelectedFile();
       router.refresh();
-      updateSession();
     }
 
     setLoading(false);
@@ -83,7 +126,7 @@ export function EditProfileForm({
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <label className="text-sm font-medium text-text/70">
-          {t("settings.account.displayName")}
+          {t("settings.account.userName")}
         </label>
         <input
           type="text"
@@ -91,6 +134,23 @@ export function EditProfileForm({
           onChange={(e) => setNameValue(e.target.value)}
           className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-purple-light placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-purple-light transition-all"
         />
+        {nameChanged && nameValue.trim() && (
+          <p
+            className={`text-xs mt-0.5 ${
+              checkingUsername
+                ? "text-text/40"
+                : usernameAvailable
+                  ? "text-green-500"
+                  : "text-red-500"
+            }`}
+          >
+            {checkingUsername
+              ? t("profile.usernameChecking")
+              : usernameAvailable
+                ? t("profile.usernameAvailable")
+                : t("profile.usernameTaken")}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-1">
@@ -186,7 +246,12 @@ export function EditProfileForm({
 
       <Button
         type="submit"
-        disabled={loading || bioTooLong}
+        disabled={
+          loading ||
+          bioTooLong ||
+          checkingUsername ||
+          (nameChanged && !usernameAvailable)
+        }
         className="mt-1 bg-gradient-to-r from-blue-dark to-purple-dark text-white text-base"
       >
         {loading

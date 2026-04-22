@@ -21,7 +21,7 @@ model User {
   password      String?
   image         String?
 
-  displayName  String?
+  displayName  String?   @unique
   bio          String?   @db.Text
   avatarUrl    String?   @db.Text
   avatarData   Bytes?

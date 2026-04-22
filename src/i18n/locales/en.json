@@ -157,8 +157,11 @@
   "profile": {
     "title": "Set up your Profile",
     "subtitle": "Choose how you'll appear to others",
-    "displayNameLabel": "Display name",
-    "displayNamePlaceholder": "Type your display name",
+    "userNameLabel": "Username",
+    "userNamePlaceholder": "Type your Username",
+    "usernameChecking": "Checking...",
+    "usernameAvailable": "✓ Username is available",
+    "usernameTaken": "✗ Username is already taken",
     "submit": "CONTINUE",
     "loading": "Saving...",
     "errorFallback": "Profile setup failed",
@@ -180,7 +183,7 @@
     },
     "account": {
       "title": "Account",
-      "displayName": "Display name",
+      "userName": "Username",
       "email": "Email",
       "bio": "Bio",
       "bioTooLong": "Bio must be {{max}} characters or fewer",

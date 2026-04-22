@@ -73,7 +73,10 @@ export async function updateProfileAction(formData: FormData) {
     revalidatePath("/profile");
 
     return { ok: true };
-  } catch {
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message.includes("Unique constraint")) {
+      return { ok: false, error: apiErrors.displayNameTaken };
+    }
     return { ok: false, error: apiErrors.missingFields };
   }
 }
