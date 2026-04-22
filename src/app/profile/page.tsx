@@ -40,12 +40,14 @@ async function getProfileData(email: string) {
 
   return {
     user: {
+      id: user.id,
       displayName: user.displayName,
       username: user.username,
       name: user.name,
       email: user.email,
       bio: user.bio,
       avatarUrl: user.avatarUrl,
+      avatarVersion: user.updatedAt.getTime(),
       joinedAt: fmt(user.createdAt, {
         day: "2-digit",
         month: "2-digit",

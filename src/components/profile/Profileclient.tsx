@@ -12,6 +12,7 @@ export function ProfileClient({ data }: { data: NonNullable<ProfileData> }) {
     user.displayName || user.username || user.name || t("profilePage.title");
 
   const recentMatches = user.matches.slice(0, 20);
+  const avatarSrc = `/api/avatar/${user.id}?v=${user.avatarVersion}`;
 
   return (
     <div className="flex-1 overflow-y-auto p-4 sm:p-6" suppressHydrationWarning>
@@ -21,19 +22,14 @@ export function ProfileClient({ data }: { data: NonNullable<ProfileData> }) {
           {/* Title card with avatar */}
           <div className="bg-card rounded-2xl border border-purple-light p-6 shadow-xl flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
             <div className="w-20 h-20 rounded-xl border-2 border-purple-light bg-purple-light/20 flex items-center justify-center shrink-0 overflow-hidden">
-              {user.avatarUrl ? (
-                <Image
-                  src={user.avatarUrl}
-                  alt={displayName}
-                  width={80}
-                  height={80}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-2xl font-bold text-text/50">
-                  {displayName.charAt(0).toUpperCase()}
-                </span>
-              )}
+              <Image
+                unoptimized
+                src={avatarSrc}
+                alt={displayName}
+                width={80}
+                height={80}
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="text-center sm:text-left">
               <h1 className="text-3xl font-bold text-text">
