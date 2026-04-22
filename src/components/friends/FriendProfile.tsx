@@ -144,7 +144,11 @@ export default function FriendProfile({
       {/* Top row: avatar + name + close button */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-4">
-          <UserAvatar label={friend.label} avatarUrl={friend.avatarUrl} size="lg" />
+          <UserAvatar
+            label={friend.label}
+            avatarUrl={friend.avatarUrl}
+            size="lg"
+          />
           <div className="flex flex-col items-start">
             <h2 className="text-lg font-bold text-text leading-tight">
               {friend.label}

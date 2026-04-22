@@ -10,7 +10,12 @@ type Props = {
   isSelected: boolean;
 };
 
-export default function FriendCard({ label, avatarUrl, onSelect, isSelected }: Props) {
+export default function FriendCard({
+  label,
+  avatarUrl,
+  onSelect,
+  isSelected,
+}: Props) {
   return (
     <PersonCard
       label={label}

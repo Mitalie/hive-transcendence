@@ -75,7 +75,9 @@ export function FriendsClient({
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const searchRef = useRef(search);
-  useEffect(() => { searchRef.current = search; }, [search]);
+  useEffect(() => {
+    searchRef.current = search;
+  }, [search]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdatedTime, setLastUpdatedTime] = useState<string | null>(null);
@@ -90,7 +92,9 @@ export function FriendsClient({
     }
     setIsSearching(true);
     const results = await searchUsersForFriendRequest(trimmed);
-    setSearchResults(results.map((u) => ({ ...u, avatarUrl: `/api/avatar/${u.id}` })));
+    setSearchResults(
+      results.map((u) => ({ ...u, avatarUrl: `/api/avatar/${u.id}` })),
+    );
     setIsSearching(false);
   }, []);
 
@@ -288,7 +292,11 @@ export function FriendsClient({
               type="button"
               onClick={handleManualRefresh}
               disabled={isRefreshing}
-              title={lastUpdatedTime ? t("friends.lastUpdated", { time: lastUpdatedTime }) : undefined}
+              title={
+                lastUpdatedTime
+                  ? t("friends.lastUpdated", { time: lastUpdatedTime })
+                  : undefined
+              }
               className="shrink-0 mt-1 rounded-lg p-2 text-text/50 hover:text-text hover:bg-purple-light/20 transition-colors disabled:opacity-40"
             >
               <svg
