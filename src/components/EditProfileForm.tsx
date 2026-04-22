@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import Button from "./Button";
 import { updateProfileAction } from "@/actions/account";
 import { checkUsernameAvailableAction } from "@/actions/registration";
+import { useSession } from "next-auth/react";
 
 interface EditProfileFormProps {
   displayName: string | null;
@@ -117,6 +118,7 @@ export function EditProfileForm({
       setSuccess(true);
       clearSelectedFile();
       router.refresh();
+      updateSession();
     }
 
     setLoading(false);
