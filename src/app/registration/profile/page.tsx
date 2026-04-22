@@ -24,7 +24,7 @@ export default function ProfileSetupPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const { t } = useTranslation();
-  const { data: session } = useSession();
+  const { data: session, update: updateSession } = useSession();
 
   const showGithubOption = !!session?.user?.image;
 
@@ -91,7 +91,7 @@ export default function ProfileSetupPage() {
         );
       }
 
-      window.dispatchEvent(new Event("avatar-updated"));
+      updateSession();
       window.location.href = "/";
     } catch (err: unknown) {
       if (err instanceof Error && err.message.includes("Unique constraint")) {

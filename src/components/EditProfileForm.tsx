@@ -64,6 +64,7 @@ export function EditProfileForm({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
   const { t } = useTranslation();
+  const { update: updateSession } = useSession();
 
   const { usernameAvailable, checkingUsername } = useUsernameCheck(
     nameValue,

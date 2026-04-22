@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -16,34 +15,9 @@ export default function Header() {
   const { data: session, status } = useSession();
   const { t } = useTranslation();
 
-  const [avatarVersion, setAvatarVersion] = useState(() => {
-    if (typeof window === "undefined") {
-      return 0;
-    }
-
-    const stored = sessionStorage.getItem("avatarVersion");
-    return stored ? Number(stored) : 0;
-  });
-
-  useEffect(() => {
-    // Header stays mounted while the current user updates their avatar in
-    // settings or during profile setup. We persist the version so avatar
-    // refreshes also survive full page navigations.
-    const handleAvatarUpdated = () => {
-      const nextVersion = Date.now();
-      sessionStorage.setItem("avatarVersion", String(nextVersion));
-      setAvatarVersion(nextVersion);
-    };
-
-    window.addEventListener("avatar-updated", handleAvatarUpdated);
-    return () => {
-      window.removeEventListener("avatar-updated", handleAvatarUpdated);
-    };
-  }, []);
-
   const avatarSrc =
     status === "authenticated" && session.user?.id
-      ? `/api/avatar/${session.user.id}?v=${avatarVersion}`
+      ? `/api/avatar/${session.user.id}?v=${session.user.avatarVersion}`
       : "/images/user_icon.png";
 
   return (
