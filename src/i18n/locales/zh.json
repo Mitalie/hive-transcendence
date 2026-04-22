@@ -21,12 +21,12 @@
     "settings": "账户设置",
     "SetProfile": "资料设置",
     "default": "默认页面",
-    "play": "开始"
+    "play": "开始玩!"
   },
   "home": {
     "welcome": "欢迎来到 <网站名称>",
     "intro": "这里是网站简介。",
-    "startgame": "开始游戏"
+    "startgame": "开始玩"
   },
   "terms": {
     "title": "服务条款",
@@ -98,7 +98,7 @@
       },
       "rights": {
         "title": "您的权利",
-        "content": "您可以随时联系项目管理员请求删除您的账户及所有相关个人数据。我们将在收到请求后从数据库中永久删除您的数据。"
+        "content": "我们仅将 Cookie 用于基本功能：在您访问期间保持登录状态、记住您的语言偏好以及保存深色/浅色模式设置。我们不使用任何跟踪、广告或分析类 Cookie。"
       },
       "contact": {
         "title": "联系我们",
@@ -281,7 +281,6 @@
       "at": ""
     },
     "settingsLink": "设置",
-    "startPlay": "玩!",
     "totalStat": "总统计",
     "achievements": "成就",
     "gameHistory": "游戏统计与历史"

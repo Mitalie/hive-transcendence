@@ -43,7 +43,7 @@ export default function Header() {
       {/* Play button */}
       <Link href="/game" className="shrink-0">
         <button className="px-4 sm:px-8 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-blue-dark to-purple-dark hover:opacity-90 transition-opacity whitespace-nowrap">
-          <span className="hidden sm:inline">{t("profilePage.startPlay")}</span>
+          <span className="hidden sm:inline">{t("header.play")}</span>
           {/* Small screen: just a play icon */}
           <svg
             className="sm:hidden w-5 h-5"

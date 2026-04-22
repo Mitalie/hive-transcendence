@@ -6,8 +6,12 @@ import { useTranslation } from "react-i18next";
 import Button from "@/components/Button";
 import Link from "next/link";
 
-export default function Footer() {
-  const [dark, setDark] = useState(false);
+function setCookie(name: string, value: string) {
+  document.cookie = `${name}=${value}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+}
+
+export default function Footer({ initialDark }: { initialDark: boolean }) {
+  const [dark, setDark] = useState(initialDark);
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -41,7 +45,6 @@ export default function Footer() {
     <Bar className="gap-2.5">
       {/* LEFT: label + links */}
       <div className="flex items-center gap-4 text-sm font-sans min-w-0">
-        {/* Copyright label — hidden on very small screens */}
         <span className="hidden sm:block shrink-0">{t("footer.label")}</span>
 
         <Link href="/terms" className="hover:underline shrink-0">
@@ -63,7 +66,6 @@ export default function Footer() {
             className="bg-btn-blue hover:bg-btn-blue-hover flex items-center gap-1.5"
             onClick={() => setOpen(!open)}
           >
-            {/* On small screens show a globe icon, on sm+ show the language label */}
             <svg
               className="w-4 h-4 shrink-0"
               fill="none"
@@ -87,6 +89,7 @@ export default function Footer() {
                   key={lang.code}
                   onClick={() => {
                     i18n.changeLanguage(lang.code);
+                    setCookie("lang", lang.code);
                     setOpen(false);
                   }}
                   className={`
@@ -104,10 +107,13 @@ export default function Footer() {
 
         {/* Dark mode toggle */}
         <Button
-          onClick={() => setDark(!dark)}
+          onClick={() => {
+            const next = !dark;
+            setDark(next);
+            setCookie("dark", String(next));
+          }}
           className="bg-btn-blue hover:bg-btn-blue-hover flex items-center gap-1.5"
         >
-          {/* Icon always visible */}
           {dark ? (
             <svg
               className="w-4 h-4 shrink-0"
@@ -125,7 +131,6 @@ export default function Footer() {
               <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
             </svg>
           )}
-          {/* Label hidden on small screens */}
           <span className="hidden sm:inline">
             {dark ? t("footer.light") : t("footer.dark")}
           </span>

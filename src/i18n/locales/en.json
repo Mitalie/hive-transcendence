@@ -27,12 +27,12 @@
     "settings": "Account Settings",
     "SetProfile": "Profile Setup",
     "default": "Default Page Title",
-    "play": "Play"
+    "play": "Play!"
   },
   "home": {
     "welcome": "Welcome to <Website Name>",
     "intro": "This is a brief introduction to the website.",
-    "startgame": "Start Play"
+    "startgame": "Play"
   },
   "terms": {
     "title": "Terms of Service",
@@ -100,7 +100,7 @@
       },
       "cookies": {
         "title": "Cookies & Sessions",
-        "content": "We use session tokens or cookies strictly to keep you authenticated during your visit. No tracking, advertising, or analytics cookies are used."
+        "content": "We use cookies strictly for essential functionality: keeping you authenticated during your visit, remembering your preferred language, and saving your dark/light mode preference. No tracking, advertising, or analytics cookies are used."
       },
       "rights": {
         "title": "Your Rights",
@@ -287,7 +287,6 @@
       "at": "at"
     },
     "settingsLink": "Settings",
-    "startPlay": "Play!",
     "totalStat": "Total Stats",
     "achievements": "Achievements",
     "gameHistory": "Game Stats & History"

@@ -26,7 +26,7 @@
   "home": {
     "welcome": "Tervetuloa <Verkkosivuston nimi>",
     "intro": "Tämä on lyhyt esittely verkkosivustosta.",
-    "startgame": "Aloita toisto"
+    "startgame": "Pelaa"
   },
   "terms": {
     "title": "Käyttöehdot",
@@ -94,7 +94,7 @@
       },
       "cookies": {
         "title": "Evästeet ja istunnot",
-        "content": "Käytämme istuntotunnisteita tai evästeitä ainoastaan pitääksemme sinut kirjautuneena vierailusi ajan. Emme käytä seuranta-, mainos- tai analytiikkaevästeitä."
+        "content": "Käytämme evästeitä ainoastaan välttämättömiin toimintoihin: kirjautumisesi ylläpitämiseen vierailusi aikana, kieliasetuksesi muistamiseen sekä tumman/vaalean tilan tallentamiseen. Seuranta-, mainonta- tai analytiikkaevästeitä ei käytetä."
       },
       "rights": {
         "title": "Oikeutesi",
@@ -276,12 +276,11 @@
       "noMatches": "Ei pelattuja otteluita.",
       "versus": "vs",
       "win": "Voitto",
-      "loss": "Häviö",
+      "loss": "Tappiot",
       "you": "Sinä",
       "at": "klo"
     },
     "settingsLink": "Asetukset",
-    "startPlay": "Pelaa!",
     "totalStat": "Kokonaistilastot",
     "achievements": "Saavutukset",
     "gameHistory": "Pelitilastot & historia"
