@@ -49,24 +49,22 @@ export async function getFriendshipBetweenUsers(
   });
 }
 
+const userDisplayFields = {
+  id: true,
+  displayName: true,
+  name: true,
+  username: true,
+} as const;
+
 export async function getPendingFriendRequestsByUserId(userId: string) {
   return prisma.friendship.findMany({
     where: {
       status: "PENDING",
       addresseeId: userId,
     },
-    include: {
-      requester: {
-        select: {
-          id: true,
-          displayName: true,
-          name: true,
-          username: true,
-          email: true,
-          image: true,
-          avatarUrl: true,
-        },
-      },
+    select: {
+      id: true,
+      requester: { select: userDisplayFields },
     },
     orderBy: {
       createdAt: "desc",
@@ -80,18 +78,9 @@ export async function getSentFriendRequestsByUserId(userId: string) {
       status: "PENDING",
       requesterId: userId,
     },
-    include: {
-      addressee: {
-        select: {
-          id: true,
-          displayName: true,
-          name: true,
-          username: true,
-          email: true,
-          image: true,
-          avatarUrl: true,
-        },
-      },
+    select: {
+      id: true,
+      addressee: { select: userDisplayFields },
     },
     orderBy: {
       createdAt: "desc",
@@ -105,29 +94,11 @@ export async function getAcceptedFriendsByUserId(userId: string) {
       status: "ACCEPTED",
       OR: [{ requesterId: userId }, { addresseeId: userId }],
     },
-    include: {
-      requester: {
-        select: {
-          id: true,
-          displayName: true,
-          name: true,
-          username: true,
-          email: true,
-          image: true,
-          avatarUrl: true,
-        },
-      },
-      addressee: {
-        select: {
-          id: true,
-          displayName: true,
-          name: true,
-          username: true,
-          email: true,
-          image: true,
-          avatarUrl: true,
-        },
-      },
+    select: {
+      id: true,
+      requesterId: true,
+      requester: { select: userDisplayFields },
+      addressee: { select: userDisplayFields },
     },
     orderBy: {
       createdAt: "desc",

@@ -232,6 +232,17 @@
     "fileTooLarge": "Kuva on liian suuri. Valitse alle 2 Mt:n tiedosto.",
     "errorUnexpected": "Odottamaton virhe. Yritä uudelleen."
   },
+  "friendshipErrors": {
+    "cannotAddSelf": "Et voi lähettää kaveripyyntöä itsellesi",
+    "userNotFound": "Käyttäjää ei löydy",
+    "friendshipAlreadyExists": "Kaveripyyntö tai kaverisuhde on jo olemassa",
+    "friendRequestNotFound": "Pyyntöä ei enää ole. Päivitä sivu.",
+    "friendRequestAlreadyHandled": "Tämä pyyntö on jo käsitelty.",
+    "notAllowed": "Sinulla ei ole oikeutta tehdä tätä.",
+    "friendshipNotFound": "Kaverisuhdetta ei enää ole. Päivitä sivu.",
+    "notFriends": "Vain hyväksyttyjä kaverisuhteet voidaan poistaa.",
+    "internalServerError": "Jotain meni pieleen. Päivitä sivu ja yritä uudelleen."
+  },
   "profilePage": {
     "title": "Profiili",
     "subtitle": "Käyttäjätietosi",
@@ -274,5 +285,56 @@
     "totalStat": "Kokonaistilastot",
     "achievements": "Saavutukset",
     "gameHistory": "Pelitilastot & historia"
+  },
+  "friends": {
+    "title": "Kaverit",
+    "subtitle": "Hallinnoi kavereita ja pyyntöjä.",
+    "lastUpdated": "Päivitetty: {{time}}",
+    "stats": {
+      "friends": "Kaverit",
+      "incoming": "Saapuneet pyynnöt",
+      "sent": "Lähetetyt pyynnöt"
+    },
+    "incoming": {
+      "title": "Saapuneet pyynnöt",
+      "empty": "Ei saapuneita pyyntöjä."
+    },
+    "myFriends": {
+      "title": "Kaverisi",
+      "empty": "Sinulla ei ole vielä kavereita."
+    },
+    "sentRequests": {
+      "title": "Lähetetyt pyynnöt",
+      "empty": "Ei odottavia lähetettyjä pyyntöjä."
+    },
+    "discover": {
+      "title": "Etsi henkilö",
+      "empty": "Ei käyttäjiä lisättäväksi juuri nyt.",
+      "searchPlaceholder": "Etsi henkilö",
+      "searchHint": "Etsi henkilö yllä olevasta hakukentästä.",
+      "unknownUser": "Tuntematon käyttäjä",
+      "noUsername": "Ei käyttäjänimeä",
+      "addFriend": "Lisää kaveriksi",
+      "viewProfile": "Näytä profiili",
+      "remove": "Poista",
+      "accept": "Hyväksy",
+      "decline": "Hylkää",
+      "cancelRequest": "Peruuta pyyntö"
+    },
+    "profile": {
+      "subtitle": "Kaveri",
+      "subtitleStranger": "Pelaaja",
+      "matchHistory": "Otteluhistoria",
+      "matchHistoryEmpty": "Otteluhistoria tulossa pian",
+      "matchHistoryLocked": "Lisää kaveriksi nähdäksesi otteluhistorian",
+      "stats": {
+        "games": "Pelit",
+        "wins": "Voitot",
+        "winRate": "Voittoprosentti"
+      },
+      "removeConfirmText": "Poistetaanko {{name}} kavereista?",
+      "removeConfirm": "Poista",
+      "removeCancel": "Peruuta"
+    }
   }
 }

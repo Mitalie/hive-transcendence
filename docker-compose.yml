@@ -18,7 +18,7 @@ services:
           "-h",
           "localhost",
           "-uroot",
-          "-p${MARIADB_ROOT_PASSWORD}"
+          "-p${MARIADB_ROOT_PASSWORD}",
         ]
       interval: 5s
       timeout: 5s

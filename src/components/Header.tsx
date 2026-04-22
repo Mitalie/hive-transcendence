@@ -70,6 +70,9 @@ export default function Header() {
         <NavButton href="/profile" active={pathname === "/profile"}>
           <span className="block w-8 h-8 shrink-0 rounded-full overflow-hidden">
             <Image
+              unoptimized
+              loading="eager"
+              priority
               src={avatarSrc}
               alt="user"
               width={32}
