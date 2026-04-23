@@ -1,4 +1,4 @@
-# standalone MariaDB fragment matching the main docker-compose configuration
+# reusable MariaDB fragment to share the configuration with multiple compose setups
 services:
   mariadb:
     # Pin to LTS (11.4.x) to ensure compatibility with Prisma's authentication driver

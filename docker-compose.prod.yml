@@ -15,6 +15,7 @@ services:
       - .env
     environment:
       - NEXTAUTH_TRUSTHOST=true # Trusts Nginx headers for Server Actions
+      - MARIADB_HOST=transcendence_db
     depends_on:
       transcendence_db:
         condition: service_healthy
