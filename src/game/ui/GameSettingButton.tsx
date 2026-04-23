@@ -10,9 +10,13 @@ import Button from "@/components/Button";
 export default function GameSettingButton({
   open,
   onApplyColors,
+  isLoggedIn = false,
+  userId = null,
 }: {
   open: boolean;
   onApplyColors: () => void;
+  isLoggedIn?: boolean;
+  userId?: string | null;
 }) {
   const dispatch = use(GameStateDispatchContext);
 
@@ -38,8 +42,13 @@ export default function GameSettingButton({
       </Button>
 
       {open && (
-        <div className="absolute right-0 top-[36px] z-50">
-          <GameSettingPanel onClose={closePanel} onApply={onApplyColors} />
+        <div className="absolute right-0 top-[48px] z-50">
+          <GameSettingPanel
+            onClose={closePanel}
+            onApply={onApplyColors}
+            isLoggedIn={isLoggedIn}
+            userId={userId}
+          />
         </div>
       )}
     </div>

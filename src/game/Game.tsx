@@ -20,6 +20,7 @@ import Button from "@/components/Button";
 import GameUI from "@/game/ui/GameUI";
 import GameRender from "@/game/3d/GameRender";
 import GameSetup from "@/game/ui/GameSetup";
+import { loadSettingsPrefs, applySettingsToConfig } from "@/game/GamePrefs";
 import type { GameState } from "@/game/GameState";
 
 // ── Settings snapshot ──────────────────────────────────────────────────────
@@ -87,6 +88,7 @@ function restoreSnapshot(s: ConfigSnapshot) {
 
 interface GameProps {
   isLoggedIn: boolean;
+  /** The logged-in user's displayName — used as player label and cookie key. */
   playerName: string | null;
 }
 
@@ -94,6 +96,13 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
   const { t } = useTranslation();
   // Pass isLoggedIn so useGameState knows whether to save
   const [state, dispatch] = useGameState(isLoggedIn);
+
+  useEffect(() => {
+    if (!isLoggedIn || !playerName) return;
+    const s = loadSettingsPrefs(playerName);
+    if (s) applySettingsToConfig(s);
+  }, []);
+
   const [guestName, setGuestName] = useState<string>("");
   const [showSetup, setShowSetup] = useState(true);
   const [gameStarted, setGameStarted] = useState(false);
@@ -211,7 +220,13 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
 
   // ── Setup screen ──
   if (state.view === "start" && showSetup) {
-    return <GameSetup onStart={handleSetupStart} isLoggedIn={isLoggedIn} />;
+    return (
+      <GameSetup
+        onStart={handleSetupStart}
+        isLoggedIn={isLoggedIn}
+        userId={playerName}
+      />
+    );
   }
 
   // ── Lobby ──
@@ -303,6 +318,8 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
           gameStarted={gameStarted}
           onStart={doStart}
           onExitConfirm={resetToSetup}
+          isLoggedIn={isLoggedIn}
+          userId={playerName}
         />
       </GameStateDispatchContext>
     </div>

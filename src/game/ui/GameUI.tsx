@@ -16,12 +16,16 @@ export default function GameUI({
   gameStarted,
   onStart,
   onExitConfirm,
+  isLoggedIn = false,
+  userId = null,
 }: {
   state: GameState;
   onApplyColors: () => void;
   gameStarted: boolean;
   onStart: () => void;
   onExitConfirm?: () => void;
+  isLoggedIn?: boolean;
+  userId?: string | null;
 }) {
   const { paused, menuOpen, exitPromptOpen } = state;
   const dispatch = use(GameStateDispatchContext);
@@ -30,12 +34,17 @@ export default function GameUI({
   return (
     <>
       {menuOpen && (
-        <div className="absolute inset-0 z-30 rounded-xl" />
+        <div className="absolute inset-0 z-30 rounded-xl bg-white/20 backdrop-blur-[1px]" />
       )}
 
       {/* Settings button + panel — z-50 so panel floats above the backdrop */}
       <div className="absolute top-[15px] right-[15px] z-50">
-        <GameSettingButton open={menuOpen} onApplyColors={onApplyColors} />
+        <GameSettingButton
+          open={menuOpen}
+          onApplyColors={onApplyColors}
+          isLoggedIn={isLoggedIn}
+          userId={userId}
+        />
       </div>
 
       {/* Ready prompt */}

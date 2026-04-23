@@ -1,34 +1,50 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { GameConfig } from "@/game/GameConfig";
 import { GameMode, GameOpponent, GameType } from "@/game/GameState";
+import { loadSetupPrefs, saveSetupPrefs } from "@/game/GamePrefs";
+import Button from "@/components/Button";
 
 interface GameSetupProps {
   onStart: (mode: GameMode, guestName?: string) => void;
   isLoggedIn: boolean;
+  userId: string | null;
 }
 
 const WIN_SCORE_OPTIONS = [7, 11, 21] as const;
 type WinScore = (typeof WIN_SCORE_OPTIONS)[number];
 
-export default function GameSetup({ onStart, isLoggedIn }: GameSetupProps) {
+export default function GameSetup({
+  onStart,
+  isLoggedIn,
+  userId,
+}: GameSetupProps) {
   const { t } = useTranslation();
 
   const [selectedType, setSelectedType] = useState<GameType>("classic");
-  const [selectedOpponent, setSelectedOpponent] = useState<GameOpponent>(
-    GameConfig.defaults.opponent as GameOpponent,
-  );
+  const [selectedOpponent, setSelectedOpponent] =
+    useState<GameOpponent>("medium");
   const [guestName, setGuestName] = useState("");
   const [aiDifficulty, setAiDifficulty] = useState<"easy" | "medium" | "hard">(
     "medium",
   );
   const [winScore, setWinScore] = useState<WinScore>(11);
 
+  useEffect(() => {
+    if (!isLoggedIn || !userId) return;
+    const prefs = loadSetupPrefs(userId);
+    if (!prefs) return;
+    setSelectedType(prefs.gameType);
+    if (prefs.opponent !== "human") setSelectedOpponent(prefs.opponent);
+    setAiDifficulty(prefs.aiDifficulty);
+    setWinScore(prefs.winScore);
+  }, []);
+
   const isAI = selectedOpponent !== "human";
 
-  const requiresLogin =
+    const requiresLogin =
     !isLoggedIn &&
     (selectedType === "advanced" || selectedOpponent === "human");
 
@@ -41,6 +57,16 @@ export default function GameSetup({ onStart, isLoggedIn }: GameSetupProps) {
     const opponent: GameOpponent =
       selectedOpponent === "human" ? "human" : aiDifficulty;
     GameConfig.rules.winLimit = winScore;
+
+    if (isLoggedIn && userId) {
+      saveSetupPrefs(userId, {
+        gameType: selectedType,
+        opponent: selectedOpponent === "human" ? "human" : aiDifficulty,
+        aiDifficulty,
+        winScore,
+      });
+    }
+
     onStart({ type: selectedType, opponent }, guestName || undefined);
   }, [
     selectedType,
@@ -49,6 +75,8 @@ export default function GameSetup({ onStart, isLoggedIn }: GameSetupProps) {
     guestName,
     winScore,
     canStart,
+    isLoggedIn,
+    userId,
     onStart,
   ]);
 
@@ -164,13 +192,13 @@ export default function GameSetup({ onStart, isLoggedIn }: GameSetupProps) {
           )}
 
           {/* Start */}
-          <button
+          <Button
             onClick={handleStart}
             disabled={!canStart}
-            className="w-full py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl text-sm sm:text-base md:text-lg font-semibold text-white bg-linear-to-r from-blue-dark to-purple-dark disabled:opacity-30 disabled:cursor-not-allowed"
+            className="w-full font-semibold text-white bg-linear-to-r from-blue-dark to-purple-dark disabled:opacity-30 disabled:cursor-not-allowed"
           >
             {t("game.setup.startPlay")}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -191,10 +219,10 @@ function OptionCard({
   locked?: boolean;
 }) {
   return (
-    <button
+    <Button
       onClick={onClick}
       className={[
-        "relative flex flex-col gap-1 sm:gap-1.5 px-3.5 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl text-left transition-colors duration-150 border",
+        "relative flex flex-col gap-1 sm:gap-1.5 px-3.5 sm:px-5 md:px-6 py-3 sm:py-4 md:py-5 text-left transition-colors duration-150 border",
         selected
           ? "bg-card border-purple-dark"
           : "bg-card/70 border-card/70 hover:border-purple-dark",
@@ -212,7 +240,7 @@ function OptionCard({
       <span className="text-[11px] sm:text-xs md:text-sm text-text/40 leading-snug">
         {description}
       </span>
-    </button>
+    </Button>
   );
 }
 
@@ -226,7 +254,7 @@ function SelectChip({
   onClick: () => void;
 }) {
   return (
-    <button
+    <Button
       onClick={onClick}
       className={[
         "flex-1 py-2 sm:py-3 md:py-3.5 rounded-lg sm:rounded-xl text-xs sm:text-sm md:text-base font-medium border transition-colors duration-150",
@@ -236,6 +264,6 @@ function SelectChip({
       ].join(" ")}
     >
       {label}
-    </button>
+    </Button>
   );
 }

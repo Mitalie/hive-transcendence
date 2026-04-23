@@ -4,10 +4,13 @@ import { useState, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import Button from "@/components/Button";
 import { GameConfig } from "@/game/GameConfig";
+import { saveSettingsPrefs } from "@/game/GamePrefs";
 
 type Props = {
   onClose?: () => void;
   onApply?: () => void;
+  isLoggedIn?: boolean;
+  userId?: string | null;
 };
 
 // We mutate GameConfig in-memory only (no .ts file edits).
@@ -89,7 +92,12 @@ function readSnapshot() {
 
 type Tab = "colors" | "physics";
 
-export default function GameSettingPanel({ onClose, onApply }: Props) {
+export default function GameSettingPanel({
+  onClose,
+  onApply,
+  isLoggedIn = false,
+  userId = null,
+}: Props) {
   const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>("colors");
 
@@ -168,9 +176,25 @@ export default function GameSettingPanel({ onClose, onApply }: Props) {
 
   const handleApply = useCallback(() => {
     snapshot.current = readSnapshot();
+
+    if (isLoggedIn && userId) {
+      saveSettingsPrefs(userId, {
+        p1: GameConfig.colors.p1,
+        p2: GameConfig.colors.p2,
+        floorColor: GameConfig.arena.floorColor,
+        netColor: GameConfig.arena.netColor,
+        glassColor: GameConfig.arena.glassColor,
+        ballColor: GameConfig.ballVisuals.color,
+        ballSpeed: ballSpeedToScale(GameConfig.ball.startVelocityX),
+        gravity: gravityToScale(GameConfig.ball.gravity),
+        bounce: bounceToScale(GameConfig.ball.bounceFriction),
+        spin: spinToScale(GameConfig.ball.swipeSpinFactor),
+        paddleSpeed: paddleSpeedToScale(GameConfig.paddle.maxVelocity),
+      });
+    }
     onApply?.();
     onClose?.();
-  }, [onApply, onClose]);
+  }, [isLoggedIn, userId, onApply, onClose]);
 
   // Restore snapshot and close (✕ button, Space key, backdrop)
   const handleClose = useCallback(() => {
@@ -254,11 +278,11 @@ export default function GameSettingPanel({ onClose, onApply }: Props) {
             bg-black/[.08] replaces rgba(0,0,0,0.08). */}
         <div className="flex rounded-lg p-1 gap-1 bg-black/[.08]">
           {(["colors", "physics"] as Tab[]).map((tabKey) => (
-            <button
+            <Button
               key={tabKey}
               onClick={() => setTab(tabKey)}
               className={[
-                "flex-1 py-1.5 rounded-md text-sm font-medium text-text transition-all duration-150",
+                "flex-1 rounded-md",
                 tab === tabKey
                   ? "bg-btn-purple opacity-100"
                   : "bg-transparent opacity-50",
@@ -267,7 +291,7 @@ export default function GameSettingPanel({ onClose, onApply }: Props) {
               {tabKey === "colors"
                 ? t("game.settings.tabColors")
                 : t("game.settings.tabPhysics")}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -360,13 +384,13 @@ export default function GameSettingPanel({ onClose, onApply }: Props) {
         <div className="flex gap-2 pt-1 border-t border-btn-purple">
           <Button
             onClick={handleReset}
-            className="flex-1 py-2 rounded-lg text-sm font-medium bg-btn-purple hover:bg-btn-purple-hover"
+            className="flex-1 font-semibold bg-btn-purple hover:bg-btn-purple-hover"
           >
             {t("game.settings.reset")}
           </Button>
           <Button
             onClick={handleApply}
-            className="flex-1 py-2 rounded-lg text-sm font-semibold bg-btn-purple-hover hover:opacity-90"
+            className="flex-1 font-semibold bg-btn-purple-hover hover:opacity-90"
           >
             {t("game.settings.apply")}
           </Button>
