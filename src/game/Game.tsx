@@ -23,8 +23,7 @@ import GameSetup from "@/game/ui/GameSetup";
 import { loadSettingsPrefs, applySettingsToConfig } from "@/game/GamePrefs";
 import type { GameState } from "@/game/GameState";
 
-// ── Settings snapshot ──────────────────────────────────────────────────────
-
+// Settings snapshot
 type ConfigSnapshot = {
   p1: string;
   p2: string;
@@ -84,22 +83,21 @@ function restoreSnapshot(s: ConfigSnapshot) {
   GameConfig.paddle.acceleration = s.paddleAcceleration;
 }
 
-// ── Component ──────────────────────────────────────────────────────────────
-
 interface GameProps {
   isLoggedIn: boolean;
-  /** The logged-in user's displayName — used as player label and cookie key. */
   playerName: string | null;
 }
 
 export default function Game({ isLoggedIn, playerName }: GameProps) {
   const { t } = useTranslation();
-  // Pass isLoggedIn so useGameState knows whether to save
   const [state, dispatch] = useGameState(isLoggedIn);
 
+  const isLoggedInRef = useRef(isLoggedIn);
+  const playerNameRef = useRef(playerName);
+
   useEffect(() => {
-    if (!isLoggedIn || !playerName) return;
-    const s = loadSettingsPrefs(playerName);
+    if (!isLoggedInRef.current || !playerNameRef.current) return;
+    const s = loadSettingsPrefs(playerNameRef.current);
     if (s) applySettingsToConfig(s);
   }, []);
 
@@ -197,7 +195,7 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
       GameConfig.matchHistory.currentPlayer2 =
         mode.opponent === "human"
           ? resolvedGuestName || t("game.lobby.player2")
-          : `AI-${mode.opponent}`; // e.g. "AI-medium"
+          : `AI-${mode.opponent}`;
 
       setShowSetup(false);
     },
@@ -218,7 +216,7 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
 
   const p1Label = playerName ?? t("game.lobby.you");
 
-  // ── Setup screen ──
+  // Setup screen
   if (state.view === "start" && showSetup) {
     return (
       <GameSetup
@@ -229,7 +227,7 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
     );
   }
 
-  // ── Lobby ──
+  // Lobby
   if (state.view === "start" && !showSetup) {
     const opponentLabel =
       state.mode.opponent === "human"
@@ -238,8 +236,8 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
 
     return (
       <div className="h-full w-full rounded-xl overflow-y-auto flex items-center justify-center">
-        <div className="bg-card/80 backdrop-blur-sm rounded-2xl shadow-2xl flex flex-col items-center gap-5 px-10 py-8 my-4 mx-4 select-none">
-          <div className="text-text/50 text-xs tracking-widest uppercase">
+        <div className="bg-card backdrop-blur-sm rounded-2xl shadow-2xl flex flex-col items-center gap-5 px-10 py-8 my-4 mx-4 select-none">
+          <div className="text-text text-sm tracking-widest uppercase">
             {t("game.lobby.readyToPlay")}
           </div>
 
@@ -250,7 +248,7 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
             >
               {p1Label}
             </span>
-            <span className="text-text/30 text-sm">{t("game.lobby.vs")}</span>
+            <span className="text-text/50 text-sm">{t("game.lobby.vs")}</span>
             <span
               className="text-xl font-bold"
               style={{ color: GameConfig.colors.p2 }}
@@ -259,10 +257,28 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
             </span>
           </div>
 
-          <div className="text-text/40 text-xs tracking-wider">
+          <div className="text-text/50 text-sm tracking-wider">
             {state.mode.type === "classic"
               ? t("game.lobby.classicMode")
               : t("game.lobby.advancedMode")}
+          </div>
+
+          <div className="text-sm tracking-widest text-center flex flex-col gap-1">
+            <div className="text-text/50">{t("game.lobby.gametips")}</div>
+            <div style={{ color: GameConfig.colors.p1 }}>
+              <span className="font-semibold">{p1Label} - </span>
+              {state.mode.type === "classic"
+                ? t("game.lobby.tipsClassicPlayer1")
+                : t("game.lobby.tipsAdvancedPlayer1")}
+            </div>
+            {state.mode.opponent === "human" && (
+              <div style={{ color: GameConfig.colors.p2 }}>
+                <span className="font-semibold">{opponentLabel} - </span>
+                {state.mode.type === "classic"
+                  ? t("game.lobby.tipsClassicPlayer2")
+                  : t("game.lobby.tipsAdvancedPlayer2")}
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 flex-wrap justify-center">
@@ -287,7 +303,7 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
     );
   }
 
-  // ── End screen ──
+  // End screen
   if (state.view === "end") {
     return (
       <EndScreen
@@ -301,7 +317,7 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
     );
   }
 
-  // ── Play view ──
+  // Play view
   return (
     <div className="relative h-full w-full">
       <GameStateDispatchContext value={dispatch}>
@@ -326,8 +342,7 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
   );
 }
 
-// ── End Screen ─────────────────────────────────────────────────────────────
-
+// End Screen
 function EndScreen({
   isLoggedIn,
   p1Label,
@@ -353,39 +368,31 @@ function EndScreen({
 
   return (
     <div className="h-full w-full rounded-xl overflow-y-auto flex items-center justify-center">
-      <div className="bg-card/80 backdrop-blur-sm rounded-2xl shadow-2xl flex flex-col items-center gap-5 px-10 py-8 my-4 mx-4 select-none">
-        <div className="text-text/50 text-xs tracking-widest uppercase">
+      <div className="bg-card backdrop-blur-sm rounded-2xl shadow-2xl flex flex-col items-center gap-5 px-10 py-8 my-4 mx-4 select-none">
+        <div className="text-text/70 text-xs tracking-widest uppercase">
           {t("game.end.gameOver")}
         </div>
 
         <div
           className="text-3xl font-bold"
-          style={{ color: p1Won ? GameConfig.colors.p1 : GameConfig.colors.p2 }}
+          style={{
+            color: p1Won ? "var(--color-blue-dark)" : "var(--color-red-light)",
+          }}
         >
           {winnerLabel} {t("game.end.wins")}
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-6 text-text/70">
           <div className="flex flex-col items-center gap-1">
-            <span className="text-xs text-text/50 tracking-wide">
-              {p1Label}
-            </span>
-            <span
-              className="text-3xl font-bold font-mono tabular-nums"
-              style={{ color: GameConfig.colors.p1 }}
-            >
+            <span className="text-xs tracking-wide">{p1Label}</span>
+            <span className="text-3xl text-blue-dark tabular-nums font-bold">
               {String(state.score1).padStart(2, "0")}
             </span>
           </div>
-          <span className="text-text/30 text-lg">—</span>
+          <span className=" text-lg">:</span>
           <div className="flex flex-col items-center gap-1">
-            <span className="text-xs text-text/50 tracking-wide">
-              {p2Label}
-            </span>
-            <span
-              className="text-3xl font-bold font-mono tabular-nums"
-              style={{ color: GameConfig.colors.p2 }}
-            >
+            <span className="text-xs tracking-wide">{p2Label}</span>
+            <span className="text-3xl text-red-light tabular-nums font-bold">
               {String(state.score2).padStart(2, "0")}
             </span>
           </div>

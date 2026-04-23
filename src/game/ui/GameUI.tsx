@@ -33,11 +33,9 @@ export default function GameUI({
 
   return (
     <>
-      {menuOpen && (
-        <div className="absolute inset-0 z-30 rounded-xl bg-white/20 backdrop-blur-[1px]" />
-      )}
+      {menuOpen && <div className="absolute inset-0 z-30 rounded-xl" />}
 
-      {/* Settings button + panel — z-50 so panel floats above the backdrop */}
+      {/* Settings button + panel */}
       <div className="absolute top-[15px] right-[15px] z-50">
         <GameSettingButton
           open={menuOpen}
@@ -52,7 +50,7 @@ export default function GameUI({
         <div className="absolute inset-0 flex flex-col justify-center items-center rounded-xl z-10 pointer-events-none">
           <div
             className={[
-              "bg-card/80 backdrop-blur-sm rounded-2xl shadow-2xl flex flex-col items-center gap-3",
+              "bg-card backdrop-blur-sm rounded-2xl shadow-2xl flex flex-col items-center gap-3",
               "px-8 py-6 sm:px-10 sm:py-8 select-none cursor-pointer max-h-[80vh]",
               menuOpen ? "pointer-events-none" : "pointer-events-auto",
             ].join(" ")}
@@ -73,7 +71,7 @@ export default function GameUI({
         <div className="absolute inset-0 flex flex-col justify-center items-center rounded-xl z-10 pointer-events-none">
           <div
             className={[
-              "bg-card/80 backdrop-blur-sm rounded-2xl shadow-2xl flex flex-col items-center",
+              "bg-card backdrop-blur-sm rounded-2xl shadow-2xl flex flex-col items-center",
               "gap-4 px-6 py-6 sm:gap-5 sm:px-10 sm:py-8 select-none max-h-[80vh]",
               menuOpen ? "pointer-events-none" : "pointer-events-auto",
             ].join(" ")}

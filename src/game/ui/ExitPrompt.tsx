@@ -12,10 +12,8 @@ export default function ExitModal({
   onConfirm,
 }: {
   exitPromptOpen: boolean;
-  /** Called after dispatching exitConfirmAction — use to reset local UI state */
   onConfirm?: () => void;
 }) {
-  // Hooks must be called unconditionally — before any early return.
   const dispatch = use(GameStateDispatchContext);
   const { t } = useTranslation();
 

@@ -349,7 +349,7 @@
       "loginToUnlock": "Kirjaudu sisään avataksesi lisää pelitiloja"
     },
     "lobby": {
-      "readyToPlay": "Valmis pelaamaan",
+      "readyToPlay": "Valmis pelaamaan?",
       "player1": "Pelaaja 1",
       "player2": "Pelaaja 2",
       "vs": "VS",
@@ -360,11 +360,17 @@
       "aiEasy": "Helppo",
       "aiMedium": "Keskitaso",
       "aiHard": "Vaikea",
-      "you": "Sinä"
+      "you": "Sinä",
+      "gametips": "Pelipainikkeet:",
+      "tipsClassicPlayer1": "WS",
+      "tipsAdvancedPlayer1": "WASD",
+      "tipsClassicPlayer2": "YLÖS/ALAS",
+      "tipsAdvancedPlayer2": "Nuolinäppäimet"
     },
     "play": {
       "ready": "Valmis?",
       "clickOrSpace": "Klikkaa tai paina välilyöntiä",
+      "gameTips": "Käytä WASD-näppäimiä mailan ohjaamiseen",
       "paused": "Tauko",
       "continue": "Jatka",
       "endGame": "Lopeta peli"

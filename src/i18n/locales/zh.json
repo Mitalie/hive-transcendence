@@ -349,7 +349,7 @@
       "loginToUnlock": "登录以解锁更多游戏模式"
     },
     "lobby": {
-      "readyToPlay": "准备好了",
+      "readyToPlay": "准备好了？",
       "player1": "玩家 1",
       "player2": "玩家 2",
       "vs": "VS",
@@ -360,11 +360,17 @@
       "aiEasy": "简单",
       "aiMedium": "普通",
       "aiHard": "困难",
-      "you": "你"
+      "you": "你",
+      "gametips": "控制按键：",
+      "tipsClassicPlayer1": "WS键",
+      "tipsAdvancedPlayer1": "WASD键",
+      "tipsClassicPlayer2": "上下键盘",
+      "tipsAdvancedPlayer2": "方向键"
     },
     "play": {
       "ready": "准备好了吗？",
-      "clickOrSpace": "点击或按空格键",
+      "clickOrSpace": "点击或按空格键开始游戏",
+      "gameTips": "使用WASD控制球拍",
       "paused": "已暂停",
       "continue": "继续",
       "endGame": "结束游戏"

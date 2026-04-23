@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { GameConfig } from "@/game/GameConfig";
 import { GameMode, GameOpponent, GameType } from "@/game/GameState";
@@ -23,28 +23,27 @@ export default function GameSetup({
 }: GameSetupProps) {
   const { t } = useTranslation();
 
-  const [selectedType, setSelectedType] = useState<GameType>("classic");
-  const [selectedOpponent, setSelectedOpponent] =
-    useState<GameOpponent>("medium");
+  const initialPrefs = isLoggedIn && userId ? loadSetupPrefs(userId) : null;
+
+  const [selectedType, setSelectedType] = useState<GameType>(
+    initialPrefs?.gameType ?? "classic",
+  );
+  const [selectedOpponent, setSelectedOpponent] = useState<GameOpponent>(
+    initialPrefs?.opponent !== "human"
+      ? (initialPrefs?.opponent ?? "medium")
+      : "medium",
+  );
   const [guestName, setGuestName] = useState("");
   const [aiDifficulty, setAiDifficulty] = useState<"easy" | "medium" | "hard">(
-    "medium",
+    initialPrefs?.aiDifficulty ?? "medium",
   );
-  const [winScore, setWinScore] = useState<WinScore>(11);
-
-  useEffect(() => {
-    if (!isLoggedIn || !userId) return;
-    const prefs = loadSetupPrefs(userId);
-    if (!prefs) return;
-    setSelectedType(prefs.gameType);
-    if (prefs.opponent !== "human") setSelectedOpponent(prefs.opponent);
-    setAiDifficulty(prefs.aiDifficulty);
-    setWinScore(prefs.winScore);
-  }, []);
+  const [winScore, setWinScore] = useState<WinScore>(
+    initialPrefs?.winScore ?? 11,
+  );
 
   const isAI = selectedOpponent !== "human";
 
-    const requiresLogin =
+  const requiresLogin =
     !isLoggedIn &&
     (selectedType === "advanced" || selectedOpponent === "human");
 
@@ -184,7 +183,7 @@ export default function GameSetup({
             </div>
           </section>
 
-          {/* Login-required hint — shown above Start when a locked mode is selected */}
+          {/* Login-required hint */}
           {requiresLogin && (
             <p className="text-xs text-red-500 text-center -mb-2">
               {t("game.setup.loginToUnlock")}

@@ -355,7 +355,7 @@
       "loginToUnlock": "Log in to unlock more game modes"
     },
     "lobby": {
-      "readyToPlay": "Ready to play",
+      "readyToPlay": "Ready to play?",
       "player1": "Player 1",
       "player2": "Player 2",
       "vs": "VS",
@@ -367,7 +367,12 @@
       "aiEasy": "Easy",
       "aiMedium": "Medium",
       "aiHard": "Hard",
-      "you": "You"
+      "you": "You",
+      "gametips": "Control keys:",
+      "tipsClassicPlayer1": "WS",
+      "tipsAdvancedPlayer1": "WASD",
+      "tipsClassicPlayer2": "UP/DOWN",
+      "tipsAdvancedPlayer2": "Arrows"
     },
     "play": {
       "ready": "Ready?",

@@ -13,8 +13,6 @@ type Props = {
   userId?: string | null;
 };
 
-// We mutate GameConfig in-memory only (no .ts file edits).
-// This is a simple approach that survives for the session.
 const DEFAULT_COLORS = {
   p1: GameConfig.colors.p1,
   p2: GameConfig.colors.p2,
@@ -253,8 +251,6 @@ export default function GameSettingPanel({
   ]);
 
   return (
-    // The entire panel scrolls as a single unit — simplest approach for small screens.
-    // max-height is capped so it never overflows the viewport.
     <div
       className="bg-card w-[260px] rounded-xl shadow-2xl overflow-y-auto"
       style={{ maxHeight: "calc(100dvh - 220px)" }}
@@ -273,10 +269,8 @@ export default function GameSettingPanel({
           </Button>
         </div>
 
-        {/* Tabs
-            Changed: style={{ backgroundColor, opacity }} → Tailwind classes.
-            bg-black/[.08] replaces rgba(0,0,0,0.08). */}
-        <div className="flex rounded-lg p-1 gap-1 bg-black/[.08]">
+        {/* Tabs */}
+        <div className="flex rounded-lg p-1 gap-1 bg-text/10">
           {(["colors", "physics"] as Tab[]).map((tabKey) => (
             <Button
               key={tabKey}
@@ -377,10 +371,6 @@ export default function GameSettingPanel({
           </div>
         )}
 
-        {/* Actions
-            Changed: raw <button> + style={{ backgroundColor, color }}
-            → Button component + Tailwind classes.
-            Changed: style={{ borderTop }} → border-t border-btn-purple. */}
         <div className="flex gap-2 pt-1 border-t border-btn-purple">
           <Button
             onClick={handleReset}
@@ -411,7 +401,6 @@ function ColorRow({
 }) {
   return (
     <div className="flex items-center gap-3">
-      {/* Changed: style={{ color, opacity }} → text-text/80 */}
       <span className="text-sm flex-1 text-left text-text/80">{label}</span>
       <label className="relative cursor-pointer flex-shrink-0">
         <input
@@ -420,8 +409,6 @@ function ColorRow({
           onChange={(e) => onChange(e.target.value)}
           className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
         />
-        {/* backgroundColor must stay style= — runtime dynamic value from color picker.
-            Changed: border via style → border-2 border-btn-purple (Tailwind). */}
         <div
           className="w-8 h-8 rounded-lg shadow-sm transition-transform hover:scale-110 border-2 border-btn-purple"
           style={{ backgroundColor: value }}
@@ -450,13 +437,11 @@ function SliderRow({
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex justify-between items-center">
-        {/* Changed: style={{ color, opacity }} → text-text/80 and text-text/70 */}
         <span className="text-sm text-text/80">{label}</span>
         <span className="text-sm font-mono font-semibold tabular-nums text-text/70">
           {value}
         </span>
       </div>
-      {/* background must stay style= — runtime dynamic gradient percentage. */}
       <input
         type="range"
         min={min}
