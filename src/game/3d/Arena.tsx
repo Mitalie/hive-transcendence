@@ -1,7 +1,9 @@
 "use client";
 
-import { memo, Suspense } from "react";
+import { memo, useRef, Suspense } from "react";
+import { useFrame } from "@react-three/fiber";
 import { Text3D, Center } from "@react-three/drei";
+import * as THREE from "three";
 import { GameConfig } from "@/game/GameConfig";
 
 // Base text configurations utilized by both the player scores and the "VS" text block
@@ -15,6 +17,23 @@ const SideWall = memo(function SideWall({ z }: { z: number }) {
   // Kept inside the component to satisfy the architectural request regarding static vs dynamic memory
   const HALF_WIDTH = GameConfig.court.width / 2;
 
+  const glassMatRef = useRef<THREE.MeshStandardMaterial>(null!);
+  const topFrameMatRef = useRef<THREE.MeshStandardMaterial>(null!);
+  const leftFrameMatRef = useRef<THREE.MeshStandardMaterial>(null!);
+  const rightFrameMatRef = useRef<THREE.MeshStandardMaterial>(null!);
+
+  useFrame(() => {
+    const g = GameConfig.arena.glassColor;
+    const f = GameConfig.arena.frameColor;
+    if (glassMatRef.current) glassMatRef.current.color.set(g);
+    for (const ref of [topFrameMatRef, leftFrameMatRef, rightFrameMatRef]) {
+      if (ref.current) {
+        ref.current.color.set(f);
+        ref.current.emissive.set(f);
+      }
+    }
+  });
+
   return (
     <group position={[0, GameConfig.court.wallHeight / 2, z]}>
       <mesh>
@@ -26,6 +45,7 @@ const SideWall = memo(function SideWall({ z }: { z: number }) {
           ]}
         />
         <meshStandardMaterial
+          ref={glassMatRef}
           color={GameConfig.arena.glassColor}
           transparent
           opacity={GameConfig.arena.glassOpacity}
@@ -44,6 +64,7 @@ const SideWall = memo(function SideWall({ z }: { z: number }) {
           ]}
         />
         <meshStandardMaterial
+          ref={topFrameMatRef}
           color={GameConfig.arena.frameColor}
           emissive={GameConfig.arena.frameColor}
           emissiveIntensity={GameConfig.arena.frameEmissiveIntensity}
@@ -65,6 +86,7 @@ const SideWall = memo(function SideWall({ z }: { z: number }) {
           ]}
         />
         <meshStandardMaterial
+          ref={rightFrameMatRef}
           color={GameConfig.arena.frameColor}
           emissive={GameConfig.arena.frameColor}
           emissiveIntensity={GameConfig.arena.frameEmissiveIntensity}
@@ -86,6 +108,7 @@ const SideWall = memo(function SideWall({ z }: { z: number }) {
           ]}
         />
         <meshStandardMaterial
+          ref={leftFrameMatRef}
           color={GameConfig.arena.frameColor}
           emissive={GameConfig.arena.frameColor}
           emissiveIntensity={GameConfig.arena.frameEmissiveIntensity}
@@ -101,7 +124,19 @@ const SideWall = memo(function SideWall({ z }: { z: number }) {
 });
 
 // Groups all non-interactive map geometries
+// Floor and net use materialRef + useFrame to pick up GameConfig changes in real time,
+// even while the physics loop is paused.
 const ArenaStaticGeometry = memo(function ArenaStaticGeometry() {
+  const floorMatRef = useRef<THREE.MeshToonMaterial>(null!);
+  const netMatRef = useRef<THREE.MeshBasicMaterial>(null!);
+
+  useFrame(() => {
+    if (floorMatRef.current)
+      floorMatRef.current.color.set(GameConfig.arena.floorColor);
+    if (netMatRef.current)
+      netMatRef.current.color.set(GameConfig.arena.netColor);
+  });
+
   // Constants kept local to the component body per review instructions
   const WALL_Z_NEAR = -(
     GameConfig.court.zLimit +
@@ -127,7 +162,10 @@ const ArenaStaticGeometry = memo(function ArenaStaticGeometry() {
             GameConfig.court.depth,
           ]}
         />
-        <meshToonMaterial color={GameConfig.arena.floorColor} />
+        <meshToonMaterial
+          ref={floorMatRef}
+          color={GameConfig.arena.floorColor}
+        />
       </mesh>
 
       <mesh
@@ -138,6 +176,7 @@ const ArenaStaticGeometry = memo(function ArenaStaticGeometry() {
           args={[GameConfig.court.netWidth, GameConfig.court.depth]}
         />
         <meshBasicMaterial
+          ref={netMatRef}
           color={GameConfig.arena.netColor}
           transparent
           opacity={GameConfig.arena.netOpacity}
@@ -150,8 +189,53 @@ const ArenaStaticGeometry = memo(function ArenaStaticGeometry() {
   );
 });
 
-// A single side of the 3D scoreboard block.
-// Uses the 'side' prop to statically align text with the global X-axis player positions.
+// ScoreText wraps a single Text3D and updates its material color imperatively every frame.
+// Text3D renders as a THREE.Mesh whose material is set by its <meshStandardMaterial> child.
+// We grab the mesh ref and call material.color.set() + material.emissive.set() each frame
+// so color preview is instant without needing a React re-render.
+const ScoreText = memo(function ScoreText({
+  text,
+  getColor,
+}: {
+  text: string;
+  getColor: () => string;
+}) {
+  const meshRef = useRef<THREE.Mesh>(null!);
+
+  useFrame(() => {
+    if (!meshRef.current) return;
+    const mat = meshRef.current.material;
+    if (!mat) return;
+    const color = getColor();
+    // Text3D may produce a single material or an array; handle both
+    if (Array.isArray(mat)) {
+      for (const m of mat) {
+        if (m instanceof THREE.MeshStandardMaterial) {
+          m.color.set(color);
+          m.emissive.set(color);
+        }
+      }
+    } else if (mat instanceof THREE.MeshStandardMaterial) {
+      mat.color.set(color);
+      mat.emissive.set(color);
+    }
+  });
+
+  return (
+    <Center>
+      <Text3D ref={meshRef} {...TEXT_PROPS}>
+        {text}
+        <meshStandardMaterial
+          color={getColor()}
+          emissive={getColor()}
+          emissiveIntensity={GameConfig.arena.scoreboardEmissive}
+          toneMapped={false}
+        />
+      </Text3D>
+    </Center>
+  );
+});
+
 const ScoreboardSide = memo(function ScoreboardSide({
   p1Score,
   p2Score,
@@ -167,8 +251,13 @@ const ScoreboardSide = memo(function ScoreboardSide({
   const displayScoreLeft = isBackFace ? p2Score : p1Score;
   const displayScoreRight = isBackFace ? p1Score : p2Score;
 
-  const colorLeft = isBackFace ? GameConfig.colors.p2 : GameConfig.colors.p1;
-  const colorRight = isBackFace ? GameConfig.colors.p1 : GameConfig.colors.p2;
+  // getColor reads GameConfig live — used both as initial value and in useFrame
+  const getColorLeft = isBackFace
+    ? () => GameConfig.colors.p2
+    : () => GameConfig.colors.p1;
+  const getColorRight = isBackFace
+    ? () => GameConfig.colors.p1
+    : () => GameConfig.colors.p2;
 
   const HALF_DEPTH = GameConfig.court.depth / 2;
   const HALF_WIDTH = GameConfig.court.width / 2;
@@ -184,19 +273,11 @@ const ScoreboardSide = memo(function ScoreboardSide({
       rotation={[0, side === -1 ? Math.PI : 0, 0]}
     >
       <group position={[-HALF_WIDTH / 2, 0, 0]}>
-        <Center>
-          <Text3D {...TEXT_PROPS}>
-            {String(displayScoreLeft).padStart(2, "0")}
-            <meshStandardMaterial
-              color={colorLeft}
-              emissive={colorLeft}
-              emissiveIntensity={GameConfig.arena.scoreboardEmissive}
-              toneMapped={false}
-            />
-          </Text3D>
-        </Center>
+        <ScoreText
+          text={String(displayScoreLeft).padStart(2, "0")}
+          getColor={getColorLeft}
+        />
       </group>
-
       <group position={[0, 0, 0]}>
         <Center>
           <Text3D {...TEXT_PROPS}>
@@ -208,19 +289,11 @@ const ScoreboardSide = memo(function ScoreboardSide({
           </Text3D>
         </Center>
       </group>
-
       <group position={[HALF_WIDTH / 2, 0, 0]}>
-        <Center>
-          <Text3D {...TEXT_PROPS}>
-            {String(displayScoreRight).padStart(2, "0")}
-            <meshStandardMaterial
-              color={colorRight}
-              emissive={colorRight}
-              emissiveIntensity={GameConfig.arena.scoreboardEmissive}
-              toneMapped={false}
-            />
-          </Text3D>
-        </Center>
+        <ScoreText
+          text={String(displayScoreRight).padStart(2, "0")}
+          getColor={getColorRight}
+        />
       </group>
     </group>
   );
@@ -236,7 +309,6 @@ const Scoreboard = memo(function Scoreboard({
 }) {
   return (
     <group>
-      {/* Wrapping each side in its own Suspense prevents visual "pop-in" asymmetry during font loading */}
       <Suspense fallback={null}>
         <ScoreboardSide p1Score={p1Score} p2Score={p2Score} side={1} />
       </Suspense>

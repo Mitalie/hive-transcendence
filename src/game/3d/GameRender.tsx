@@ -23,7 +23,6 @@ const ResponsiveCamera = memo(function ResponsiveCamera() {
     const target = GameConfig.render.responsive.targetAspect;
     let calculatedFov = GameConfig.camera.fov;
 
-    // Dynamically calculate FOV adjustments for narrow viewports to keep the arena fully in frame
     if (aspect < target) {
       const zoomFactor = target / aspect;
       const baseFovRads = THREE.MathUtils.degToRad(GameConfig.camera.fov);
@@ -55,8 +54,6 @@ export default memo(function GameRender({
 }) {
   const orbitRef = useRef<OrbitControlsImpl>(null);
 
-  // onScore is strictly dependent on a stable dispatcher in the parent,
-  // so it is safe to include in the dependency array without triggering mid-game resets.
   const [engine, aiOpponent] = useMemo(() => {
     const engine = new PongEngine(onScore, mode.type);
     const aiOpponent =
@@ -90,7 +87,6 @@ export default memo(function GameRender({
   return (
     <div className="w-full h-full rounded-xl overflow-hidden bg-transparent">
       <Canvas
-        // PCFShadowMap set explicitly; PCFSoftShadowMap rejected due to rendering acne on paddle skirts.
         shadows={{ type: THREE.PCFShadowMap }}
         gl={{
           alpha: true,
@@ -164,16 +160,17 @@ export default memo(function GameRender({
           />
         ))}
 
+        {/* Scoreboard colors update imperatively each frame via useFrame in Arena */}
         <Arena p1Score={p1Score} p2Score={p2Score} />
 
         <Ball ballData={engine.ball} />
 
+        {/* color is the initial mount value; Paddle reads GameConfig.colors imperatively each frame */}
         <Paddle
           paddleData={engine.p1}
           initialX={GameConfig.player1.xPos}
           color={GameConfig.colors.p1}
         />
-
         <Paddle
           paddleData={engine.p2}
           initialX={GameConfig.player2.xPos}
@@ -196,7 +193,6 @@ const GameUpdate = memo(function GameUpdate({
   paused: boolean;
 }) {
   useFrame((_, delta) => {
-    // Silently freezes the physics loop if the game is paused or the browser tab is hidden
     if (paused || document.hidden) return;
 
     const aiKeys = aiOpponent?.getInputs(delta) ?? {};
@@ -205,7 +201,7 @@ const GameUpdate = memo(function GameUpdate({
       ...keys.current,
       ...aiKeys,
     });
-  }, -1); // Priority -1 ensures this physics update runs before 3D meshes read the state
+  }, -1);
 
   return null;
 });

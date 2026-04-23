@@ -174,7 +174,7 @@ const initGameState: GameState = {
   exitPromptOpen: false,
 };
 
-export const useGameState = () => {
+export const useGameState = (isLoggedIn: boolean) => {
   const [state, dispatch] = useReducer(gameStateReducer, initGameState);
   const resultSaved = useRef(false);
 
@@ -184,23 +184,21 @@ export const useGameState = () => {
       return;
     }
 
-    if (resultSaved.current) return;
+    if (!isLoggedIn || resultSaved.current) return;
     resultSaved.current = true;
 
-    // Dynamically formats the database identifier to distinguish human vs AI matches
-    const opponentId =
-      state.mode.opponent === "human"
-        ? GameConfig.matchHistory.localPlayer2Id
-        : `${GameConfig.matchHistory.aiPrefix}${state.mode.opponent}`;
+    const player2 = GameConfig.matchHistory.currentPlayer2;
 
     saveMatchAction({
-      player2: opponentId,
+      player2,
       score1: state.score1,
       score2: state.score2,
-    }).catch((error) => {
-      console.error("Match History API Failure", error);
+    }).then((result) => {
+      if (!result.ok) {
+        console.error("Match History API Failure", result.error);
+      }
     });
-  }, [state.view, state.score1, state.score2, state.mode.opponent]);
+  }, [isLoggedIn, state.view, state.score1, state.score2]);
 
   return [state, dispatch] as const;
 };

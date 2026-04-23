@@ -228,9 +228,9 @@ export const GameConfig = {
     },
   },
 
-  // Centralized identifiers for match persistence
   matchHistory: {
     localPlayer2Id: "local-player-2",
     aiPrefix: "ai-",
+    currentPlayer2: "",
   },
 };

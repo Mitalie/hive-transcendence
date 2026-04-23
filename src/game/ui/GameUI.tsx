@@ -1,47 +1,103 @@
 import { use } from "react";
+import { useTranslation } from "react-i18next";
 import {
   GameState,
   GameStateDispatchContext,
+  exitPromptAction,
   resumeAction,
 } from "@/game/GameState";
-import GameControls from "@/game/ui/GameControls";
-import ScoreBoard from "@/game/ui/ScoreBoard";
 import GameSettingButton from "@/game/ui/GameSettingButton";
 import ExitModal from "@/game/ui/ExitPrompt";
+import Button from "@/components/Button";
 
-export default function GameUI({ state }: { state: GameState }) {
-  const { view, paused, score1, score2, menuOpen, exitPromptOpen } = state;
+export default function GameUI({
+  state,
+  onApplyColors,
+  gameStarted,
+  onStart,
+  onExitConfirm,
+  isLoggedIn = false,
+  userId = null,
+}: {
+  state: GameState;
+  onApplyColors: () => void;
+  gameStarted: boolean;
+  onStart: () => void;
+  onExitConfirm?: () => void;
+  isLoggedIn?: boolean;
+  userId?: string | null;
+}) {
+  const { paused, menuOpen, exitPromptOpen } = state;
   const dispatch = use(GameStateDispatchContext);
+  const { t } = useTranslation();
 
   return (
     <>
-      {/* HUD overlay interactivity is suppressed when exit modals are active */}
-      <div
-        className={`absolute top-[15px] left-[15px] right-[15px] flex items-center justify-between z-10
-                 ${exitPromptOpen ? "pointer-events-none opacity-50" : ""}`}
-      >
-        <GameControls view={view} paused={paused} />
+      {menuOpen && <div className="absolute inset-0 z-30 rounded-xl" />}
 
-        <div className="absolute left-1/2 -translate-x-1/2">
-          <ScoreBoard p1={score1} p2={score2} />
-        </div>
-
-        <GameSettingButton open={menuOpen} />
+      {/* Settings button + panel */}
+      <div className="absolute top-[15px] right-[15px] z-50">
+        <GameSettingButton
+          open={menuOpen}
+          onApplyColors={onApplyColors}
+          isLoggedIn={isLoggedIn}
+          userId={userId}
+        />
       </div>
 
-      {/* Pointer-events-none allows background 3D OrbitControls to remain active during pause */}
-      {state.paused && (
-        <div className="absolute inset-0 flex justify-center items-center bg-black/50 rounded-xl pointer-events-none">
+      {/* Ready prompt */}
+      {!gameStarted && (
+        <div className="absolute inset-0 flex flex-col justify-center items-center rounded-xl z-10 pointer-events-none">
           <div
-            className="flex items-center justify-center w-32 h-32 bg-card rounded-2xl text-7xl select-none cursor-pointer pointer-events-auto shadow-2xl transition-transform hover:scale-105 active:scale-95"
-            onClick={() => dispatch(resumeAction())}
+            className={[
+              "bg-card backdrop-blur-sm rounded-2xl shadow-2xl flex flex-col items-center gap-3",
+              "px-8 py-6 sm:px-10 sm:py-8 select-none cursor-pointer max-h-[80vh]",
+              menuOpen ? "pointer-events-none" : "pointer-events-auto",
+            ].join(" ")}
+            onClick={onStart}
           >
-            ▶
+            <span className="text-2xl sm:text-3xl font-bold tracking-wide text-text">
+              {t("game.play.ready")}
+            </span>
+            <span className="text-xs sm:text-sm text-text/50 tracking-widest uppercase">
+              {t("game.play.clickOrSpace")}
+            </span>
           </div>
         </div>
       )}
 
-      <ExitModal exitPromptOpen={state.exitPromptOpen} />
+      {/* Paused overlay */}
+      {gameStarted && paused && !exitPromptOpen && (
+        <div className="absolute inset-0 flex flex-col justify-center items-center rounded-xl z-10 pointer-events-none">
+          <div
+            className={[
+              "bg-card backdrop-blur-sm rounded-2xl shadow-2xl flex flex-col items-center",
+              "gap-4 px-6 py-6 sm:gap-5 sm:px-10 sm:py-8 select-none max-h-[80vh]",
+              menuOpen ? "pointer-events-none" : "pointer-events-auto",
+            ].join(" ")}
+          >
+            <span className="text-2xl sm:text-3xl font-bold tracking-wide text-text">
+              {t("game.play.paused")}
+            </span>
+            <div className="flex gap-2 sm:gap-3">
+              <Button
+                className="w-32 sm:w-40 py-2.5 sm:py-3 bg-btn-purple hover:bg-btn-purple-hover font-semibold justify-center"
+                onClick={() => dispatch(resumeAction())}
+              >
+                {t("game.play.continue")}
+              </Button>
+              <Button
+                className="w-32 sm:w-40 py-2.5 sm:py-3 bg-btn-purple hover:bg-btn-purple-hover font-semibold justify-center"
+                onClick={() => dispatch(exitPromptAction())}
+              >
+                {t("game.play.endGame")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ExitModal exitPromptOpen={exitPromptOpen} onConfirm={onExitConfirm} />
     </>
   );
 }

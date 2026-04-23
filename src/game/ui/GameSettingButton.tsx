@@ -1,5 +1,4 @@
-import { useRef, useEffect, useCallback, use } from "react";
-import { useTranslation } from "react-i18next";
+import { useCallback, use } from "react";
 import {
   closeMenuAction,
   GameStateDispatchContext,
@@ -8,61 +7,48 @@ import {
 import GameSettingPanel from "@/game/ui/GameSettingPanel";
 import Button from "@/components/Button";
 
-export default function GameSettingButton({ open }: { open: boolean }) {
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const panelRef = useRef<HTMLDivElement | null>(null);
-  const { t } = useTranslation();
+export default function GameSettingButton({
+  open,
+  onApplyColors,
+  isLoggedIn = false,
+  userId = null,
+}: {
+  open: boolean;
+  onApplyColors: () => void;
+  isLoggedIn?: boolean;
+  userId?: string | null;
+}) {
   const dispatch = use(GameStateDispatchContext);
 
-  const toggleSettingPanel = useCallback(() => {
-    if (open) dispatch(closeMenuAction());
-    else dispatch(openMenuAction());
-  }, [dispatch, open]);
+  const openPanel = useCallback(() => dispatch(openMenuAction()), [dispatch]);
+  const closePanel = useCallback(() => dispatch(closeMenuAction()), [dispatch]);
 
-  const closeSettingPanel = useCallback(() => {
-    if (open) dispatch(closeMenuAction());
-  }, [dispatch, open]);
-
-  // close setting panel when click outside
-  useEffect(() => {
-    if (!open) return;
-
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Node;
-
-      if (
-        panelRef.current &&
-        !panelRef.current.contains(target) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(target)
-      ) {
-        dispatch(closeMenuAction());
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dispatch, open]);
+  const togglePanel = useCallback(() => {
+    if (open) closePanel();
+    else openPanel();
+  }, [open, openPanel, closePanel]);
 
   return (
-    <div>
+    <div className="relative z-50">
       <Button
-        ref={buttonRef}
-        onClick={toggleSettingPanel}
-        className={`
-          ${open ? "bg-btn-purple-active" : "bg-btn-purple"}
+        onClick={togglePanel}
+        className={`w-9 h-9 flex items-center justify-center
+          ${open ? "bg-btn-purple-active" : "bg-card"}
           hover:bg-btn-purple-hover
         `}
+        aria-label="Settings"
       >
-        {t("gamesetting.settingbtn")}
+        ⚙️
       </Button>
+
       {open && (
-        <div className="relative">
-          <div ref={panelRef} className="absolute right-[0] top-[15px] z-20">
-            <GameSettingPanel onClose={closeSettingPanel} />
-          </div>
+        <div className="absolute right-0 top-[48px] z-50">
+          <GameSettingPanel
+            onClose={closePanel}
+            onApply={onApplyColors}
+            isLoggedIn={isLoggedIn}
+            userId={userId}
+          />
         </div>
       )}
     </div>

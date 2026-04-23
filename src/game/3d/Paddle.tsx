@@ -16,6 +16,7 @@ export default memo(function Paddle({
   color: string;
 }) {
   const groupRef = useRef<THREE.Group>(null!);
+  const matRef = useRef<THREE.MeshStandardMaterial>(null!);
 
   const h = GameConfig.paddle.height;
   const s = GameConfig.paddleVisuals.skirtExtension;
@@ -38,6 +39,15 @@ export default memo(function Paddle({
 
     groupRef.current.rotation.z =
       -(paddleData.vx ?? 0) * GameConfig.paddleVisuals.tiltFactor * delta;
+
+    // Real-time color preview: reads GameConfig every frame so changes in the
+    // settings panel appear immediately without needing a React re-render.
+    if (matRef.current) {
+      const liveColor =
+        initialX < 0 ? GameConfig.colors.p1 : GameConfig.colors.p2;
+      matRef.current.color.set(liveColor);
+      matRef.current.emissive.set(liveColor);
+    }
   });
 
   return (
@@ -47,6 +57,7 @@ export default memo(function Paddle({
           args={[GameConfig.paddle.width, totalHeight, GameConfig.paddle.depth]}
         />
         <meshStandardMaterial
+          ref={matRef}
           color={color}
           emissive={color}
           emissiveIntensity={GameConfig.paddleVisuals.emissiveIntensity}

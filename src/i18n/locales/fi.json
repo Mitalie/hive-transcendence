@@ -106,16 +106,6 @@
       }
     }
   },
-  "gamecontrols": {
-    "start": "Käynnistä",
-    "pause": "Keskeytä",
-    "end": "loppu",
-    "continue": "jatka"
-  },
-  "gamesetting": {
-    "settingbtn": "Asetus",
-    "title": "Peliasetukset"
-  },
   "auth": {
     "signIn": "Kirjaudu sisään",
     "signOut": "Kirjaudu ulos",
@@ -334,6 +324,87 @@
       "removeConfirmText": "Poistetaanko {{name}} kavereista?",
       "removeConfirm": "Poista",
       "removeCancel": "Peruuta"
+    }
+  },
+  "game": {
+    "setup": {
+      "gameMode": "Pelitila",
+      "classic": "Klassinen",
+      "classicDesc": "2D sivuvieritys",
+      "advanced": "Edistynyt",
+      "advancedDesc": "3D-fysiikka pyörityksellä",
+      "opponent": "Vastustaja",
+      "ai": "Tekoäly",
+      "aiDesc": "Haasta tietokone",
+      "guest": "Vieras",
+      "guestDesc": "Pelaa kaverin kanssa",
+      "difficulty": "Vaikeustaso",
+      "easy": "Helppo",
+      "medium": "Keskitaso",
+      "hard": "Vaikea",
+      "player2Name": "Pelaaja 2:n nimi",
+      "player2Placeholder": "Kirjoita nimi jatkaaksesi...",
+      "winScore": "Voittopisteet",
+      "startPlay": "Aloita peli",
+      "loginToUnlock": "Kirjaudu sisään avataksesi lisää pelitiloja"
+    },
+    "lobby": {
+      "readyToPlay": "Valmis pelaamaan?",
+      "player1": "Pelaaja 1",
+      "player2": "Pelaaja 2",
+      "vs": "VS",
+      "classicMode": "Klassinen tila",
+      "advancedMode": "Edistynyt tila",
+      "back": "← Takaisin",
+      "enterCourt": "Kentälle →",
+      "aiEasy": "Helppo",
+      "aiMedium": "Keskitaso",
+      "aiHard": "Vaikea",
+      "you": "Sinä",
+      "gametips": "Pelipainikkeet:",
+      "tipsClassicPlayer1": "WS",
+      "tipsAdvancedPlayer1": "WASD",
+      "tipsClassicPlayer2": "YLÖS/ALAS",
+      "tipsAdvancedPlayer2": "Nuolinäppäimet"
+    },
+    "play": {
+      "ready": "Valmis?",
+      "clickOrSpace": "Klikkaa tai paina välilyöntiä",
+      "gameTips": "Käytä WASD-näppäimiä mailan ohjaamiseen",
+      "paused": "Tauko",
+      "continue": "Jatka",
+      "endGame": "Lopeta peli"
+    },
+    "exit": {
+      "title": "Lopetetaanko peli?",
+      "keepPlaying": "Jatka pelaamista",
+      "endGame": "Lopeta peli"
+    },
+    "end": {
+      "gameOver": "Peli ohi",
+      "wins": "Voittaa!",
+      "playAgain": "Pelaa uudelleen",
+      "mainMenu": "Päävalikko",
+      "loginToSave": "Kirjaudu sisään tallentaaksesi otteluhistoriasi"
+    },
+    "settings": {
+      "title": "Peliasetukset",
+      "tabColors": "Värit",
+      "tabPhysics": "Fysiikka",
+      "p1Color": "P1 väri",
+      "p2Color": "P2 väri",
+      "floor": "Lattia",
+      "net": "Verkko",
+      "glassWalls": "Lasiseeinät",
+      "ball": "Pallo",
+      "ballSpeed": "Pallon nopeus",
+      "ballGravity": "Pallon painovoima",
+      "ballBounce": "Pallon pomppu",
+      "ballSpin": "Pallon pyöritys",
+      "paddleSpeed": "Mailan nopeus",
+      "reset": "Nollaa",
+      "apply": "Käytä",
+      "close": "✕"
     }
   }
 }

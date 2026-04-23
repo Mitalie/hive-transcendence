@@ -12,15 +12,26 @@ function validateSaveMatchArgs(o: unknown): o is SaveMatchArgs {
   return true;
 }
 
-export async function saveMatchAction(args: SaveMatchArgs) {
+export type SaveMatchResult =
+  | { ok: true }
+  | { ok: false; error: "unauthorized" | "invalid_args" | "unknown" };
+
+export async function saveMatchAction(
+  args: SaveMatchArgs,
+): Promise<SaveMatchResult> {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    throw new Error("Unauthorized");
+    return { ok: false, error: "unauthorized" };
   }
   if (!validateSaveMatchArgs(args)) {
-    throw new Error("Invalid arguments to action");
+    return { ok: false, error: "invalid_args" };
   }
 
-  await saveMatch(session.user.id, args);
+  try {
+    await saveMatch(session.user.id, args);
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "unknown" };
+  }
 }
