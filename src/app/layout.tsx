@@ -33,7 +33,7 @@ export default async function RootLayout({
 
             {/* footer */}
             <div className="pb-5 px-5 z-100">
-              <Footer />
+              <Footer initialDark={dark} />
             </div>
           </div>
         </Providers>
