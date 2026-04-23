@@ -10,12 +10,21 @@ yarn-error.log*
 # Next.js build output: Ensures the container builds a fresh version
 .next
 out
+build/
+
+# Prisma generated client: Prevents copying host-side outdated types into the container
+src/generated/prisma
+
+# TypeScript cache: Prevents Next.js from using local host cache during container build
+*.tsbuildinfo
+next-env.d.ts
 
 # Git and environment: Keeps the image clean and prevents leaking secrets in image layers
 .git
 .gitignore
 .devcontainer
 .env
+.env*
 
 # Optional: Speeds up the "Sending build context to Docker daemon" step
 README.md
@@ -26,3 +35,9 @@ docs/
 docker/
 docker-compose.yml
 mariadb.yml
+
+# Misc tooling and OS files
+coverage/
+.vercel/
+.DS_Store
+*.pem
