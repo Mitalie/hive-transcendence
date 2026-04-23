@@ -1,0 +1,35 @@
+services:
+  transcendence_db:
+    extends:
+      file: docker/mariadb.yml
+      service: mariadb
+    container_name: transcendence_db
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    container_name: transcendence_app
+    restart: on-failure
+    env_file:
+      - .env
+    environment:
+      - NEXTAUTH_TRUSTHOST=true # Trusts Nginx headers for Server Actions
+      - MARIADB_HOST=transcendence_db
+    depends_on:
+      transcendence_db:
+        condition: service_healthy
+
+  nginx:
+    build:
+      context: ./docker/nginx
+    container_name: transcendence_nginx
+    restart: on-failure
+    ports:
+      - "8443:443"
+      - "8080:80"
+    depends_on:
+      - app
+
+volumes:
+  transcendence_mariadb_data:
