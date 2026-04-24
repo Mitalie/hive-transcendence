@@ -370,6 +370,7 @@
     "play": {
       "ready": "Valmis?",
       "clickOrSpace": "Klikkaa tai paina välilyöntiä",
+      "settingOpen": "Viimeistele asetukset ennen jatkamista",
       "gameTips": "Käytä WASD-näppäimiä mailan ohjaamiseen",
       "paused": "Tauko",
       "continue": "Jatka",

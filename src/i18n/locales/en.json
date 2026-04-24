@@ -377,6 +377,7 @@
     "play": {
       "ready": "Ready?",
       "clickOrSpace": "Click or press Space",
+      "settingOpen": "Finish settings before continuing",
       "paused": "Paused",
       "continue": "Continue",
       "endGame": "End Game"
