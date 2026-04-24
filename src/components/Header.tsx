@@ -81,7 +81,11 @@ export default function Header() {
         </NavButton>
 
         {/* Sign in/out button depending on session */}
-        {session ? <SignOutButton /> : <SignInButton />}
+        {status === "authenticated" && session?.user ? (
+          <SignOutButton />
+        ) : (
+          <SignInButton />
+        )}
       </div>
     </Bar>
   );

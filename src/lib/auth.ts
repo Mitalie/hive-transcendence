@@ -1,4 +1,4 @@
-import { NextAuthOptions } from "next-auth";
+import { NextAuthOptions, Session } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
@@ -58,6 +58,10 @@ export const authOptions: NextAuthOptions = {
           updatedAt: true,
         },
       });
+
+      if (!user) {
+        return { ...session, user: undefined } as unknown as Session;
+      }
 
       session.user.id = token.userId;
       session.user.avatarVersion = user?.updatedAt.getTime();
