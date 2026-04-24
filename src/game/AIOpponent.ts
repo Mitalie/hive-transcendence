@@ -63,7 +63,36 @@ export class AIOpponent {
         this.targetZ = 0;
         this.targetX = GameConfig.player2.xPos;
       } else {
-        this.targetZ = ball.z + this.currentMistakeZ;
+        const zLimit = GameConfig.paddle.zLimit;
+
+        // Multi-bounce trajectory prediction
+        if (ball.vy < -0.01 && ball.y > GameConfig.ball.radius) {
+          // Ball falling: Predict floor intercept
+          const timeToFloor =
+            (ball.y - GameConfig.ball.radius) / Math.abs(ball.vy);
+          const predictedZ = ball.z + ball.vz * timeToFloor;
+          this.targetZ =
+            Math.max(Math.min(predictedZ, zLimit), -zLimit) +
+            this.currentMistakeZ;
+        } else if (ball.vy > 0.01) {
+          // Ball rising: Predict ceiling ricochet -> then floor intercept
+          const CEILING =
+            GameConfig.court.wallHeight * 3 - GameConfig.ball.radius;
+          const timeToCeiling = (CEILING - ball.y) / ball.vy;
+          const zAtCeiling = ball.z + ball.vz * timeToCeiling;
+
+          const vyAfterCeiling = -ball.vy * GameConfig.ball.bounceFriction;
+          const timeFromCeilingToFloor =
+            (CEILING - GameConfig.ball.radius) / Math.abs(vyAfterCeiling);
+          const predictedZ = zAtCeiling + ball.vz * timeFromCeilingToFloor;
+
+          this.targetZ =
+            Math.max(Math.min(predictedZ, zLimit), -zLimit) +
+            this.currentMistakeZ;
+        } else {
+          this.targetZ = ball.z + this.currentMistakeZ;
+        }
+
         const isBallTooHigh = ball.y > GameConfig.paddle.height;
 
         if (ball.vx > 0 && ball.x > GameConfig.court.centerX) {

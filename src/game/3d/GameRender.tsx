@@ -201,7 +201,7 @@ const GameUpdate = memo(function GameUpdate({
       ...keys.current,
       ...aiKeys,
     });
-  }, -1);
+  }, -1); // Priority -1 ensures this physics update runs before 3D meshes read the state
 
   return null;
 });
