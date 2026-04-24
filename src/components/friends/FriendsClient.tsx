@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import FriendCard from "./FriendCard";
@@ -8,12 +8,14 @@ import RequestCard from "./RequestCard";
 import DiscoverUserCard from "./DiscoverUserCard";
 import FriendProfile from "./FriendProfile";
 import { searchUsersForFriendRequest } from "@/actions/users";
+import { getFriendMatchDataAction } from "@/actions/friendProfile";
 
 type Person = {
   id: string;
+  friendshipId?: string;
   label: string;
   avatarUrl?: string | null;
-  isOnline: boolean;
+  isOnline?: boolean;
 };
 type ActiveTab = "friends" | "incoming" | "sent";
 
@@ -86,7 +88,23 @@ export function FriendsClient({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdatedTime, setLastUpdatedTime] = useState<string | null>(null);
 
-  const friendIds = new Set(friends.map((f) => f.id));
+  const friendIds = useMemo(() => new Set(friends.map((f) => f.id)), [friends]);
+
+  const [profileStats, setProfileStats] = useState<{
+    games: number;
+    wins: number;
+    winRate: string;
+  }>();
+
+  const [profileMatchHistory, setProfileMatchHistory] = useState<
+    {
+      id: string;
+      opponent: string;
+      result: "win" | "loss";
+      date: string;
+      score?: string;
+    }[]
+  >([]);
 
   const runSearch = useCallback(async (keyword: string) => {
     const trimmed = keyword.trim();
@@ -150,6 +168,22 @@ export function FriendsClient({
       null)
     : null;
 
+  useEffect(() => {
+    async function loadFriendMatchData() {
+      if (!selectedPerson || !friendIds.has(selectedPerson.id)) {
+        setProfileStats(undefined);
+        setProfileMatchHistory([]);
+        return;
+      }
+
+      const data = await getFriendMatchDataAction(selectedPerson.id);
+
+      setProfileStats(data.stats);
+      setProfileMatchHistory(data.matchHistory);
+    }
+
+    loadFriendMatchData();
+  }, [selectedPerson, friendIds]);
   const selectFromList = (p: Person) => {
     setSelectedId(p.id);
     setSelectedFromSearch(false);
@@ -209,7 +243,7 @@ export function FriendsClient({
             {friends.map((f) => (
               <FriendCard
                 key={f.id}
-                friendshipId={f.id}
+                friendshipId={f.friendshipId ?? ""}
                 label={f.label}
                 avatarUrl={f.avatarUrl}
                 isOnline={f.isOnline}
@@ -233,7 +267,7 @@ export function FriendsClient({
             {incomingRequests.map((f) => (
               <RequestCard
                 key={f.id}
-                friendshipId={f.id}
+                friendshipId={f.friendshipId ?? ""}
                 label={f.label}
                 avatarUrl={f.avatarUrl}
                 isOnline={f.isOnline}
@@ -260,7 +294,7 @@ export function FriendsClient({
             {sentRequests.map((f) => (
               <RequestCard
                 key={f.id}
-                friendshipId={f.id}
+                friendshipId={f.friendshipId ?? ""}
                 label={f.label}
                 avatarUrl={f.avatarUrl}
                 isOnline={f.isOnline}
@@ -360,6 +394,8 @@ export function FriendsClient({
               friend={selectedPerson}
               isFriend={friendIds.has(selectedPerson.id)}
               onClose={closeProfile}
+              stats={profileStats}
+              matchHistory={profileMatchHistory}
             />
           ) : (
             <div className="bg-card rounded-2xl p-5 flex-1 overflow-y-auto min-h-0">

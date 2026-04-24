@@ -10,10 +10,14 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await prisma.user.update({
-    where: { id: session.user.id },
-    data: { lastActiveAt: new Date() },
-  });
+  try {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { lastActiveAt: new Date() },
+    });
 
-  return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ success: false }, { status: 200 });
+  }
 }

@@ -38,13 +38,15 @@ export default async function FriendsPage() {
   return (
     <FriendsClient
       incomingRequests={incomingRequests.map((f) => ({
-        id: f.id,
+        id: f.requester.id,
+        friendshipId: f.id,
         label: resolveLabel(f.requester),
         avatarUrl: avatarUrl(f.requester.id),
         isOnline: isOnline(f.requester.lastActiveAt),
       }))}
       sentRequests={sentRequests.map((f) => ({
-        id: f.id,
+        id: f.addressee.id,
+        friendshipId: f.id,
         label: resolveLabel(f.addressee),
         avatarUrl: avatarUrl(f.addressee.id),
         isOnline: isOnline(f.addressee.lastActiveAt),
@@ -52,7 +54,8 @@ export default async function FriendsPage() {
       friends={friends.map((f) => {
         const friend = f.requesterId === userId ? f.addressee : f.requester;
         return {
-          id: f.id,
+          id: friend.id,
+          friendshipId: f.id,
           label: resolveLabel(friend),
           avatarUrl: avatarUrl(friend.id),
           isOnline: isOnline(friend.lastActiveAt),

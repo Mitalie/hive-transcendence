@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { removeFriend } from "@/actions/friendships";
 import UserAvatar from "./UserAvatar";
 
-type MatchResult = "win" | "loss" | "draw";
+type MatchResult = "win" | "loss";
 
 type MatchHistoryItem = {
   id: string;
@@ -22,7 +22,12 @@ type Stats = {
 };
 
 type Props = {
-  friend: { id: string; label: string; avatarUrl?: string | null };
+  friend: {
+    id: string;
+    friendshipId?: string;
+    label: string;
+    avatarUrl?: string | null;
+  };
   isFriend?: boolean;
   onClose: () => void;
   stats?: Stats;
@@ -44,13 +49,11 @@ function MatchRow({ match }: { match: MatchHistoryItem }) {
   const resultColors: Record<MatchResult, string> = {
     win: "text-green-400",
     loss: "text-red-400",
-    draw: "text-text/50",
   };
 
   const resultLabels: Record<MatchResult, string> = {
     win: "W",
     loss: "L",
-    draw: "D",
   };
 
   return (
@@ -114,10 +117,13 @@ export default function FriendProfile({
   const [removePending, setRemovePending] = useState(false);
 
   async function handleRemove() {
+    if (!friend.friendshipId) return;
+
     setRemovePending(true);
     setRemoveError(null);
-    const result = await removeFriend(friend.id);
+    const result = await removeFriend(friend.friendshipId);
     setRemovePending(false);
+
     if ("error" in result) {
       setRemoveError(result.error);
       setConfirmRemove(false);
