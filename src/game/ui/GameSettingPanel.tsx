@@ -36,6 +36,7 @@ function scaleToBallSpeed(s: number) {
   GameConfig.ball.startVelocityX = Math.round(BASE_BALL_VX * f);
   GameConfig.ball.startVelocityZ = Math.round(BASE_BALL_VZ * f);
   GameConfig.ball.maxXVelocity = Math.round(BASE_BALL_MAX * f);
+  GameConfig.ball.maxZVelocity = Math.round(14 * f);
 }
 
 function gravityToScale(g: number) {

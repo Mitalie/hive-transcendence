@@ -14,7 +14,6 @@ const TEXT_PROPS = {
 
 // SideWall abstracts the complex bounding box and top/side framing geometry to keep the parent clean
 const SideWall = memo(function SideWall({ z }: { z: number }) {
-  // Kept inside the component to satisfy the architectural request regarding static vs dynamic memory
   const HALF_WIDTH = GameConfig.court.width / 2;
 
   const glassMatRef = useRef<THREE.MeshStandardMaterial>(null!);

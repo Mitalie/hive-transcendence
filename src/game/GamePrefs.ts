@@ -126,6 +126,7 @@ export function applySettingsToConfig(p: SettingsPrefs) {
   GameConfig.ball.startVelocityX = Math.round(12 * bsf);
   GameConfig.ball.startVelocityZ = Math.round(10 * bsf);
   GameConfig.ball.maxXVelocity = Math.round(28 * bsf);
+  GameConfig.ball.maxZVelocity = Math.round(14 * bsf);
 
   GameConfig.ball.gravity = Math.round(5 + ((p.gravity - 1) / 9) * 35);
   GameConfig.ball.bounceFriction = parseFloat(
