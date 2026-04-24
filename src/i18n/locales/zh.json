@@ -370,6 +370,7 @@
     "play": {
       "ready": "准备好了吗？",
       "clickOrSpace": "点击或按空格键开始游戏",
+      "settingOpen": "请先完成游戏设置",
       "gameTips": "使用WASD控制球拍",
       "paused": "已暂停",
       "continue": "继续",

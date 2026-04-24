@@ -30,7 +30,8 @@ export default function GameSetup({
   );
   const [selectedOpponent, setSelectedOpponent] = useState<GameOpponent>(
     initialPrefs?.opponent === "human"
-      ? "human" : (initialPrefs?.opponent ?? "medium"),
+      ? "human"
+      : (initialPrefs?.opponent ?? "medium"),
   );
   const [guestName, setGuestName] = useState("");
   const [aiDifficulty, setAiDifficulty] = useState<"easy" | "medium" | "hard">(

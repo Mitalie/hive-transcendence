@@ -59,9 +59,15 @@ export default function GameUI({
             <span className="text-2xl sm:text-3xl font-bold tracking-wide text-text">
               {t("game.play.ready")}
             </span>
-            <span className="text-xs sm:text-sm text-text/50 tracking-widest uppercase">
-              {t("game.play.clickOrSpace")}
-            </span>
+            {menuOpen ? (
+              <span className="text-xs sm:text-sm text-text/50 tracking-widest uppercase">
+                {t("game.play.settingOpen")}
+              </span>
+            ) : (
+              <span className="text-xs sm:text-sm text-text/50 tracking-widest uppercase">
+                {t("game.play.clickOrSpace")}
+              </span>
+            )}
           </div>
         </div>
       )}
@@ -79,20 +85,26 @@ export default function GameUI({
             <span className="text-2xl sm:text-3xl font-bold tracking-wide text-text">
               {t("game.play.paused")}
             </span>
-            <div className="flex gap-2 sm:gap-3">
-              <Button
-                className="w-32 sm:w-40 py-2.5 sm:py-3 bg-btn-purple hover:bg-btn-purple-hover font-semibold justify-center"
-                onClick={() => dispatch(resumeAction())}
-              >
-                {t("game.play.continue")}
-              </Button>
-              <Button
-                className="w-32 sm:w-40 py-2.5 sm:py-3 bg-btn-purple hover:bg-btn-purple-hover font-semibold justify-center"
-                onClick={() => dispatch(exitPromptAction())}
-              >
-                {t("game.play.endGame")}
-              </Button>
-            </div>
+            {menuOpen ? (
+              <span className="text-xs sm:text-sm text-text/50 tracking-widest uppercase">
+                {t("game.play.settingOpen")}
+              </span>
+            ) : (
+              <div className="flex gap-2 sm:gap-3">
+                <Button
+                  className="w-32 sm:w-40 py-2.5 sm:py-3 bg-btn-purple hover:bg-btn-purple-hover font-semibold justify-center"
+                  onClick={() => dispatch(resumeAction())}
+                >
+                  {t("game.play.continue")}
+                </Button>
+                <Button
+                  className="w-32 sm:w-40 py-2.5 sm:py-3 bg-btn-purple hover:bg-btn-purple-hover font-semibold justify-center"
+                  onClick={() => dispatch(exitPromptAction())}
+                >
+                  {t("game.play.endGame")}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}
