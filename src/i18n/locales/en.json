@@ -3,7 +3,7 @@
     "language": "Language",
     "dark": "Dark",
     "light": "Light",
-    "label": "© 2026 Transcendence",
+    "label": "© 2026 OmniPong",
     "termsLink": "Terms of Service",
     "termsLinkShort": "Terms",
     "privacyLink": "Privacy Policy",
@@ -15,7 +15,7 @@
     }
   },
   "header": {
-    "websitename": "Website Name",
+    "websitename": "OmniPong",
     "home": "Home",
     "game": "Game",
     "friends": "Friends",
@@ -30,22 +30,22 @@
     "play": "Play!"
   },
   "home": {
-    "welcome": "Welcome to <Website Name>",
-    "intro": "This is a brief introduction to the website.",
+    "welcome": "Welcome to OmniPong",
+    "intro": "OmniPong is a web-based Pong game platform. You can play against a Guest or AI using different modes & settings. Try it.",
     "startgame": "Play"
   },
   "terms": {
     "title": "Terms of Service",
     "lastUpdated": "Last updated: March 30, 2026",
-    "intro": "Welcome to Transcendence. By accessing or using this application, you agree to be bound by these Terms of Service. Please read them carefully.",
+    "intro": "Welcome to OmniPong. By accessing or using this application, you agree to be bound by these Terms of Service. Please read them carefully.",
     "sections": {
       "acceptance": {
         "title": "Acceptance of Terms",
-        "content": "By creating an account or using Transcendence, you confirm that you have read, understood, and agree to these terms. If you do not agree, please do not use the application."
+        "content": "By creating an account or using OmniPong, you confirm that you have read, understood, and agree to these terms. If you do not agree, please do not use the application."
       },
       "use": {
         "title": "Use of the Service",
-        "content": "Transcendence is a web-based Pong game platform developed as part of the 42 school curriculum. You agree to use it only for its intended purpose and in a respectful manner toward other users."
+        "content": "OmniPong is a web-based Pong game platform developed as part of the 42 school curriculum. You agree to use it only for its intended purpose and in a respectful manner toward other users."
       },
       "accounts": {
         "title": "User Accounts",
@@ -88,7 +88,7 @@
       },
       "dataUse": {
         "title": "How We Use Your Data",
-        "content": "Your data is used solely to operate the application — to authenticate you, track your game results, and display profiles or leaderboards within the platform. We do not use your data for advertising, analytics services, or any purpose beyond running Transcendence."
+        "content": "Your data is used solely to operate the application — to authenticate you, track your game results, and display profiles or leaderboards within the platform. We do not use your data for advertising, analytics services, or any purpose beyond running OmniPong."
       },
       "dataStorage": {
         "title": "Data Storage",

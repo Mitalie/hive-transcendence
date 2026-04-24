@@ -9,7 +9,7 @@
     "privacyLinkShort": "Tietosuoja"
   },
   "header": {
-    "websitename": "Verkkosivuston Nimi",
+    "websitename": "OmniPong",
     "home": "Etusivu",
     "game": "Peli",
     "friends": "Ystävät",
@@ -24,22 +24,22 @@
     "play": "Pelaa"
   },
   "home": {
-    "welcome": "Tervetuloa <Verkkosivuston nimi>",
-    "intro": "Tämä on lyhyt esittely verkkosivustosta.",
+    "welcome": "Tervetuloa OmniPongiin",
+    "intro": "OmniPong on selainpohjainen Pong-pelialusta. Voit pelata vierasta tai tekoälyä vastaan eri pelitiloilla ja asetuksilla. Kokeile.",
     "startgame": "Pelaa"
   },
   "terms": {
     "title": "Käyttöehdot",
     "lastUpdated": "Viimeksi päivitetty: 30. maaliskuuta 2026",
-    "intro": "Tervetuloa Transcendenceen. Käyttämällä tätä sovellusta hyväksyt nämä käyttöehdot. Lue ne huolellisesti.",
+    "intro": "Tervetuloa OmniPongiin. Käyttämällä tätä sovellusta hyväksyt nämä käyttöehdot. Lue ne huolellisesti.",
     "sections": {
       "acceptance": {
         "title": "Ehtojen hyväksyminen",
-        "content": "Luomalla tilin tai käyttämällä Transcendencea vahvistat, että olet lukenut, ymmärtänyt ja hyväksynyt nämä ehdot. Jos et hyväksy ehtoja, älä käytä sovellusta."
+        "content": "Luomalla tilin tai käyttämällä OmniPongia vahvistat, että olet lukenut, ymmärtänyt ja hyväksynyt nämä ehdot. Jos et hyväksy ehtoja, älä käytä sovellusta."
       },
       "use": {
         "title": "Palvelun käyttö",
-        "content": "Transcendence on selainpohjainen Pong-pelialusta, joka on kehitetty osana 42-koulun opetussuunnitelmaa. Sitoudut käyttämään palvelua vain sen tarkoituksen mukaisesti ja kunnioittavasti muita käyttäjiä kohtaan."
+        "content": "OmniPong on selainpohjainen Pong-pelialusta, joka on kehitetty osana 42-koulun opetussuunnitelmaa. Sitoudut käyttämään palvelua vain sen tarkoituksen mukaisesti ja kunnioittavasti muita käyttäjiä kohtaan."
       },
       "accounts": {
         "title": "Käyttäjätilit",
@@ -82,7 +82,7 @@
       },
       "dataUse": {
         "title": "Tietojen käyttö",
-        "content": "Tietojasi käytetään ainoastaan sovelluksen toiminnan mahdollistamiseen — kirjautumiseen, pelitulosten seuraamiseen sekä profiilien ja tulostaulujen näyttämiseen alustalla. Emme käytä tietojasi mainontaan, analytiikkaan tai mihinkään muuhun tarkoitukseen."
+        "content": "Tietojasi käytetään ainoastaan OmniPong toiminnan mahdollistamiseen — kirjautumiseen, pelitulosten seuraamiseen sekä profiilien ja tulostaulujen näyttämiseen alustalla. Emme käytä tietojasi mainontaan, analytiikkaan tai mihinkään muuhun tarkoitukseen."
       },
       "dataStorage": {
         "title": "Tietojen säilytys",

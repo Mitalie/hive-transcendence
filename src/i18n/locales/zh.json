@@ -9,7 +9,7 @@
     "privacyLinkShort": "隐私"
   },
   "header": {
-    "websitename": "网站名称",
+    "websitename": "OmniPong",
     "home": "主页",
     "game": "游戏",
     "friends": "好友",
@@ -24,22 +24,22 @@
     "play": "开始玩!"
   },
   "home": {
-    "welcome": "欢迎来到 <网站名称>",
-    "intro": "这里是网站简介。",
+    "welcome": "欢迎来到 OmniPong",
+    "intro": "OmniPong 是一个基于网页的乒乓球游戏平台。你可以使用不同的模式和设置与访客或 AI 对战。来试试吧。",
     "startgame": "开始玩"
   },
   "terms": {
     "title": "服务条款",
     "lastUpdated": "最后更新：2026年3月30日",
-    "intro": "欢迎使用 Transcendence。访问或使用本应用即表示您同意受本服务条款的约束。请仔细阅读。",
+    "intro": "欢迎使用 OmniPong。访问或使用本应用即表示您同意受本服务条款的约束。请仔细阅读。",
     "sections": {
       "acceptance": {
         "title": "条款接受",
-        "content": "通过创建账户或使用 Transcendence，您确认已阅读、理解并同意这些条款。如果您不同意，请不要使用本应用。"
+        "content": "通过创建账户或使用 OmniPong，您确认已阅读、理解并同意这些条款。如果您不同意，请不要使用本应用。"
       },
       "use": {
         "title": "服务的使用",
-        "content": "Transcendence 是一个基于网页的 Pong 游戏平台，作为 42 学校课程的一部分开发。您同意仅将其用于预期用途，并以尊重他人的方式使用。"
+        "content": "OmniPong 是一个基于网页的乒乓球游戏平台，作为 42 学校课程的一部分开发。您同意仅将其用于预期用途，并以尊重他人的方式使用。"
       },
       "accounts": {
         "title": "用户账户",
@@ -82,7 +82,7 @@
       },
       "dataUse": {
         "title": "数据的使用方式",
-        "content": "您的数据仅用于应用运行，例如身份验证、记录游戏结果以及在平台上展示个人资料或排行榜。我们不会将您的数据用于广告、分析或其他用途。"
+        "content": "您的数据仅用于OmniPong运行，例如身份验证、记录游戏结果以及在平台上展示个人资料或排行榜。我们不会将您的数据用于广告、分析或其他用途。"
       },
       "dataStorage": {
         "title": "数据存储",
