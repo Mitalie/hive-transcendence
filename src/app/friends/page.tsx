@@ -17,6 +17,11 @@ function avatarUrl(userId: string): string {
   return `/api/avatar/${userId}`;
 }
 
+function isOnline(lastActiveAt: Date | null): boolean {
+  if (!lastActiveAt) return false;
+  return Date.now() - new Date(lastActiveAt).getTime() < 60 * 1000;
+}
+
 // ---------- Page ----------
 export default async function FriendsPage() {
   const session = await getServerSession(authOptions);
@@ -36,11 +41,13 @@ export default async function FriendsPage() {
         id: f.id,
         label: resolveLabel(f.requester),
         avatarUrl: avatarUrl(f.requester.id),
+        isOnline: isOnline(f.requester.lastActiveAt),
       }))}
       sentRequests={sentRequests.map((f) => ({
         id: f.id,
         label: resolveLabel(f.addressee),
         avatarUrl: avatarUrl(f.addressee.id),
+        isOnline: isOnline(f.addressee.lastActiveAt),
       }))}
       friends={friends.map((f) => {
         const friend = f.requesterId === userId ? f.addressee : f.requester;
@@ -48,6 +55,7 @@ export default async function FriendsPage() {
           id: f.id,
           label: resolveLabel(friend),
           avatarUrl: avatarUrl(friend.id),
+          isOnline: isOnline(friend.lastActiveAt),
         };
       })}
     />

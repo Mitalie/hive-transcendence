@@ -54,6 +54,7 @@ const userDisplayFields = {
   displayName: true,
   name: true,
   username: true,
+  lastActiveAt: true,
 } as const;
 
 export async function getPendingFriendRequestsByUserId(userId: string) {

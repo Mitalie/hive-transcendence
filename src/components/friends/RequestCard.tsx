@@ -15,6 +15,7 @@ type Props = {
   friendshipId: string;
   label: string;
   avatarUrl?: string | null;
+  isOnline?: boolean;
   isSelected: boolean;
   variant: RequestCardVariant;
   onViewProfile: () => void;
@@ -25,6 +26,7 @@ export default function RequestCard({
   friendshipId,
   label,
   avatarUrl,
+  isOnline,
   isSelected,
   variant,
   onViewProfile,
@@ -85,6 +87,7 @@ export default function RequestCard({
         label={label}
         avatarUrl={avatarUrl}
         isSelected={isSelected}
+        online={isOnline ?? false}
         onClick={onViewProfile}
         actions={actions}
       />

@@ -9,7 +9,12 @@ import DiscoverUserCard from "./DiscoverUserCard";
 import FriendProfile from "./FriendProfile";
 import { searchUsersForFriendRequest } from "@/actions/users";
 
-type Person = { id: string; label: string; avatarUrl?: string | null };
+type Person = {
+  id: string;
+  label: string;
+  avatarUrl?: string | null;
+  isOnline: boolean;
+};
 type ActiveTab = "friends" | "incoming" | "sent";
 
 interface FriendsClientProps {
@@ -92,7 +97,11 @@ export function FriendsClient({
     setIsSearching(true);
     const results = await searchUsersForFriendRequest(trimmed);
     setSearchResults(
-      results.map((u) => ({ ...u, avatarUrl: `/api/avatar/${u.id}` })),
+      results.map((u) => ({
+        ...u,
+        avatarUrl: `/api/avatar/${u.id}`,
+        isOnline: false,
+      })),
     );
     setIsSearching(false);
   }, []);
@@ -203,6 +212,7 @@ export function FriendsClient({
                 friendshipId={f.id}
                 label={f.label}
                 avatarUrl={f.avatarUrl}
+                isOnline={f.isOnline}
                 onSelect={() => selectFromList(f)}
                 isSelected={selectedId === f.id}
               />
@@ -226,6 +236,7 @@ export function FriendsClient({
                 friendshipId={f.id}
                 label={f.label}
                 avatarUrl={f.avatarUrl}
+                isOnline={f.isOnline}
                 variant="incoming"
                 isSelected={selectedId === f.id}
                 onViewProfile={() => selectFromList(f)}
@@ -252,6 +263,7 @@ export function FriendsClient({
                 friendshipId={f.id}
                 label={f.label}
                 avatarUrl={f.avatarUrl}
+                isOnline={f.isOnline}
                 variant="sent"
                 isSelected={selectedId === f.id}
                 onViewProfile={() => selectFromList(f)}
