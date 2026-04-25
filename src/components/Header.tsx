@@ -68,18 +68,14 @@ export default function Header() {
         </NavButton>
 
         <NavButton href="/profile" active={pathname === "/profile"}>
-          <span className="block w-8 h-8 shrink-0 rounded-full overflow-hidden">
-            <Image
-              unoptimized
-              loading="eager"
-              priority
-              src={avatarSrc}
-              alt="user"
-              width={32}
-              height={32}
-              className="w-full h-full object-cover"
-            />
-          </span>
+          <Image
+            unoptimized
+            src={avatarSrc}
+            alt="user"
+            width={32}
+            height={32}
+            className={`rounded-full object-cover ${session ? "" : "dark:invert"}`}
+          />
         </NavButton>
 
         {/* Sign in/out button depending on session */}
