@@ -6,12 +6,12 @@ import bcrypt from "bcrypt";
 export async function getCurrentUser() {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.email) {
+  if (!session?.user) {
     return null;
   }
 
   return prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { id: session.user.id },
     select: {
       id: true,
       email: true,
@@ -31,10 +31,10 @@ export async function getCurrentUser() {
   });
 }
 
-export async function setUserPassword(email: string, password: string) {
+export async function setUserPassword(id: string, password: string) {
   const hashedPassword = await bcrypt.hash(password, 12);
   await prisma.user.update({
-    where: { email },
+    where: { id },
     data: { password: hashedPassword },
   });
 }

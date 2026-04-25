@@ -5,9 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { ProfileClient } from "@/components/profile/Profileclient";
 import { getMatchStatsByUserId } from "@/data/matchHistory";
 
-async function getProfileData(email: string) {
+async function getProfileData(id: string) {
   const user = await prisma.user.findUnique({
-    where: { email },
+    where: { id },
     include: {
       matches: {
         orderBy: { createdAt: "desc" },
@@ -85,8 +85,8 @@ export type ProfileData = Awaited<ReturnType<typeof getProfileData>>;
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email) redirect("/login");
-  const data = await getProfileData(session.user.email);
+  if (!session?.user) redirect("/login");
+  const data = await getProfileData(session.user.id);
   if (!data) redirect("/login");
   if (!data.user.displayName) redirect("/registration/profile");
   return <ProfileClient data={data} />;

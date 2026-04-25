@@ -60,7 +60,7 @@ export async function registerUserAction(email: string, password: string) {
 
   if (userExists) {
     if (!userExists.password) {
-      await setUserPassword(email, password);
+      await setUserPassword(userExists.id, password);
       return {
         ok: true,
         userId: userExists.id,

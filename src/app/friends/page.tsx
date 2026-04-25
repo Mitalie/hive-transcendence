@@ -21,7 +21,7 @@ function avatarUrl(userId: string): string {
 // ---------- Page ----------
 export default async function FriendsPage() {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.id) redirect("/login");
+  if (!session?.user) redirect("/login");
 
   const user = await getCurrentUser();
   if (!user?.displayName) redirect("/registration/profile");

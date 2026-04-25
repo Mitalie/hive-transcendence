@@ -23,7 +23,7 @@ function validateUpdateProfileArgs(o: unknown): o is UpdateProfileArgs {
 export async function updateProfileAction(args: UpdateProfileArgs) {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.id) throw new Error("Unauthorized");
+  if (!session?.user) throw new Error("Unauthorized");
   if (!validateUpdateProfileArgs(args)) throw new Error("Invalid arguments");
 
   return updateProfile(session.user.id, args);

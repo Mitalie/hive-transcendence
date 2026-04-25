@@ -15,7 +15,7 @@ export async function sendFriendRequest(
 ): Promise<ActionResult> {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.id) {
+  if (!session?.user) {
     return { error: apiErrors.unauthorized };
   }
 
@@ -65,7 +65,7 @@ export async function acceptFriendRequest(
 ): Promise<ActionResult> {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.id) {
+  if (!session?.user) {
     return { error: apiErrors.unauthorized };
   }
 
@@ -111,7 +111,7 @@ export async function declineFriendRequest(
 ): Promise<ActionResult> {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.id) {
+  if (!session?.user) {
     return { error: apiErrors.unauthorized };
   }
 
@@ -154,7 +154,7 @@ export async function cancelFriendRequest(
 ): Promise<ActionResult> {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.id) {
+  if (!session?.user) {
     return { error: apiErrors.unauthorized };
   }
 
@@ -197,7 +197,7 @@ export async function removeFriend(
 ): Promise<ActionResult> {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.id) {
+  if (!session?.user) {
     return { error: apiErrors.unauthorized };
   }
 

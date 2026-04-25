@@ -21,7 +21,7 @@ export async function saveMatchAction(
 ): Promise<SaveMatchResult> {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.id) {
+  if (!session?.user) {
     return { ok: false, error: "unauthorized" };
   }
   if (!validateSaveMatchArgs(args)) {
