@@ -26,9 +26,9 @@ export default function ProfileSetupPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const { t } = useTranslation();
-  const { data: session, update: updateSession } = useSession();
+  const { update: updateSession } = useSession();
 
-  const showGithubOption = !!session?.user?.image;
+  const showGithubOption = false; // FIXME: session?.user?.image no longer exists
 
   const nameTooLong = displayName.length > NAME_MAX;
 
