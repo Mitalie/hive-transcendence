@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Providers } from "@/components/Providers";
 import { cookies } from "next/headers";
+import PresenceGate from "@/components/PresenceGate";
 
 export const metadata: Metadata = {
   title: "OmniPong",
@@ -22,11 +23,14 @@ export default async function RootLayout({
     <html className={dark ? "dark" : ""}>
       <body className={`bg-gradient-to-br from-purple-light to-blue-light`}>
         <Providers initialLang={lang}>
+          <PresenceGate />
+
           <div className="h-screen flex flex-col">
             {/* header */}
             <div className="pt-5 px-5 z-100">
               <Header />
             </div>
+
             <div className="text-text text-3xl flex-1 flex flex-col justify-center mx-5 my-3 rounded-xl text-center overflow-hidden">
               {children}
             </div>

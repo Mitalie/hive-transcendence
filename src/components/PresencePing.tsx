@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { updatePresenceAction } from "@/actions/presence";
 
 const PING_INTERVAL_MS = 30_000;
 
@@ -12,11 +13,7 @@ export default function PresencePing() {
     startedRef.current = true;
 
     async function pingPresence() {
-      try {
-        await fetch("/api/presence", {
-          method: "POST",
-        });
-      } catch {}
+      await updatePresenceAction();
     }
 
     pingPresence();

@@ -1,13 +1,14 @@
+"use server";
+
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function POST() {
+export async function updatePresenceAction() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return { success: false };
   }
 
   try {
@@ -16,8 +17,8 @@ export async function POST() {
       data: { lastActiveAt: new Date() },
     });
 
-    return NextResponse.json({ success: true });
+    return { success: true };
   } catch {
-    return NextResponse.json({ success: false }, { status: 200 });
+    return { success: false };
   }
 }
