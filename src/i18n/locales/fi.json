@@ -344,6 +344,7 @@
       "hard": "Vaikea",
       "player2Name": "Pelaaja 2:n nimi",
       "player2Placeholder": "Kirjoita nimi jatkaaksesi...",
+      "player2MaxLength": "Nimi voi olla enintään 20 merkkiä",
       "winScore": "Voittopisteet",
       "startPlay": "Aloita peli",
       "loginToUnlock": "Kirjaudu sisään avataksesi lisää pelitiloja"

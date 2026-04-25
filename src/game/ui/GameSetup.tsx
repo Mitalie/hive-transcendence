@@ -47,7 +47,9 @@ export default function GameSetup({
     !isLoggedIn &&
     (selectedType === "advanced" || selectedOpponent === "human");
 
-  const canStart = !requiresLogin && (isAI || guestName.trim().length > 0);
+  const canStart =
+    !requiresLogin &&
+    (isAI || (guestName.trim().length > 0 && guestName.length <= 20));
 
   const handleWinScore = useCallback((v: WinScore) => setWinScore(v), []);
 
@@ -157,12 +159,21 @@ export default function GameSetup({
                 value={guestName}
                 onChange={(e) => setGuestName(e.target.value)}
                 placeholder={t("game.setup.player2Placeholder")}
-                maxLength={20}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && canStart) handleStart();
                 }}
-                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 md:py-4 rounded-lg sm:rounded-xl text-sm sm:text-base md:text-lg text-center text-text bg-card border border-text/10 outline-none placeholder:text-text/25 focus:border-purple-dark"
+                className={[
+                  "w-full px-3 sm:px-4 py-2.5 sm:py-3 md:py-4 rounded-lg sm:rounded-xl text-sm sm:text-base md:text-lg text-center text-text bg-card border outline-none placeholder:text-text/25",
+                  guestName.length > 20
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-text/10 focus:border-purple-dark",
+                ].join(" ")}
               />
+              {guestName.length > 20 && (
+                <p className="text-xs text-red-500 text-center">
+                  {t("game.setup.player2MaxLength")}
+                </p>
+              )}
             </section>
           )}
 

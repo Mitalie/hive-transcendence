@@ -350,6 +350,7 @@
       "hard": "Hard",
       "player2Name": "Player 2 Name",
       "player2Placeholder": "Enter a name to continue...",
+      "player2MaxLength": "Name must be 20 characters or fewer",
       "winScore": "Win Score",
       "startPlay": "Start Play",
       "loginToUnlock": "Log in to unlock more game modes"

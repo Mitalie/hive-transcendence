@@ -344,6 +344,7 @@
       "hard": "困难",
       "player2Name": "玩家 2 名称",
       "player2Placeholder": "输入名称以继续...",
+      "player2MaxLength": "名字最多20个字符",
       "winScore": "胜利分数",
       "startPlay": "开始游戏",
       "loginToUnlock": "登录以解锁更多游戏模式"
