@@ -169,11 +169,11 @@ export default function FriendProfile({
             </p>
           </div>
         </div>
-        <div className="rounded-xl bg-button p-4">
+        <div className="rounded-xl bg-button p-4 min-w-0 overflow-hidden">
           <p className="text-xs font-semibold uppercase tracking-widest text-text/40 mb-1">
             {t("friends.profile.bio", { defaultValue: "Bio" })}
           </p>
-          <p className="text-sm text-text/70 whitespace-pre-wrap break-words">
+          <p className="text-sm text-text/70 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
             {friend.bio ||
               t("friends.profile.noBio", { defaultValue: "No bio yet" })}
           </p>
