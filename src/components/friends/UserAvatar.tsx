@@ -23,6 +23,7 @@ export default function UserAvatar({ label, avatarUrl, size = "md" }: Props) {
       alt={label}
       width={pixelSizes[size]}
       height={pixelSizes[size]}
+      unoptimized
       className={`${sizes[size]} shrink-0 rounded-full object-cover`}
     />
   );
