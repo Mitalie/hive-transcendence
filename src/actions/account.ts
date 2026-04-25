@@ -11,7 +11,7 @@ import { fileToStoredAvatar, urlToStoredAvatar } from "@/lib/avatar";
 export async function addPasswordAction(password: string) {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.email) {
+  if (!session?.user) {
     return { ok: false, error: apiErrors.unauthorized };
   }
 
@@ -19,7 +19,7 @@ export async function addPasswordAction(password: string) {
     return { ok: false, error: apiErrors.passwordTooShort };
   }
 
-  await setUserPassword(session.user.email, password);
+  await setUserPassword(session.user.id, password);
 
   return { ok: true };
 }
@@ -27,7 +27,7 @@ export async function addPasswordAction(password: string) {
 export async function updateProfileAction(formData: FormData) {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.email) {
+  if (!session?.user) {
     return { ok: false, error: apiErrors.unauthorized };
   }
 
@@ -65,7 +65,7 @@ export async function updateProfileAction(formData: FormData) {
     }
 
     await prisma.user.update({
-      where: { email: session.user.email },
+      where: { id: session.user.id },
       data,
     });
 
@@ -86,13 +86,13 @@ export async function updateProfileAction(formData: FormData) {
 export async function deleteProfileAction() {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user?.email) {
+  if (!session?.user) {
     return { ok: false, error: apiErrors.unauthorized };
   }
 
   try {
     await prisma.user.delete({
-      where: { email: session.user.email },
+      where: { id: session.user.id },
     });
 
     revalidatePath("/");

@@ -12,13 +12,12 @@ import { useTranslation } from "react-i18next";
 
 export default function Header() {
   const pathname = usePathname();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const { t } = useTranslation();
 
-  const avatarSrc =
-    status === "authenticated" && session.user?.id
-      ? `/api/avatar/${session.user.id}?v=${session.user.avatarVersion}`
-      : "/images/user_icon.png";
+  const avatarSrc = session?.user
+    ? `/api/avatar/${session.user.id}?v=${session.user.avatarVersion}`
+    : "/images/user_icon.png";
 
   return (
     <Bar>

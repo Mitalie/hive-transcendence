@@ -10,7 +10,7 @@ export async function searchUsersForFriendRequest(
   keyword: string,
 ): Promise<UserResult[]> {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.id) return [];
+  if (!session?.user) return [];
 
   const trimmed = keyword.trim();
   if (trimmed.length === 0) return [];
