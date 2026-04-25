@@ -120,15 +120,38 @@ export class AIOpponent {
 
     const p2Keys = GameConfig.player2.controls;
 
-    if (this.focusZ > paddle.z + GameConfig.ai.deadzone.z)
-      inputs[p2Keys.down] = true;
-    else if (this.focusZ < paddle.z - GameConfig.ai.deadzone.z)
-      inputs[p2Keys.up] = true;
+    if (this.engine.mode === "classic") {
+      const distanceToTargetZ = this.focusZ - paddle.z;
+      const distanceToTargetX = this.focusX - paddle.x;
+      const stepDist = GameConfig.paddle.maxVelocity * delta;
 
-    if (this.focusX < paddle.x - GameConfig.ai.deadzone.x)
-      inputs[p2Keys.left] = true;
-    else if (this.focusX > paddle.x + GameConfig.ai.deadzone.x)
-      inputs[p2Keys.right] = true;
+      // Z-axis Anti-Jitter Snap
+      if (Math.abs(distanceToTargetZ) > stepDist) {
+        inputs[distanceToTargetZ > 0 ? p2Keys.down : p2Keys.up] = true;
+      } else {
+        paddle.z = this.focusZ; // Snap exactly to the target so it doesn't overshoot
+        paddle.vz = 0; // Stop all velocity to prevent jittering
+      }
+
+      // X-axis Anti-Jitter Snap (for lob returns)
+      if (Math.abs(distanceToTargetX) > stepDist) {
+        inputs[distanceToTargetX > 0 ? p2Keys.right : p2Keys.left] = true;
+      } else {
+        paddle.x = this.focusX; // Snap exactly to the target
+        paddle.vx = 0;
+      }
+    } else {
+      // Advanced mode relies on momentum and friction, so standard deadzones work cleanly
+      if (this.focusZ > paddle.z + GameConfig.ai.deadzone.z)
+        inputs[p2Keys.down] = true;
+      else if (this.focusZ < paddle.z - GameConfig.ai.deadzone.z)
+        inputs[p2Keys.up] = true;
+
+      if (this.focusX < paddle.x - GameConfig.ai.deadzone.x)
+        inputs[p2Keys.left] = true;
+      else if (this.focusX > paddle.x + GameConfig.ai.deadzone.x)
+        inputs[p2Keys.right] = true;
+    }
 
     return inputs;
   }

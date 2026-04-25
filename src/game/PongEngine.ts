@@ -416,6 +416,22 @@ export class PongEngine {
         );
         this.ball.vy = GameConfig.ball.paddleHitForceY;
       }
+
+      // Calculate the total combined speed of the ball (Pythagorean theorem)
+      const totalSpeed = Math.sqrt(
+        this.ball.vx * this.ball.vx + this.ball.vz * this.ball.vz,
+      );
+      const MAX_SPEED = GameConfig.ball.maxXVelocity;
+
+      // If the combined speed is faster than the game allows...
+      if (totalSpeed > MAX_SPEED) {
+        // Calculate the ratio to scale it back down
+        const scale = MAX_SPEED / totalSpeed;
+
+        // Scale both the X and Z velocities down proportionally so the angle stays the same, but the speed drops
+        this.ball.vx *= scale;
+        this.ball.vz *= scale;
+      }
     }
   }
 
