@@ -31,7 +31,7 @@ interface TabConfig {
   count: number;
 }
 
-const REFRESH_INTERVAL_MS = 60_000;
+const REFRESH_INTERVAL_MS = 30_000;
 
 function TabButton({
   active,

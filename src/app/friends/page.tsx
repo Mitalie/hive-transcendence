@@ -19,7 +19,7 @@ function avatarUrl(userId: string): string {
 
 function isOnline(lastActiveAt: Date | null): boolean {
   if (!lastActiveAt) return false;
-  return Date.now() - new Date(lastActiveAt).getTime() < 60 * 1000;
+  return Date.now() - new Date(lastActiveAt).getTime() < 2 * 60 * 1000;
 }
 
 // ---------- Page ----------
