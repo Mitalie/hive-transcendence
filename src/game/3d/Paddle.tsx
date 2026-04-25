@@ -4,13 +4,11 @@ import * as THREE from "three";
 import { PaddleData } from "@/game/PongEngine";
 import { GameConfig } from "@/game/GameConfig";
 
-const PADDLE_Y = GameConfig.paddle.height / 2;
-
 export default memo(function Paddle({
   paddleData,
   initialX,
   color,
-  scaleMultiplier = 1, // New prop to sync visuals with difficulty-based physics
+  scaleMultiplier = 1,
 }: {
   paddleData: PaddleData;
   initialX: number;
@@ -23,32 +21,30 @@ export default memo(function Paddle({
   const h = GameConfig.paddle.height;
   const s = GameConfig.paddleVisuals.skirtExtension;
   const totalHeight = h + s;
-
-  // Offsets the extended skirt so the visible base of the paddle rests flush on the floor plane.
   const verticalOffset = -(s / 2);
 
   useFrame((_, delta) => {
     if (!groupRef.current || !paddleData) return;
 
-    // Apply the difficulty scale to the group.
-    // We scale height and depth (Z), but keep width (X) constant as per our design.
-    groupRef.current.scale.set(1, scaleMultiplier, scaleMultiplier);
+    // Visual scale synchronized with engine hitboxes on all axes
+    groupRef.current.scale.set(
+      scaleMultiplier,
+      scaleMultiplier,
+      scaleMultiplier,
+    );
 
     groupRef.current.position.set(
       paddleData.x ?? initialX,
-      // Paddle Y must also be scaled to match the new dynamic height in the engine
-      paddleData.y ?? PADDLE_Y * scaleMultiplier,
+      paddleData.y,
       paddleData.z ?? 0,
     );
 
     groupRef.current.rotation.x =
       (paddleData.vz ?? 0) * GameConfig.paddleVisuals.tiltFactor * delta;
-
     groupRef.current.rotation.z =
       -(paddleData.vx ?? 0) * GameConfig.paddleVisuals.tiltFactor * delta;
 
-    // Real-time color preview: reads GameConfig every frame so changes in the
-    // settings panel appear immediately without needing a React re-render.
+    // Color preview is read imperatively to reflect settings panel changes in real-time
     if (matRef.current) {
       const liveColor =
         initialX < 0 ? GameConfig.colors.p1 : GameConfig.colors.p2;

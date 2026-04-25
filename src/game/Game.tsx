@@ -23,7 +23,6 @@ import GameSetup from "@/game/ui/GameSetup";
 import { loadSettingsPrefs, applySettingsToConfig } from "@/game/GamePrefs";
 import type { GameState } from "@/game/GameState";
 
-// Settings snapshot
 type ConfigSnapshot = {
   p1: string;
   p2: string;
@@ -36,6 +35,7 @@ type ConfigSnapshot = {
   startVelocityX: number;
   startVelocityZ: number;
   maxXVelocity: number;
+  maxZVelocity: number;
   gravity: number;
   bounceFriction: number;
   swipeSpinFactor: number;
@@ -56,6 +56,7 @@ function takeSnapshot(): ConfigSnapshot {
     startVelocityX: GameConfig.ball.startVelocityX,
     startVelocityZ: GameConfig.ball.startVelocityZ,
     maxXVelocity: GameConfig.ball.maxXVelocity,
+    maxZVelocity: GameConfig.ball.maxZVelocity,
     gravity: GameConfig.ball.gravity,
     bounceFriction: GameConfig.ball.bounceFriction,
     swipeSpinFactor: GameConfig.ball.swipeSpinFactor,
@@ -76,6 +77,7 @@ function restoreSnapshot(s: ConfigSnapshot) {
   GameConfig.ball.startVelocityX = s.startVelocityX;
   GameConfig.ball.startVelocityZ = s.startVelocityZ;
   GameConfig.ball.maxXVelocity = s.maxXVelocity;
+  GameConfig.ball.maxZVelocity = s.maxZVelocity;
   GameConfig.ball.gravity = s.gravity;
   GameConfig.ball.bounceFriction = s.bounceFriction;
   GameConfig.ball.swipeSpinFactor = s.swipeSpinFactor;
@@ -83,15 +85,15 @@ function restoreSnapshot(s: ConfigSnapshot) {
   GameConfig.paddle.acceleration = s.paddleAcceleration;
 }
 
-interface GameProps {
+export default function Game({
+  isLoggedIn,
+  playerName,
+}: {
   isLoggedIn: boolean;
   playerName: string | null;
-}
-
-export default function Game({ isLoggedIn, playerName }: GameProps) {
+}) {
   const { t } = useTranslation();
   const [state, dispatch] = useGameState(isLoggedIn);
-
   const isLoggedInRef = useRef(isLoggedIn);
   const playerNameRef = useRef(playerName);
 
@@ -104,7 +106,6 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
   const [guestName, setGuestName] = useState<string>("");
   const [showSetup, setShowSetup] = useState(true);
   const [gameStarted, setGameStarted] = useState(false);
-
   const settingsSnapshot = useRef<ConfigSnapshot | null>(null);
   const menuOpenRef = useRef(false);
 
@@ -114,25 +115,22 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
 
   const prevMenuOpen = useRef(false);
   useEffect(() => {
-    if (state.menuOpen && !prevMenuOpen.current) {
+    if (state.menuOpen && !prevMenuOpen.current)
       settingsSnapshot.current = takeSnapshot();
-    }
     prevMenuOpen.current = state.menuOpen;
   }, [state.menuOpen]);
 
   useEffect(() => {
     return () => {
-      if (menuOpenRef.current && settingsSnapshot.current) {
+      if (menuOpenRef.current && settingsSnapshot.current)
         restoreSnapshot(settingsSnapshot.current);
-      }
     };
   }, []);
 
   useEffect(() => {
     const onBeforeUnload = () => {
-      if (menuOpenRef.current && settingsSnapshot.current) {
+      if (menuOpenRef.current && settingsSnapshot.current)
         restoreSnapshot(settingsSnapshot.current);
-      }
     };
     window.addEventListener("beforeunload", onBeforeUnload);
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
@@ -149,7 +147,6 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
     },
     [dispatch],
   );
-
   const doStart = useCallback(() => {
     setGameStarted(true);
     dispatch(startGameAction());
@@ -164,13 +161,9 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
         closeSettingsWithRestore();
         return;
       }
-      if (state.view === "play" && !gameStarted) {
-        doStart();
-      } else if (state.view === "play" && state.paused) {
-        dispatch(resumeAction());
-      } else if (state.view === "play" && !state.paused) {
-        dispatch(pauseAction());
-      }
+      if (state.view === "play" && !gameStarted) doStart();
+      else if (state.view === "play" && state.paused) dispatch(resumeAction());
+      else if (state.view === "play" && !state.paused) dispatch(pauseAction());
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -188,15 +181,11 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
   const handleSetupStart = useCallback(
     (mode: GameMode, guest?: string) => {
       dispatch(setModeAction(mode));
-
-      const resolvedGuestName = guest ?? "";
-      setGuestName(resolvedGuestName);
-
+      setGuestName(guest ?? "");
       GameConfig.matchHistory.currentPlayer2 =
         mode.opponent === "human"
-          ? resolvedGuestName || t("game.lobby.player2")
+          ? guest || t("game.lobby.player2")
           : `AI-${mode.opponent}`;
-
       setShowSetup(false);
     },
     [dispatch, t],
@@ -206,7 +195,6 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
     setGameStarted(false);
     dispatch(startGameAction());
   }, [dispatch]);
-
   const resetToSetup = useCallback(() => {
     dispatch(exitConfirmAction());
     setShowSetup(true);
@@ -216,8 +204,7 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
 
   const p1Label = playerName ?? t("game.lobby.you");
 
-  // Setup screen
-  if (state.view === "start" && showSetup) {
+  if (state.view === "start" && showSetup)
     return (
       <GameSetup
         onStart={handleSetupStart}
@@ -225,22 +212,17 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
         userId={playerName}
       />
     );
-  }
-
-  // Lobby
   if (state.view === "start" && !showSetup) {
     const opponentLabel =
       state.mode.opponent === "human"
         ? guestName || t("game.lobby.player2")
         : `AI · ${state.mode.opponent === "easy" ? t("game.lobby.aiEasy") : state.mode.opponent === "medium" ? t("game.lobby.aiMedium") : t("game.lobby.aiHard")}`;
-
     return (
       <div className="h-full w-full rounded-xl overflow-y-auto flex items-center justify-center">
         <div className="bg-card backdrop-blur-sm rounded-2xl shadow-2xl flex flex-col items-center gap-5 px-10 py-8 my-4 mx-4 select-none">
           <div className="text-text text-sm tracking-widest uppercase">
             {t("game.lobby.readyToPlay")}
           </div>
-
           <div className="flex items-center gap-6">
             <span
               className="text-xl font-bold"
@@ -256,13 +238,11 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
               {opponentLabel}
             </span>
           </div>
-
           <div className="text-text/50 text-sm tracking-wider">
             {state.mode.type === "classic"
               ? t("game.lobby.classicMode")
               : t("game.lobby.advancedMode")}
           </div>
-
           <div className="text-sm tracking-widest text-center flex flex-col gap-1">
             <div className="text-text/50">{t("game.lobby.gametips")}</div>
             <div style={{ color: GameConfig.colors.p1 }}>
@@ -280,7 +260,6 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
               </div>
             )}
           </div>
-
           <div className="flex gap-3 flex-wrap justify-center">
             <Button
               className="bg-btn-purple hover:bg-btn-purple-hover"
@@ -303,8 +282,7 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
     );
   }
 
-  // End screen
-  if (state.view === "end") {
+  if (state.view === "end")
     return (
       <EndScreen
         isLoggedIn={isLoggedIn}
@@ -315,9 +293,7 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
         onReturnToMenu={resetToSetup}
       />
     );
-  }
 
-  // Play view
   return (
     <div className="relative h-full w-full">
       <GameStateDispatchContext value={dispatch}>
@@ -342,7 +318,6 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
   );
 }
 
-// End Screen
 function EndScreen({
   isLoggedIn,
   p1Label,
@@ -372,7 +347,6 @@ function EndScreen({
         <div className="text-text/70 text-xs tracking-widest uppercase">
           {t("game.end.gameOver")}
         </div>
-
         <div
           className="text-3xl font-bold"
           style={{
@@ -381,7 +355,6 @@ function EndScreen({
         >
           {winnerLabel} {t("game.end.wins")}
         </div>
-
         <div className="flex items-center gap-6 text-text/70">
           <div className="flex flex-col items-center gap-1">
             <span className="text-xs tracking-wide">{p1Label}</span>
@@ -397,13 +370,11 @@ function EndScreen({
             </span>
           </div>
         </div>
-
         {!isLoggedIn && (
           <p className="text-xs text-text/50 text-center">
             {t("game.end.loginToSave")}
           </p>
         )}
-
         <div className="flex flex-col gap-3 w-full items-center mt-1">
           <Button
             className="bg-btn-purple hover:bg-btn-purple-hover w-48 justify-center"

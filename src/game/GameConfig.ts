@@ -29,6 +29,8 @@ export const GameConfig = {
     xLimit: 11,
     centerX: 0,
     wallHeight: 2.0,
+    // Physics ceiling is above the visible walls to allow high lob shots.
+    physicsCeilingMultiplier: 3.0,
     floorHeight: 5.0,
     wallThickness: 0.5,
     netWidth: 0.15,
@@ -120,23 +122,19 @@ export const GameConfig = {
   ai: {
     lobBackpedalOffset: 2,
     deadzone: { z: 0.3, x: 0.2 },
-    // Rates are processed as per-second variables for exponential decay
     difficulties: {
-      // Easy: Slow reaction, high error margin, and sluggish physical tracking
       easy: {
         reactionDelayMs: 600,
         errorMargin: 1.0,
         mistakeIntervalSec: 2,
         lerpSpeed: 3.0,
       },
-      // Medium: Average human reaction time, tight targeting, solid competent tracking speed
       medium: {
         reactionDelayMs: 250,
         errorMargin: 0.2,
         mistakeIntervalSec: 3,
         lerpSpeed: 12.0,
       },
-      // Hard: Instant reflexes, perfect tracking, lightning-fast snap (Strike Phase enabled)
       hard: {
         reactionDelayMs: 0,
         errorMargin: 0.0,
@@ -146,26 +144,17 @@ export const GameConfig = {
     },
   },
 
-  // Physical arena modifiers based on difficulty (Kept subtle for 3D playability)
   difficultyModifiers: {
-    easy: {
-      paddleSizeMultiplier: 1.25, // 15% larger (Forgiving)
-    },
-    medium: {
-      paddleSizeMultiplier: 1.0, // Standard
-    },
-    hard: {
-      paddleSizeMultiplier: 0.75, // 15% smaller (Requires precision but isn't impossible)
-    },
+    easy: { paddleSizeMultiplier: 1.25 },
+    medium: { paddleSizeMultiplier: 1.0 },
+    hard: { paddleSizeMultiplier: 0.75 },
   },
 
   paddleVisuals: {
     emissiveIntensity: 0.4,
     roughness: 0.1,
     metalness: 0.5,
-    // Multiplier derived from kinematic velocity (per-second rate) for physical leaning
     tiltFactor: -1.2,
-    // Sub-floor geometry extension to conceal gaps during extreme X/Z rotations
     skirtExtension: 0.5,
   },
 
@@ -246,11 +235,7 @@ export const GameConfig = {
       minDistance: 10,
       maxDistance: 45,
       flipAzimuthThreshold: Math.PI / 2,
-      mouseButtons: {
-        left: 0,
-        middle: 1,
-        right: 2,
-      },
+      mouseButtons: { left: 0, middle: 1, right: 2 },
     },
   },
 
