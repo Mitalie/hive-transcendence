@@ -7,7 +7,7 @@ import { signIn } from "next-auth/react";
 import { useTranslation } from "react-i18next";
 import { registerUserAction } from "@/actions/registration";
 
-export default function RegisterPage() {
+export default function RegistrationPageClient() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [password, setPassword] = useState("");
