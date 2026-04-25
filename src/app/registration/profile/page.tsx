@@ -11,6 +11,8 @@ import {
 
 type AvatarChoice = "default" | "github" | "upload";
 
+const NAME_MAX = 20;
+
 export default function ProfileSetupPage() {
   const [displayName, setDisplayName] = useState("");
   const [avatarChoice, setAvatarChoice] = useState<AvatarChoice>("default");
@@ -28,6 +30,8 @@ export default function ProfileSetupPage() {
 
   const showGithubOption = !!session?.user?.image;
 
+  const nameTooLong = displayName.length > NAME_MAX;
+
   const handleAvatarChoice = (choice: AvatarChoice) => {
     setAvatarChoice(choice);
     setError("");
@@ -39,7 +43,7 @@ export default function ProfileSetupPage() {
   };
 
   useEffect(() => {
-    if (!displayName.trim()) {
+    if (!displayName.trim() || nameTooLong) {
       setUsernameAvailable(null);
       return;
     }
@@ -52,10 +56,16 @@ export default function ProfileSetupPage() {
       setCheckingUsername(false);
     }, 500);
     return () => clearTimeout(timeout);
-  }, [displayName]);
+  }, [displayName, nameTooLong]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (nameTooLong) {
+      setError(t("settings.account.nameTooLong", { max: NAME_MAX }));
+      return;
+    }
+
     if (!usernameAvailable) return;
     setError("");
     setLoading(true);
@@ -123,18 +133,36 @@ export default function ProfileSetupPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-text/70">
-              {t("profile.userNameLabel")}
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-text/70">
+                {t("profile.userNameLabel")}
+              </label>
+              <span
+                className={`text-xs tabular-nums ${
+                  nameTooLong ? "text-red-500" : "text-text/40"
+                }`}
+              >
+                {displayName.length} / {NAME_MAX}
+              </span>
+            </div>
             <input
               type="text"
               placeholder={t("profile.userNamePlaceholder")}
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-purple-light placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-purple-light transition-all"
+              className={`w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border placeholder:text-text/40 focus:outline-none focus:ring-2 transition-all ${
+                nameTooLong
+                  ? "border-red-500/60 focus:ring-red-500/30"
+                  : "border-purple-light focus:ring-purple-light"
+              }`}
               required
             />
-            {displayName.trim() && (
+            {nameTooLong && (
+              <p className="text-xs text-red-500">
+                {t("settings.account.nameTooLong", { max: NAME_MAX })}
+              </p>
+            )}
+            {!nameTooLong && displayName.trim() && (
               <p
                 className={`text-xs mt-0.5 ${
                   checkingUsername
@@ -236,7 +264,9 @@ export default function ProfileSetupPage() {
 
           <Button
             type="submit"
-            disabled={loading || !usernameAvailable || checkingUsername}
+            disabled={
+              loading || nameTooLong || !usernameAvailable || checkingUsername
+            }
             className="bg-gradient-to-r from-blue-dark to-purple-dark mt-1 text-white text-xl"
           >
             {loading ? t("profile.loading") : t("profile.submit")}

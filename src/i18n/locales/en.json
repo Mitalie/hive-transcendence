@@ -184,7 +184,8 @@
       "saving": "Saving...",
       "saveChanges": "Save changes",
       "chooseFile": "Choose file",
-      "noFileChosen": "No file chosen"
+      "noFileChosen": "No file chosen",
+      "nameTooLong": "Username must be {{max}} characters or fewer"
     },
     "security": {
       "title": "Security",
@@ -226,7 +227,8 @@
     "internalServerError": "An internal server error occurred.",
     "invalidImageUrl": "The image URL is invalid or unreachable.",
     "fileTooLarge": "Image is too large. Please choose a file under 2MB.",
-    "errorUnexpected": "An unexpected error occurred. Please try again."
+    "errorUnexpected": "An unexpected error occurred. Please try again.",
+    "emailTooLong": "Entered Email is too long, max 100 characters allowed"
   },
   "friendshipErrors": {
     "cannotAddSelf": "You cannot send a friend request to yourself",

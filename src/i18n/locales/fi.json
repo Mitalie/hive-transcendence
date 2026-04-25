@@ -178,7 +178,8 @@
       "saving": "Tallennetaan...",
       "saveChanges": "Tallenna muutokset",
       "chooseFile": "Valitse tiedosto",
-      "noFileChosen": "Ei tiedostoa valittu"
+      "noFileChosen": "Ei tiedostoa valittu",
+      "nameTooLong": "Käyttäjänimi saa olla enintään {{max}} merkkiä"
     },
     "security": {
       "title": "Turvallisuus",
@@ -220,7 +221,8 @@
     "internalServerError": "Palvelimella tapahtui sisäinen virhe.",
     "invalidImageUrl": "Kuvan URL-osoite on virheellinen tai se ei ole saavutettavissa.",
     "fileTooLarge": "Kuva on liian suuri. Valitse alle 2 Mt:n tiedosto.",
-    "errorUnexpected": "Odottamaton virhe. Yritä uudelleen."
+    "errorUnexpected": "Odottamaton virhe. Yritä uudelleen.",
+    "emailTooLong": "Syötetty sähköpostiosoite on liian pitkä, enintään 100 merkkiä sallittu"
   },
   "friendshipErrors": {
     "cannotAddSelf": "Et voi lähettää kaveripyyntöä itsellesi",

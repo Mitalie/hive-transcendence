@@ -178,7 +178,8 @@
       "saving": "保存中...",
       "saveChanges": "保存更改",
       "chooseFile": "选择文件",
-      "noFileChosen": "未选择文件"
+      "noFileChosen": "未选择文件",
+      "nameTooLong": "用户名不能超过 {{max}} 个字符"
     },
     "security": {
       "title": "安全",
@@ -220,7 +221,8 @@
     "internalServerError": "服务器内部错误。",
     "invalidImageUrl": "图片链接无效或无法访问。",
     "fileTooLarge": "图片太大，请选择小于 2MB 的文件。",
-    "errorUnexpected": "发生意外错误，请重试。"
+    "errorUnexpected": "发生意外错误，请重试。",
+    "emailTooLong": "输入的邮箱地址过长，最多允许 100 个字符"
   },
   "friendshipErrors": {
     "cannotAddSelf": "不能向自己发送好友请求",
