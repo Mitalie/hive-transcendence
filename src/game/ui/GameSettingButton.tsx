@@ -12,11 +12,13 @@ export default function GameSettingButton({
   onApplyColors,
   isLoggedIn = false,
   userId = null,
+  gameMode = "classic",
 }: {
   open: boolean;
   onApplyColors: () => void;
   isLoggedIn?: boolean;
   userId?: string | null;
+  gameMode?: "classic" | "advanced";
 }) {
   const dispatch = use(GameStateDispatchContext);
 
@@ -48,6 +50,7 @@ export default function GameSettingButton({
             onApply={onApplyColors}
             isLoggedIn={isLoggedIn}
             userId={userId}
+            gameMode={gameMode}
           />
         </div>
       )}

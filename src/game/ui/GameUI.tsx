@@ -18,6 +18,7 @@ export default function GameUI({
   onExitConfirm,
   isLoggedIn = false,
   userId = null,
+  gameMode = "classic",
 }: {
   state: GameState;
   onApplyColors: () => void;
@@ -26,6 +27,7 @@ export default function GameUI({
   onExitConfirm?: () => void;
   isLoggedIn?: boolean;
   userId?: string | null;
+  gameMode?: "classic" | "advanced";
 }) {
   const { paused, menuOpen, exitPromptOpen } = state;
   const dispatch = use(GameStateDispatchContext);
@@ -42,6 +44,7 @@ export default function GameUI({
           onApplyColors={onApplyColors}
           isLoggedIn={isLoggedIn}
           userId={userId}
+          gameMode={gameMode}
         />
       </div>
 
