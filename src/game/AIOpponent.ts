@@ -10,6 +10,7 @@ export class AIOpponent {
   private errorMargin: number;
   private mistakeIntervalSec: number;
   private isInstant: boolean;
+  private lerpRate: number;
 
   private timeSinceLastThought: number = 0;
   private timeSinceLastMistake: number = 0;
@@ -26,10 +27,13 @@ export class AIOpponent {
   constructor(engine: PongEngine, difficulty: AIDifficulty) {
     this.engine = engine;
 
+    // Load the specific configuration block for the selected difficulty
     const config = GameConfig.ai.difficulties[difficulty];
+
     this.reactionDelaySec = config.reactionDelayMs / 1000;
     this.errorMargin = config.errorMargin;
     this.mistakeIntervalSec = config.mistakeIntervalSec;
+    this.lerpRate = config.lerpSpeed;
     this.isInstant = difficulty === "hard";
 
     // Initialize to starting positions to prevent a rapid jerk on frame 1
@@ -56,6 +60,11 @@ export class AIOpponent {
       this.currentMistakeX = (Math.random() - 0.5) * this.errorMargin;
     }
 
+    // Calculate time until the ball reaches the AI's baseline
+    const distanceToAI = paddle.x - ball.x;
+    const timeToImpact =
+      ball.vx > 0 && distanceToAI > 0 ? distanceToAI / ball.vx : 999;
+
     if (this.timeSinceLastThought >= this.reactionDelaySec) {
       this.timeSinceLastThought = 0;
 
@@ -63,17 +72,28 @@ export class AIOpponent {
         this.targetZ = 0;
         this.targetX = GameConfig.player2.xPos;
       } else {
-        const zLimit = GameConfig.paddle.zLimit;
+        // Calculate dynamic safe zone for targeting based on current paddle size
+        const paddleMod =
+          GameConfig.difficultyModifiers[
+            this.isInstant ? "hard" : this.lerpRate < 5 ? "easy" : "medium"
+          ].paddleSizeMultiplier;
+        const currentPaddleDepth = GameConfig.paddle.depth * paddleMod;
+        const safeZLimit = GameConfig.court.zLimit - currentPaddleDepth / 2;
+
+        let predictedZ = ball.z;
+
+        // Spin Awareness: Calculate the curve over time (Advanced Mode only)
+        let spinCurveEffect = 0;
+        if (this.engine.mode === "advanced" && timeToImpact !== 999) {
+          spinCurveEffect = ball.spin * (timeToImpact * timeToImpact) * 0.5;
+        }
 
         // Multi-bounce trajectory prediction
         if (ball.vy < -0.01 && ball.y > GameConfig.ball.radius) {
           // Ball falling: Predict floor intercept
           const timeToFloor =
             (ball.y - GameConfig.ball.radius) / Math.abs(ball.vy);
-          const predictedZ = ball.z + ball.vz * timeToFloor;
-          this.targetZ =
-            Math.max(Math.min(predictedZ, zLimit), -zLimit) +
-            this.currentMistakeZ;
+          predictedZ = ball.z + ball.vz * timeToFloor + spinCurveEffect;
         } else if (ball.vy > 0.01) {
           // Ball rising: Predict ceiling ricochet -> then floor intercept
           const CEILING =
@@ -84,64 +104,94 @@ export class AIOpponent {
           const vyAfterCeiling = -ball.vy * GameConfig.ball.bounceFriction;
           const timeFromCeilingToFloor =
             (CEILING - GameConfig.ball.radius) / Math.abs(vyAfterCeiling);
-          const predictedZ = zAtCeiling + ball.vz * timeFromCeilingToFloor;
-
-          this.targetZ =
-            Math.max(Math.min(predictedZ, zLimit), -zLimit) +
-            this.currentMistakeZ;
+          predictedZ =
+            zAtCeiling + ball.vz * timeFromCeilingToFloor + spinCurveEffect;
         } else {
-          this.targetZ = ball.z + this.currentMistakeZ;
+          predictedZ = ball.z + ball.vz * timeToImpact + spinCurveEffect;
         }
 
-        const isBallTooHigh = ball.y > GameConfig.paddle.height;
+        this.targetZ =
+          Math.max(Math.min(predictedZ, safeZLimit), -safeZLimit) +
+          this.currentMistakeZ;
 
-        if (ball.vx > 0 && ball.x > GameConfig.court.centerX) {
-          if (isBallTooHigh) {
-            this.targetX =
-              GameConfig.court.xLimit - GameConfig.ai.lobBackpedalOffset;
+        // X-Axis Targeting (Strictly for Advanced Mode)
+        if (this.engine.mode === "advanced") {
+          const isBallTooHigh = ball.y > GameConfig.paddle.height;
+          const isFloatingLob =
+            ball.vx > 0 && ball.vx < GameConfig.ball.startVelocityX * 0.8;
+
+          if (ball.vx > 0 && ball.x > GameConfig.court.centerX) {
+            if (isBallTooHigh) {
+              this.targetX =
+                GameConfig.court.xLimit - GameConfig.ai.lobBackpedalOffset;
+            } else if (this.isInstant && isFloatingLob) {
+              // Aggression: Attack the net to smash slow balls early
+              this.targetX = GameConfig.court.centerX + 2;
+            } else {
+              this.targetX = ball.x + this.currentMistakeX;
+            }
           } else {
-            this.targetX = ball.x + this.currentMistakeX;
+            this.targetX = GameConfig.player2.xPos;
           }
         } else {
+          // Hard lock to baseline in Classic
           this.targetX = GameConfig.player2.xPos;
         }
       }
     }
 
-    const lerpRate = this.isInstant
-      ? GameConfig.ai.lerpSpeed.fast
-      : GameConfig.ai.lerpSpeed.base;
+    // --- STRIKE PHASE (Hard Mode Boss Logic) ---
+    let finalTargetZ = this.targetZ;
+    let finalTargetX = this.targetX;
 
-    // Frame-rate independent continuous exponential decay for smooth AI tracking
-    const lerpFactor = 1 - Math.exp(-lerpRate * delta);
+    if (this.isInstant && timeToImpact < 0.25 && ball.vx > 0) {
+      const safeEdge = (GameConfig.paddle.width / 2) * 0.8;
+      const p1Z = this.engine.p1.z;
 
-    this.focusZ += (this.targetZ - this.focusZ) * lerpFactor;
-    this.focusX += (this.targetX - this.focusX) * lerpFactor;
+      // 1. The Sniper: Aim away from the player to weaponize Deflection Boost
+      if (p1Z > ball.z) {
+        finalTargetZ = ball.z - safeEdge;
+      } else {
+        finalTargetZ = ball.z + safeEdge;
+      }
+
+      // 2 & 3. The Smasher & Curveball (Strictly for Advanced Mode Only)
+      if (this.engine.mode === "advanced") {
+        // Push target X forward to accelerate through the ball on impact
+        finalTargetX = GameConfig.player2.xPos - 2;
+
+        // Strafe violently 0.1s before impact to apply Swipe Spin
+        if (timeToImpact < 0.1) {
+          finalTargetZ += ball.z > 0 ? -3 : 3;
+        }
+      }
+    }
+
+    // Frame-rate independent continuous exponential decay for smooth AI tracking (Advanced mode)
+    const lerpFactor = 1 - Math.exp(-this.lerpRate * delta);
+    this.focusZ += (finalTargetZ - this.focusZ) * lerpFactor;
+    this.focusX += (finalTargetX - this.focusX) * lerpFactor;
 
     const p2Keys = GameConfig.player2.controls;
 
     if (this.engine.mode === "classic") {
-      const distanceToTargetZ = this.focusZ - paddle.z;
-      const distanceToTargetX = this.focusX - paddle.x;
+      // In Classic, read the raw final target to prevent "fake sliding" caused by smooth focus tracking
+      const distanceToTargetZ = finalTargetZ - paddle.z;
       const stepDist = GameConfig.paddle.maxVelocity * delta;
 
-      // Z-axis Anti-Jitter Snap
+      // Z-axis Anti-Jitter Snap ONLY
       if (Math.abs(distanceToTargetZ) > stepDist) {
         inputs[distanceToTargetZ > 0 ? p2Keys.down : p2Keys.up] = true;
       } else {
-        paddle.z = this.focusZ; // Snap exactly to the target so it doesn't overshoot
-        paddle.vz = 0; // Stop all velocity to prevent jittering
+        paddle.z = finalTargetZ;
+        paddle.vz = 0;
       }
 
-      // X-axis Anti-Jitter Snap (for lob returns)
-      if (Math.abs(distanceToTargetX) > stepDist) {
-        inputs[distanceToTargetX > 0 ? p2Keys.right : p2Keys.left] = true;
-      } else {
-        paddle.x = this.focusX; // Snap exactly to the target
-        paddle.vx = 0;
-      }
+      // Strictly lock X-axis to baseline for Classic mode
+      paddle.x = GameConfig.player2.xPos;
+      paddle.vx = 0;
     } else {
-      // Advanced mode relies on momentum and friction, so standard deadzones work cleanly
+      // Advanced mode relies on momentum and friction, handles X and Z using smoothed focus coordinates
       if (this.focusZ > paddle.z + GameConfig.ai.deadzone.z)
         inputs[p2Keys.down] = true;
       else if (this.focusZ < paddle.z - GameConfig.ai.deadzone.z)

@@ -54,8 +54,19 @@ export default memo(function GameRender({
 }) {
   const orbitRef = useRef<OrbitControlsImpl>(null);
 
+  // Determine difficulty multiplier for visual scaling
+  const paddleScale = useMemo(() => {
+    // If opponent is a human, we use medium (1.0) modifiers.
+    // Otherwise, we use the selected AI difficulty.
+    const difficultyKey = mode.opponent === "human" ? "medium" : mode.opponent;
+    return GameConfig.difficultyModifiers[difficultyKey].paddleSizeMultiplier;
+  }, [mode.opponent]);
+
   const [engine, aiOpponent] = useMemo(() => {
-    const engine = new PongEngine(onScore, mode.type);
+    // FIX 1: Pass the difficulty to the engine so the physics hitboxes scale
+    const difficultyKey = mode.opponent === "human" ? "medium" : mode.opponent;
+    const engine = new PongEngine(onScore, mode.type, difficultyKey);
+
     const aiOpponent =
       mode.opponent === "human" ? null : new AIOpponent(engine, mode.opponent);
     return [engine, aiOpponent];
@@ -165,16 +176,18 @@ export default memo(function GameRender({
 
         <Ball ballData={engine.ball} />
 
-        {/* color is the initial mount value; Paddle reads GameConfig.colors imperatively each frame */}
+        {/* FIX 2: Pass the paddleScale to the 3D Paddle components */}
         <Paddle
           paddleData={engine.p1}
           initialX={GameConfig.player1.xPos}
           color={GameConfig.colors.p1}
+          scaleMultiplier={paddleScale}
         />
         <Paddle
           paddleData={engine.p2}
           initialX={GameConfig.player2.xPos}
           color={GameConfig.colors.p2}
+          scaleMultiplier={paddleScale}
         />
       </Canvas>
     </div>

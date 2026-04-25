@@ -10,10 +10,12 @@ export default memo(function Paddle({
   paddleData,
   initialX,
   color,
+  scaleMultiplier = 1, // New prop to sync visuals with difficulty-based physics
 }: {
   paddleData: PaddleData;
   initialX: number;
   color: string;
+  scaleMultiplier?: number;
 }) {
   const groupRef = useRef<THREE.Group>(null!);
   const matRef = useRef<THREE.MeshStandardMaterial>(null!);
@@ -28,9 +30,14 @@ export default memo(function Paddle({
   useFrame((_, delta) => {
     if (!groupRef.current || !paddleData) return;
 
+    // Apply the difficulty scale to the group.
+    // We scale height and depth (Z), but keep width (X) constant as per our design.
+    groupRef.current.scale.set(1, scaleMultiplier, scaleMultiplier);
+
     groupRef.current.position.set(
       paddleData.x ?? initialX,
-      paddleData.y ?? PADDLE_Y,
+      // Paddle Y must also be scaled to match the new dynamic height in the engine
+      paddleData.y ?? PADDLE_Y * scaleMultiplier,
       paddleData.z ?? 0,
     );
 

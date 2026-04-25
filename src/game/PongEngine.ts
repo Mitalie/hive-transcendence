@@ -17,13 +17,30 @@ export class PongEngine {
   private EFFECTIVE_Z_LIMIT: number;
   private CEILING: number;
 
-  constructor(onScore: (player: 1 | 2) => void, mode: GameType) {
+  // Difficulty Modifiers
+  private paddleMod: number;
+  private DYNAMIC_PADDLE_Z_LIMIT: number;
+
+  constructor(
+    onScore: (player: 1 | 2) => void,
+    mode: GameType,
+    difficulty: "easy" | "medium" | "hard" = "medium",
+  ) {
     this.onScore = onScore;
     this.mode = mode;
 
-    // Evaluate physics limits dynamically based on current settings
-    this.PADDLE_Y = GameConfig.paddle.height / 2;
+    const mods = GameConfig.difficultyModifiers[difficulty];
+    this.paddleMod = mods.paddleSizeMultiplier;
+
+    // Calculate dynamic safe zone for paddle movement to prevent glass clipping
+    const currentPaddleDepth = GameConfig.paddle.depth * this.paddleMod;
+    this.DYNAMIC_PADDLE_Z_LIMIT =
+      GameConfig.court.zLimit - currentPaddleDepth / 2;
+
+    // Evaluate physics limits dynamically based on current settings and difficulty modifiers
+    this.PADDLE_Y = (GameConfig.paddle.height * this.paddleMod) / 2;
     this.EFFECTIVE_Z_LIMIT = GameConfig.court.zLimit - GameConfig.ball.radius;
+
     // Invisible stratosphere ceiling to allow high lobs without camera overshoot
     this.CEILING = GameConfig.court.wallHeight * 3;
 
@@ -77,6 +94,7 @@ export class PongEngine {
           this.ball.vy -= GameConfig.ball.gravity * delta;
           this.ball.y += this.ball.vy * delta;
           this.ball.vz += this.ball.spin * delta;
+
           this.ball.vz = Math.max(
             Math.min(this.ball.vz, GameConfig.ball.maxZVelocity),
             -GameConfig.ball.maxZVelocity,
@@ -118,7 +136,7 @@ export class PongEngine {
 
   private updateClassicPaddles(delta: number, keys: Record<string, boolean>) {
     const speed = GameConfig.paddle.maxVelocity;
-    const zLimit = GameConfig.paddle.zLimit;
+    const zLimit = this.DYNAMIC_PADDLE_Z_LIMIT;
     const p1Keys = GameConfig.player1.controls;
     const p2Keys = GameConfig.player2.controls;
 
@@ -164,8 +182,8 @@ export class PongEngine {
       acceleration: accel,
       friction: fric,
       maxVelocity: maxVel,
-      zLimit,
     } = GameConfig.paddle;
+    const zLimit = this.DYNAMIC_PADDLE_Z_LIMIT;
     const p1Keys = GameConfig.player1.controls;
     const p2Keys = GameConfig.player2.controls;
 
@@ -285,9 +303,9 @@ export class PongEngine {
 
   private checkPaddle(paddle: PaddleData, player: 1 | 2, delta: number) {
     const r = GameConfig.ball.radius;
-    const hitW = GameConfig.paddle.width / 2 + r;
-    const hitD = GameConfig.paddle.depth / 2 + r;
-    const hitH = GameConfig.paddle.height / 2 + r;
+    const hitW = (GameConfig.paddle.width * this.paddleMod) / 2 + r;
+    const hitD = (GameConfig.paddle.depth * this.paddleMod) / 2 + r;
+    const hitH = (GameConfig.paddle.height * this.paddleMod) / 2 + r;
 
     const dx = this.ball.x - paddle.x;
     const dy = this.ball.y - this.PADDLE_Y;
@@ -388,23 +406,32 @@ export class PongEngine {
         newVX = Math.min(newVX, paddle.vx - 5);
       }
 
-      this.ball.vx = Math.max(
-        Math.min(newVX, GameConfig.ball.maxXVelocity),
-        -GameConfig.ball.maxXVelocity,
-      );
+      this.ball.vx = newVX;
+
       this.ball.x =
         player === 1
           ? paddle.x + hitW + GameConfig.physics.collisionNudge
           : paddle.x - hitW - GameConfig.physics.collisionNudge;
 
       const hitPoint =
-        (crossBallZ - crossPaddleZ_saved) / (GameConfig.paddle.depth / 2);
+        (crossBallZ - crossPaddleZ_saved) /
+        ((GameConfig.paddle.depth * this.paddleMod) / 2);
       this.ball.vz += hitPoint * GameConfig.ball.deflectionBoost;
 
-      this.ball.vz = Math.max(
-        Math.min(this.ball.vz, GameConfig.ball.maxZVelocity),
-        -GameConfig.ball.maxZVelocity,
+      // START OF BULLET BALL FIX: Vector Normalization
+      const currentSpeed = Math.sqrt(
+        this.ball.vx * this.ball.vx + this.ball.vz * this.ball.vz,
       );
+      const maxSpeed = GameConfig.ball.maxXVelocity;
+
+      if (currentSpeed > maxSpeed) {
+        // We scale both components proportionally to keep the impact angle
+        // while capping the physical speed at the engine limit.
+        const scale = maxSpeed / currentSpeed;
+        this.ball.vx *= scale;
+        this.ball.vz *= scale;
+      }
+      // END OF FIX
 
       if (this.mode === "advanced") {
         const newSpin =
@@ -415,22 +442,6 @@ export class PongEngine {
           -GameConfig.ball.maxSpin,
         );
         this.ball.vy = GameConfig.ball.paddleHitForceY;
-      }
-
-      // Calculate the total combined speed of the ball (Pythagorean theorem)
-      const totalSpeed = Math.sqrt(
-        this.ball.vx * this.ball.vx + this.ball.vz * this.ball.vz,
-      );
-      const MAX_SPEED = GameConfig.ball.maxXVelocity;
-
-      // If the combined speed is faster than the game allows...
-      if (totalSpeed > MAX_SPEED) {
-        // Calculate the ratio to scale it back down
-        const scale = MAX_SPEED / totalSpeed;
-
-        // Scale both the X and Z velocities down proportionally so the angle stays the same, but the speed drops
-        this.ball.vx *= scale;
-        this.ball.vz *= scale;
       }
     }
   }

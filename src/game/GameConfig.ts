@@ -121,15 +121,41 @@ export const GameConfig = {
     lobBackpedalOffset: 2,
     deadzone: { z: 0.3, x: 0.2 },
     // Rates are processed as per-second variables for exponential decay
-    lerpSpeed: { base: 9.0, fast: 18.0 },
     difficulties: {
-      easy: { reactionDelayMs: 400, errorMargin: 2.0, mistakeIntervalSec: 0.4 },
+      // Easy: Slow reaction, high error margin, and sluggish physical tracking
+      easy: {
+        reactionDelayMs: 600,
+        errorMargin: 1.0,
+        mistakeIntervalSec: 2,
+        lerpSpeed: 3.0,
+      },
+      // Medium: Average human reaction time, tight targeting, solid competent tracking speed
       medium: {
         reactionDelayMs: 250,
-        errorMargin: 1.0,
-        mistakeIntervalSec: 0.6,
+        errorMargin: 0.2,
+        mistakeIntervalSec: 3,
+        lerpSpeed: 12.0,
       },
-      hard: { reactionDelayMs: 0, errorMargin: 0.05, mistakeIntervalSec: 1.2 },
+      // Hard: Instant reflexes, perfect tracking, lightning-fast snap (Strike Phase enabled)
+      hard: {
+        reactionDelayMs: 0,
+        errorMargin: 0.0,
+        mistakeIntervalSec: 99,
+        lerpSpeed: 25.0,
+      },
+    },
+  },
+
+  // Physical arena modifiers based on difficulty (Kept subtle for 3D playability)
+  difficultyModifiers: {
+    easy: {
+      paddleSizeMultiplier: 1.25, // 15% larger (Forgiving)
+    },
+    medium: {
+      paddleSizeMultiplier: 1.0, // Standard
+    },
+    hard: {
+      paddleSizeMultiplier: 0.75, // 15% smaller (Requires precision but isn't impossible)
     },
   },
 
