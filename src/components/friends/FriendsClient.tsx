@@ -14,6 +14,7 @@ type Person = {
   id: string;
   friendshipId?: string;
   label: string;
+  bio?: string | null;
   avatarUrl?: string | null;
   isOnline?: boolean;
 };

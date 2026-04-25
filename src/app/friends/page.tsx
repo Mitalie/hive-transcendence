@@ -41,6 +41,7 @@ export default async function FriendsPage() {
         id: f.requester.id,
         friendshipId: f.id,
         label: resolveLabel(f.requester),
+        bio: f.requester.bio,
         avatarUrl: avatarUrl(f.requester.id),
         isOnline: isOnline(f.requester.lastActiveAt),
       }))}
@@ -48,6 +49,7 @@ export default async function FriendsPage() {
         id: f.addressee.id,
         friendshipId: f.id,
         label: resolveLabel(f.addressee),
+        bio: f.addressee.bio,
         avatarUrl: avatarUrl(f.addressee.id),
         isOnline: isOnline(f.addressee.lastActiveAt),
       }))}
@@ -57,6 +59,7 @@ export default async function FriendsPage() {
           id: friend.id,
           friendshipId: f.id,
           label: resolveLabel(friend),
+          bio: friend.bio,
           avatarUrl: avatarUrl(friend.id),
           isOnline: isOnline(friend.lastActiveAt),
         };

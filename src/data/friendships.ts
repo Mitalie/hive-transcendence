@@ -54,6 +54,7 @@ const userDisplayFields = {
   displayName: true,
   name: true,
   username: true,
+  bio: true,
   lastActiveAt: true,
 } as const;
 

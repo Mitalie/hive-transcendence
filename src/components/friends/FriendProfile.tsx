@@ -26,6 +26,7 @@ type Props = {
     id: string;
     friendshipId?: string;
     label: string;
+    bio?: string | null;
     avatarUrl?: string | null;
   };
   isFriend?: boolean;
@@ -52,13 +53,13 @@ function MatchRow({ match }: { match: MatchHistoryItem }) {
   };
 
   const resultLabels: Record<MatchResult, string> = {
-    win: "W",
-    loss: "L",
+    win: "WIN",
+    loss: "LOSS",
   };
 
   return (
     <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-button border border-purple-light/40">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-6">
         <span
           className={`text-sm font-bold w-5 text-center ${resultColors[match.result]}`}
         >
@@ -168,6 +169,15 @@ export default function FriendProfile({
             </p>
           </div>
         </div>
+        <div className="rounded-xl bg-button p-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-text/40 mb-1">
+            {t("friends.profile.bio", { defaultValue: "Bio" })}
+          </p>
+          <p className="text-sm text-text/70 whitespace-pre-wrap break-words">
+            {friend.bio ||
+              t("friends.profile.noBio", { defaultValue: "No bio yet" })}
+          </p>
+        </div>
         <button
           type="button"
           onClick={onClose}
@@ -193,13 +203,7 @@ export default function FriendProfile({
 
         {isFriend ? (
           matchHistory.length === 0 ? (
-            <div className="rounded-xl border border-purple-light border-dashed p-8 flex items-center justify-center flex-1">
-              <p className="text-sm text-text/40">
-                {t("friends.profile.matchHistoryEmpty", {
-                  defaultValue: "Match history coming soon",
-                })}
-              </p>
-            </div>
+            <div className="rounded-xl border border-purple-light border-dashed p-8 flex items-center justify-center flex-1"></div>
           ) : (
             <div className="flex flex-col gap-2 flex-1">
               {matchHistory.map((match) => (
