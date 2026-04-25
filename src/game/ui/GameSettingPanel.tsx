@@ -11,6 +11,7 @@ type Props = {
   onApply?: () => void;
   isLoggedIn?: boolean;
   userId?: string | null;
+  gameMode?: "classic" | "advanced";
 };
 
 const DEFAULT_COLORS = {
@@ -96,6 +97,7 @@ export default function GameSettingPanel({
   onApply,
   isLoggedIn = false,
   userId = null,
+  gameMode = "classic",
 }: Props) {
   const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>("colors");
@@ -337,30 +339,34 @@ export default function GameSettingPanel({
               step={1}
               onChange={handleBallSpeed}
             />
-            <SliderRow
-              label={t("game.settings.ballGravity")}
-              value={gravity}
-              min={1}
-              max={10}
-              step={1}
-              onChange={handleGravity}
-            />
-            <SliderRow
-              label={t("game.settings.ballBounce")}
-              value={bounce}
-              min={1}
-              max={10}
-              step={1}
-              onChange={handleBounce}
-            />
-            <SliderRow
-              label={t("game.settings.ballSpin")}
-              value={spin}
-              min={1}
-              max={10}
-              step={1}
-              onChange={handleSpin}
-            />
+            {gameMode === "advanced" && (
+              <>
+                <SliderRow
+                  label={t("game.settings.ballGravity")}
+                  value={gravity}
+                  min={1}
+                  max={10}
+                  step={1}
+                  onChange={handleGravity}
+                />
+                <SliderRow
+                  label={t("game.settings.ballBounce")}
+                  value={bounce}
+                  min={1}
+                  max={10}
+                  step={1}
+                  onChange={handleBounce}
+                />
+                <SliderRow
+                  label={t("game.settings.ballSpin")}
+                  value={spin}
+                  min={1}
+                  max={10}
+                  step={1}
+                  onChange={handleSpin}
+                />
+              </>
+            )}
             <SliderRow
               label={t("game.settings.paddleSpeed")}
               value={paddleSpeed}

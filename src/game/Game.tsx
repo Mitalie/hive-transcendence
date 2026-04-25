@@ -336,6 +336,7 @@ export default function Game({ isLoggedIn, playerName }: GameProps) {
           onExitConfirm={resetToSetup}
           isLoggedIn={isLoggedIn}
           userId={playerName}
+          gameMode={state.mode.type}
         />
       </GameStateDispatchContext>
     </div>
