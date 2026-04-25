@@ -7,6 +7,7 @@ import {
   getSentFriendRequestsByUserId,
 } from "@/data/friendships";
 import { FriendsClient } from "@/components/friends/FriendsClient";
+import { getCurrentUser } from "@/data/user";
 
 // ---------- Helpers ----------
 function resolveLabel(u: { displayName: string | null }): string {
@@ -21,6 +22,9 @@ function avatarUrl(userId: string): string {
 export default async function FriendsPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
+
+  const user = await getCurrentUser();
+  if (!user?.displayName) redirect("/registration/profile");
 
   const userId = session.user.id;
 

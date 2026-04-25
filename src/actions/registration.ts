@@ -48,6 +48,10 @@ export async function registerUserAction(email: string, password: string) {
     return { ok: false, error: apiErrors.passwordTooShort };
   }
 
+  if (email.length > 100) {
+    return { ok: false, error: apiErrors.emailTooLong };
+  }
+
   const userExists = await prisma.user.findFirst({
     where: {
       OR: [{ email }],

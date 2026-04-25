@@ -15,6 +15,7 @@ interface EditProfileFormProps {
 }
 
 const BIO_MAX = 150;
+const NAME_MAX = 20;
 
 function useUsernameCheck(nameValue: string, originalName: string | null) {
   const [usernameAvailable, setUsernameAvailable] = useState<boolean>(true);
@@ -73,6 +74,7 @@ export function EditProfileForm({
   );
 
   const bioTooLong = bioValue.length > BIO_MAX;
+  const nameTooLong = nameValue.length > NAME_MAX;
   const nameChanged = nameValue.trim() !== (displayName ?? "").trim();
 
   const clearSelectedFile = () => {
@@ -84,6 +86,11 @@ export function EditProfileForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (nameTooLong) {
+      setError(t("settings.account.nameTooLong", { max: NAME_MAX }));
+      return;
+    }
 
     if (bioTooLong) {
       setError(t("settings.account.bioTooLong", { max: BIO_MAX }));
@@ -127,16 +134,34 @@ export function EditProfileForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-text/70">
-          {t("settings.account.userName")}
-        </label>
+        <div className="flex items-center justify-between">
+          <label className="text-sm font-medium text-text/70">
+            {t("settings.account.userName")}
+          </label>
+          <span
+            className={`text-xs tabular-nums ${
+              nameTooLong ? "text-red-500" : "text-text/40"
+            }`}
+          >
+            {nameValue.length} / {NAME_MAX}
+          </span>
+        </div>
         <input
           type="text"
           value={nameValue}
           onChange={(e) => setNameValue(e.target.value)}
-          className="w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border border-purple-light placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-purple-light transition-all"
+          className={`w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border placeholder:text-text/40 focus:outline-none focus:ring-2 transition-all ${
+            nameTooLong
+              ? "border-red-500/60 focus:ring-red-500/30"
+              : "border-purple-light focus:ring-purple-light"
+          }`}
         />
-        {nameChanged && nameValue.trim() && (
+        {nameTooLong && (
+          <p className="text-xs text-red-500">
+            {t("settings.account.nameTooLong", { max: NAME_MAX })}
+          </p>
+        )}
+        {!nameTooLong && nameChanged && nameValue.trim() && (
           <p
             className={`text-xs mt-0.5 ${
               checkingUsername
@@ -250,6 +275,7 @@ export function EditProfileForm({
         type="submit"
         disabled={
           loading ||
+          nameTooLong ||
           bioTooLong ||
           checkingUsername ||
           (nameChanged && !usernameAvailable)

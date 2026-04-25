@@ -12,6 +12,7 @@ export const apiErrors = {
   invalidImageUrl: "invalidImageUrl",
   fileTooLarge: "fileTooLarge",
   errorUnexpected: "errorUnexpected",
+  emailTooLong: "emailTooLong",
 } as const;
 
 export type ApiErrorKey = keyof typeof apiErrors;

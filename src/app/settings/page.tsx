@@ -14,6 +14,10 @@ export default async function SettingsPage({
     redirect("/login");
   }
 
+  if (!user.displayName) {
+    redirect("/registration/profile");
+  }
+
   return (
     <SettingsClient
       user={{

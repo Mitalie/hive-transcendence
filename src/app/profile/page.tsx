@@ -88,5 +88,6 @@ export default async function ProfilePage() {
   if (!session?.user?.email) redirect("/login");
   const data = await getProfileData(session.user.email);
   if (!data) redirect("/login");
+  if (!data.user.displayName) redirect("/registration/profile");
   return <ProfileClient data={data} />;
 }
