@@ -59,8 +59,14 @@ export const authOptions: NextAuthOptions = {
         },
       });
 
-      session.user.id = token.userId;
-      session.user.avatarVersion = user?.updatedAt.getTime();
+      if (!user) {
+        return { ...session, user: undefined };
+      }
+
+      if (session.user) {
+        session.user.id = token.userId;
+        session.user.avatarVersion = user?.updatedAt.getTime();
+      }
       return session;
     },
   },
