@@ -5,36 +5,31 @@ export type AIDifficulty = "easy" | "medium" | "hard";
 
 export class AIOpponent {
   private engine: PongEngine;
-
+  private difficulty: AIDifficulty;
   private reactionDelaySec: number;
   private errorMargin: number;
   private mistakeIntervalSec: number;
   private isInstant: boolean;
-
+  private lerpRate: number;
   private timeSinceLastThought: number = 0;
   private timeSinceLastMistake: number = 0;
-
   private currentMistakeZ: number = 0;
   private currentMistakeX: number = 0;
-
   private targetZ: number = 0;
   private targetX: number;
-
   private focusZ: number = 0;
   private focusX: number;
 
   constructor(engine: PongEngine, difficulty: AIDifficulty) {
     this.engine = engine;
-
+    this.difficulty = difficulty;
     const config = GameConfig.ai.difficulties[difficulty];
     this.reactionDelaySec = config.reactionDelayMs / 1000;
     this.errorMargin = config.errorMargin;
     this.mistakeIntervalSec = config.mistakeIntervalSec;
+    this.lerpRate = config.lerpSpeed;
     this.isInstant = difficulty === "hard";
-
-    // Initialize to starting positions to prevent a rapid jerk on frame 1
-    this.targetX = GameConfig.player2.xPos;
-    this.focusX = GameConfig.player2.xPos;
+    this.targetX = this.focusX = GameConfig.player2.xPos;
   }
 
   public getInputs(delta: number): Record<string, boolean> {
@@ -42,11 +37,8 @@ export class AIOpponent {
     const ball = this.engine.ball;
     const paddle = this.engine.p2;
 
-    // A small epsilon check ensures robustness against floating-point residuals
-    // when determining if the ball is stationary (e.g., waiting for a serve).
     const isBallStationary =
       Math.abs(ball.vx) < 0.001 && Math.abs(ball.vz) < 0.001;
-
     this.timeSinceLastMistake += delta;
     this.timeSinceLastThought += delta;
 
@@ -56,51 +48,71 @@ export class AIOpponent {
       this.currentMistakeX = (Math.random() - 0.5) * this.errorMargin;
     }
 
+    const distanceToAI = paddle.x - ball.x;
+    const isApproaching = ball.vx > 0 && distanceToAI > 0;
+    const timeToImpact = isApproaching ? distanceToAI / ball.vx : 0;
+
     if (this.timeSinceLastThought >= this.reactionDelaySec) {
       this.timeSinceLastThought = 0;
-
       if (isBallStationary) {
         this.targetZ = 0;
         this.targetX = GameConfig.player2.xPos;
       } else {
-        const zLimit = GameConfig.paddle.zLimit;
+        const paddleMod =
+          GameConfig.difficultyModifiers[this.difficulty].paddleSizeMultiplier;
+        const safeZLimit =
+          GameConfig.court.zLimit - (GameConfig.paddle.depth * paddleMod) / 2;
 
-        // Multi-bounce trajectory prediction
+        let predictedZ = ball.z;
+        let spinCurveEffect = 0;
+        if (
+          this.engine.mode === "advanced" &&
+          isApproaching &&
+          timeToImpact < 5
+        ) {
+          spinCurveEffect = ball.spin * (timeToImpact * timeToImpact) * 0.5;
+        }
+
         if (ball.vy < -0.01 && ball.y > GameConfig.ball.radius) {
-          // Ball falling: Predict floor intercept
           const timeToFloor =
             (ball.y - GameConfig.ball.radius) / Math.abs(ball.vy);
-          const predictedZ = ball.z + ball.vz * timeToFloor;
-          this.targetZ =
-            Math.max(Math.min(predictedZ, zLimit), -zLimit) +
-            this.currentMistakeZ;
+          predictedZ = ball.z + ball.vz * timeToFloor + spinCurveEffect;
         } else if (ball.vy > 0.01) {
-          // Ball rising: Predict ceiling ricochet -> then floor intercept
           const CEILING =
-            GameConfig.court.wallHeight * 3 - GameConfig.ball.radius;
+            GameConfig.court.wallHeight *
+              GameConfig.court.physicsCeilingMultiplier -
+            GameConfig.ball.radius;
           const timeToCeiling = (CEILING - ball.y) / ball.vy;
-          const zAtCeiling = ball.z + ball.vz * timeToCeiling;
-
           const vyAfterCeiling = -ball.vy * GameConfig.ball.bounceFriction;
           const timeFromCeilingToFloor =
             (CEILING - GameConfig.ball.radius) / Math.abs(vyAfterCeiling);
-          const predictedZ = zAtCeiling + ball.vz * timeFromCeilingToFloor;
-
-          this.targetZ =
-            Math.max(Math.min(predictedZ, zLimit), -zLimit) +
-            this.currentMistakeZ;
+          predictedZ =
+            ball.z +
+            ball.vz * timeToCeiling +
+            ball.vz * timeFromCeilingToFloor +
+            spinCurveEffect;
         } else {
-          this.targetZ = ball.z + this.currentMistakeZ;
+          predictedZ =
+            ball.z +
+            (isApproaching ? ball.vz * timeToImpact : 0) +
+            spinCurveEffect;
         }
+        this.targetZ =
+          Math.max(Math.min(predictedZ, safeZLimit), -safeZLimit) +
+          this.currentMistakeZ;
 
-        const isBallTooHigh = ball.y > GameConfig.paddle.height;
-
-        if (ball.vx > 0 && ball.x > GameConfig.court.centerX) {
-          if (isBallTooHigh) {
-            this.targetX =
-              GameConfig.court.xLimit - GameConfig.ai.lobBackpedalOffset;
+        if (this.engine.mode === "advanced") {
+          const isBallTooHigh = ball.y > GameConfig.paddle.height;
+          const isFloatingLob =
+            ball.vx > 0 && ball.vx < GameConfig.ball.startVelocityX * 0.8;
+          if (ball.vx > 0 && ball.x > GameConfig.court.centerX) {
+            this.targetX = isBallTooHigh
+              ? GameConfig.court.xLimit - GameConfig.ai.lobBackpedalOffset
+              : this.isInstant && isFloatingLob
+                ? GameConfig.court.centerX + 2
+                : ball.x + this.currentMistakeX;
           } else {
-            this.targetX = ball.x + this.currentMistakeX;
+            this.targetX = GameConfig.player2.xPos;
           }
         } else {
           this.targetX = GameConfig.player2.xPos;
@@ -108,28 +120,41 @@ export class AIOpponent {
       }
     }
 
-    const lerpRate = this.isInstant
-      ? GameConfig.ai.lerpSpeed.fast
-      : GameConfig.ai.lerpSpeed.base;
+    let finalTargetZ = this.targetZ;
+    let finalTargetX = this.targetX;
 
-    // Frame-rate independent continuous exponential decay for smooth AI tracking
-    const lerpFactor = 1 - Math.exp(-lerpRate * delta);
+    if (this.isInstant && isApproaching && timeToImpact < 0.25) {
+      const safeEdge = (GameConfig.paddle.width / 2) * 0.8;
+      finalTargetZ =
+        this.engine.p1.z > ball.z ? ball.z - safeEdge : ball.z + safeEdge;
+      if (this.engine.mode === "advanced") {
+        finalTargetX = GameConfig.player2.xPos - 2;
+        if (timeToImpact < 0.1) finalTargetZ += ball.z > 0 ? -3 : 3;
+      }
+    }
 
-    this.focusZ += (this.targetZ - this.focusZ) * lerpFactor;
-    this.focusX += (this.targetX - this.focusX) * lerpFactor;
+    if (this.engine.mode === "advanced") {
+      const lerpFactor = 1 - Math.exp(-this.lerpRate * delta);
+      this.focusZ += (finalTargetZ - this.focusZ) * lerpFactor;
+      this.focusX += (finalTargetX - this.focusX) * lerpFactor;
+    }
 
     const p2Keys = GameConfig.player2.controls;
-
-    if (this.focusZ > paddle.z + GameConfig.ai.deadzone.z)
-      inputs[p2Keys.down] = true;
-    else if (this.focusZ < paddle.z - GameConfig.ai.deadzone.z)
-      inputs[p2Keys.up] = true;
-
-    if (this.focusX < paddle.x - GameConfig.ai.deadzone.x)
-      inputs[p2Keys.left] = true;
-    else if (this.focusX > paddle.x + GameConfig.ai.deadzone.x)
-      inputs[p2Keys.right] = true;
-
+    if (this.engine.mode === "classic") {
+      const distanceZ = finalTargetZ - paddle.z;
+      const stepDist = GameConfig.paddle.maxVelocity * delta;
+      if (Math.abs(distanceZ) > stepDist)
+        inputs[distanceZ > 0 ? p2Keys.down : p2Keys.up] = true;
+    } else {
+      if (this.focusZ > paddle.z + GameConfig.ai.deadzone.z)
+        inputs[p2Keys.down] = true;
+      else if (this.focusZ < paddle.z - GameConfig.ai.deadzone.z)
+        inputs[p2Keys.up] = true;
+      if (this.focusX < paddle.x - GameConfig.ai.deadzone.x)
+        inputs[p2Keys.left] = true;
+      else if (this.focusX > paddle.x + GameConfig.ai.deadzone.x)
+        inputs[p2Keys.right] = true;
+    }
     return inputs;
   }
 
