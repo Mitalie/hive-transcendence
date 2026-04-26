@@ -212,7 +212,7 @@ export default function FriendProfile({
                 })}
               </p>
             ) : (
-              <div className="flex flex-col gap-2 flex-1 w-full">
+              <div className="flex flex-col gap-2 flex-1 w-full h-full">
                 {matchHistory.map((match) => (
                   <MatchRow key={match.id} match={match} />
                 ))}
