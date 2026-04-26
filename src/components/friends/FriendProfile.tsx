@@ -47,14 +47,16 @@ function StatCard({ label, value }: { label: string; value: string }) {
 }
 
 function MatchRow({ match }: { match: MatchHistoryItem }) {
+  const { t } = useTranslation();
+
   const resultColors: Record<MatchResult, string> = {
     win: "text-green-400",
     loss: "text-red-400",
   };
 
   const resultLabels: Record<MatchResult, string> = {
-    win: "WIN",
-    loss: "LOSS",
+    win: t("friends.profile.stats.win", { defaultValue: "WIN" }),
+    loss: t("friends.profile.stats.loss", { defaultValue: "LOSS" }),
   };
 
   return (
@@ -202,15 +204,21 @@ export default function FriendProfile({
         </h3>
 
         {isFriend ? (
-          matchHistory.length === 0 ? (
-            <div className="rounded-xl border border-purple-light border-dashed p-8 flex items-center justify-center flex-1"></div>
-          ) : (
-            <div className="flex flex-col gap-2 flex-1">
-              {matchHistory.map((match) => (
-                <MatchRow key={match.id} match={match} />
-              ))}
-            </div>
-          )
+          <div className="rounded-xl border border-purple-light border-dashed p-8 flex items-center justify-center flex-1">
+            {matchHistory.length === 0 ? (
+              <p className="text-sm text-text/40 text-center">
+                {t("friends.profile.matchHistoryEmpty", {
+                  defaultValue: "This user has no match history yet",
+                })}
+              </p>
+            ) : (
+              <div className="flex flex-col gap-2 flex-1 w-full">
+                {matchHistory.map((match) => (
+                  <MatchRow key={match.id} match={match} />
+                ))}
+              </div>
+            )}
+          </div>
         ) : (
           /* Non-friend: locked state */
           <div className="rounded-xl border border-purple-light border-dashed p-8 flex flex-col items-center justify-center gap-3 flex-1">
