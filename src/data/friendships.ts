@@ -1,5 +1,12 @@
 import { prisma } from "@/lib/prisma";
 
+const ONLINE_THRESHOLD_MS = 2 * 60 * 1000;
+
+function isUserOnline(lastActiveAt: Date | null) {
+  if (!lastActiveAt) return false;
+  return Date.now() - lastActiveAt.getTime() < ONLINE_THRESHOLD_MS;
+}
+
 export async function getFriendshipStatsByUserId(userId: string) {
   const acceptedFriends = await prisma.friendship.count({
     where: {
@@ -54,10 +61,12 @@ const userDisplayFields = {
   displayName: true,
   name: true,
   username: true,
+  bio: true,
+  lastActiveAt: true,
 } as const;
 
 export async function getPendingFriendRequestsByUserId(userId: string) {
-  return prisma.friendship.findMany({
+  const requests = await prisma.friendship.findMany({
     where: {
       status: "PENDING",
       addresseeId: userId,
@@ -70,10 +79,19 @@ export async function getPendingFriendRequestsByUserId(userId: string) {
       createdAt: "desc",
     },
   });
+
+  return requests.map((request) => ({
+    ...request,
+    requester: {
+      ...request.requester,
+      isOnline: isUserOnline(request.requester.lastActiveAt),
+      lastActiveAt: undefined,
+    },
+  }));
 }
 
 export async function getSentFriendRequestsByUserId(userId: string) {
-  return prisma.friendship.findMany({
+  const requests = await prisma.friendship.findMany({
     where: {
       status: "PENDING",
       requesterId: userId,
@@ -86,10 +104,19 @@ export async function getSentFriendRequestsByUserId(userId: string) {
       createdAt: "desc",
     },
   });
+
+  return requests.map((request) => ({
+    ...request,
+    addressee: {
+      ...request.addressee,
+      isOnline: isUserOnline(request.addressee.lastActiveAt),
+      lastActiveAt: undefined,
+    },
+  }));
 }
 
 export async function getAcceptedFriendsByUserId(userId: string) {
-  return prisma.friendship.findMany({
+  const friendships = await prisma.friendship.findMany({
     where: {
       status: "ACCEPTED",
       OR: [{ requesterId: userId }, { addresseeId: userId }],
@@ -104,4 +131,18 @@ export async function getAcceptedFriendsByUserId(userId: string) {
       createdAt: "desc",
     },
   });
+
+  return friendships.map((friendship) => ({
+    ...friendship,
+    requester: {
+      ...friendship.requester,
+      isOnline: isUserOnline(friendship.requester.lastActiveAt),
+      lastActiveAt: undefined,
+    },
+    addressee: {
+      ...friendship.addressee,
+      isOnline: isUserOnline(friendship.addressee.lastActiveAt),
+      lastActiveAt: undefined,
+    },
+  }));
 }

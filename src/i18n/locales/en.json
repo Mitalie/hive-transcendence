@@ -322,12 +322,14 @@
       "subtitle": "Friend",
       "subtitleStranger": "Player",
       "matchHistory": "Match History",
-      "matchHistoryEmpty": "Match history coming soon",
+      "matchHistoryEmpty": "This user has no match history yet",
       "matchHistoryLocked": "Add as a friend to view match history",
       "stats": {
         "games": "Games",
         "wins": "Wins",
-        "winRate": "Win rate"
+        "winRate": "Win rate",
+        "win": "Win",
+        "loss": "Loss"
       },
       "removeConfirmText": "Remove {{name}} from friends?",
       "removeConfirm": "Remove",

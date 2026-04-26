@@ -6,6 +6,7 @@ type Props = {
   friendshipId: string;
   label: string;
   avatarUrl?: string | null;
+  isOnline?: boolean;
   onSelect: () => void;
   isSelected: boolean;
 };
@@ -13,6 +14,7 @@ type Props = {
 export default function FriendCard({
   label,
   avatarUrl,
+  isOnline,
   onSelect,
   isSelected,
 }: Props) {
@@ -21,7 +23,7 @@ export default function FriendCard({
       label={label}
       avatarUrl={avatarUrl}
       isSelected={isSelected}
-      online={true}
+      online={isOnline ?? false}
       onClick={onSelect}
     />
   );

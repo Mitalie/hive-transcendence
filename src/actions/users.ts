@@ -38,12 +38,13 @@ export async function searchUsersForFriendRequest(
         { displayName: { startsWith: trimmed } },
       ],
     },
-    select: { id: true, displayName: true },
+    select: { id: true, displayName: true, bio: true },
     take: 20,
   });
 
   return users.map((u) => ({
     id: u.id,
     label: u.displayName ?? "Unknown user",
+    bio: u.bio,
   }));
 }

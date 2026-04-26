@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { removeFriend } from "@/actions/friendships";
 import UserAvatar from "./UserAvatar";
 
-type MatchResult = "win" | "loss" | "draw";
+type MatchResult = "win" | "loss";
 
 type MatchHistoryItem = {
   id: string;
@@ -22,7 +22,13 @@ type Stats = {
 };
 
 type Props = {
-  friend: { id: string; label: string; avatarUrl?: string | null };
+  friend: {
+    id: string;
+    friendshipId?: string;
+    label: string;
+    bio?: string | null;
+    avatarUrl?: string | null;
+  };
   isFriend?: boolean;
   onClose: () => void;
   stats?: Stats;
@@ -41,21 +47,21 @@ function StatCard({ label, value }: { label: string; value: string }) {
 }
 
 function MatchRow({ match }: { match: MatchHistoryItem }) {
+  const { t } = useTranslation();
+
   const resultColors: Record<MatchResult, string> = {
     win: "text-green-400",
     loss: "text-red-400",
-    draw: "text-text/50",
   };
 
   const resultLabels: Record<MatchResult, string> = {
-    win: "W",
-    loss: "L",
-    draw: "D",
+    win: t("friends.profile.stats.win", { defaultValue: "WIN" }),
+    loss: t("friends.profile.stats.loss", { defaultValue: "LOSS" }),
   };
 
   return (
     <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-button border border-purple-light/40">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-6">
         <span
           className={`text-sm font-bold w-5 text-center ${resultColors[match.result]}`}
         >
@@ -114,10 +120,13 @@ export default function FriendProfile({
   const [removePending, setRemovePending] = useState(false);
 
   async function handleRemove() {
+    if (!friend.friendshipId) return;
+
     setRemovePending(true);
     setRemoveError(null);
-    const result = await removeFriend(friend.id);
+    const result = await removeFriend(friend.friendshipId);
     setRemovePending(false);
+
     if ("error" in result) {
       setRemoveError(result.error);
       setConfirmRemove(false);
@@ -162,6 +171,15 @@ export default function FriendProfile({
             </p>
           </div>
         </div>
+        <div className="rounded-xl bg-button p-4 min-w-0 overflow-hidden">
+          <p className="text-xs font-semibold uppercase tracking-widest text-text/40 mb-1">
+            {t("friends.profile.bio", { defaultValue: "Bio" })}
+          </p>
+          <p className="text-sm text-text/70 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+            {friend.bio ||
+              t("friends.profile.noBio", { defaultValue: "No bio yet" })}
+          </p>
+        </div>
         <button
           type="button"
           onClick={onClose}
@@ -186,21 +204,21 @@ export default function FriendProfile({
         </h3>
 
         {isFriend ? (
-          matchHistory.length === 0 ? (
-            <div className="rounded-xl border border-purple-light border-dashed p-8 flex items-center justify-center flex-1">
-              <p className="text-sm text-text/40">
+          <div className="rounded-xl border border-purple-light border-dashed p-8 flex items-center justify-center flex-1">
+            {matchHistory.length === 0 ? (
+              <p className="text-sm text-text/40 text-center">
                 {t("friends.profile.matchHistoryEmpty", {
-                  defaultValue: "Match history coming soon",
+                  defaultValue: "This user has no match history yet",
                 })}
               </p>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2 flex-1">
-              {matchHistory.map((match) => (
-                <MatchRow key={match.id} match={match} />
-              ))}
-            </div>
-          )
+            ) : (
+              <div className="flex flex-col gap-2 flex-1 w-full h-full">
+                {matchHistory.map((match) => (
+                  <MatchRow key={match.id} match={match} />
+                ))}
+              </div>
+            )}
+          </div>
         ) : (
           /* Non-friend: locked state */
           <div className="rounded-xl border border-purple-light border-dashed p-8 flex flex-col items-center justify-center gap-3 flex-1">

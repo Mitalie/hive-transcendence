@@ -316,12 +316,14 @@
       "subtitle": "好友",
       "subtitleStranger": "玩家",
       "matchHistory": "对战历史",
-      "matchHistoryEmpty": "对战历史即将上线",
+      "matchHistoryEmpty": "该用户目前还没有比赛记录",
       "matchHistoryLocked": "添加好友后可查看对战历史",
       "stats": {
         "games": "游戏场数",
         "wins": "胜利场数",
-        "winRate": "胜率"
+        "winRate": "胜率",
+        "win": "胜",
+        "loss": "负"
       },
       "removeConfirmText": "确定将 {{name}} 从好友中删除？",
       "removeConfirm": "确认删除",

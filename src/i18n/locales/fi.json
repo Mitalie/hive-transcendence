@@ -268,7 +268,7 @@
       "noMatches": "Ei pelattuja otteluita.",
       "versus": "vs",
       "win": "Voitto",
-      "loss": "Tappiot",
+      "loss": "Tappio",
       "you": "Sinä",
       "at": "klo"
     },
@@ -316,12 +316,14 @@
       "subtitle": "Kaveri",
       "subtitleStranger": "Pelaaja",
       "matchHistory": "Otteluhistoria",
-      "matchHistoryEmpty": "Otteluhistoria tulossa pian",
+      "matchHistoryEmpty": "Tällä käyttäjällä ei ole vielä otteluhistoriaa",
       "matchHistoryLocked": "Lisää kaveriksi nähdäksesi otteluhistorian",
       "stats": {
         "games": "Pelit",
         "wins": "Voitot",
-        "winRate": "Voittoprosentti"
+        "winRate": "Voittoprosentti",
+        "win": "Voitto",
+        "loss": "Tappio"
       },
       "removeConfirmText": "Poistetaanko {{name}} kavereista?",
       "removeConfirm": "Poista",
