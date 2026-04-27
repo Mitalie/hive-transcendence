@@ -55,6 +55,7 @@ export class AIOpponent {
     if (this.timeSinceLastThought >= this.reactionDelaySec) {
       this.timeSinceLastThought = 0;
       if (isBallStationary) {
+        this.timeSinceLastMistake = 0;
         this.targetZ = 0;
         this.targetX = GameConfig.player2.xPos;
       } else {
@@ -123,13 +124,26 @@ export class AIOpponent {
     let finalTargetZ = this.targetZ;
     let finalTargetX = this.targetX;
 
-    if (this.isInstant && isApproaching && timeToImpact < 0.25) {
-      const safeEdge = (GameConfig.paddle.width / 2) * 0.8;
+    const strikePhase = GameConfig.ai.strikePhase;
+    if (
+      this.isInstant &&
+      isApproaching &&
+      timeToImpact < strikePhase.timeToStrikeThreshold
+    ) {
+      const safeEdge =
+        (GameConfig.paddle.width / 2) * strikePhase.safeEdgeFraction;
       finalTargetZ =
         this.engine.p1.z > ball.z ? ball.z - safeEdge : ball.z + safeEdge;
+
       if (this.engine.mode === "advanced") {
-        finalTargetX = GameConfig.player2.xPos - 2;
-        if (timeToImpact < 0.1) finalTargetZ += ball.z > 0 ? -3 : 3;
+        finalTargetX =
+          GameConfig.player2.xPos - strikePhase.smasherForwardOffset;
+        if (timeToImpact < strikePhase.timeToStrafeThreshold) {
+          finalTargetZ +=
+            ball.z > 0
+              ? -strikePhase.curveballStrafeAmplitude
+              : strikePhase.curveballStrafeAmplitude;
+        }
       }
     }
 

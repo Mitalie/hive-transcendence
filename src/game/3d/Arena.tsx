@@ -12,10 +12,17 @@ const TEXT_PROPS = {
   ...GameConfig.arena.textStyle,
 } as const;
 
+// Static layout constants computed once at import time
+const HALF_WIDTH = GameConfig.court.width / 2;
+const HALF_DEPTH = GameConfig.court.depth / 2;
+const WALL_Z_NEAR = -(
+  GameConfig.court.zLimit +
+  GameConfig.court.wallThickness / 2
+);
+const WALL_Z_FAR = GameConfig.court.zLimit + GameConfig.court.wallThickness / 2;
+
 // SideWall abstracts the complex bounding box and top/side framing geometry to keep the parent clean
 const SideWall = memo(function SideWall({ z }: { z: number }) {
-  const HALF_WIDTH = GameConfig.court.width / 2;
-
   const glassMatRef = useRef<THREE.MeshStandardMaterial>(null!);
   const topFrameMatRef = useRef<THREE.MeshStandardMaterial>(null!);
   const leftFrameMatRef = useRef<THREE.MeshStandardMaterial>(null!);
@@ -52,7 +59,6 @@ const SideWall = memo(function SideWall({ z }: { z: number }) {
         />
       </mesh>
 
-      {/* We keep these materials inline to embrace R3F's declarative nature, as requested by the primary review */}
       <mesh position={[0, GameConfig.court.wallHeight / 2, 0]}>
         <boxGeometry
           args={[
@@ -135,14 +141,6 @@ const ArenaStaticGeometry = memo(function ArenaStaticGeometry() {
     if (netMatRef.current)
       netMatRef.current.color.set(GameConfig.arena.netColor);
   });
-
-  // Constants kept local to the component body per review instructions
-  const WALL_Z_NEAR = -(
-    GameConfig.court.zLimit +
-    GameConfig.court.wallThickness / 2
-  );
-  const WALL_Z_FAR =
-    GameConfig.court.zLimit + GameConfig.court.wallThickness / 2;
 
   return (
     <group>
@@ -257,9 +255,6 @@ const ScoreboardSide = memo(function ScoreboardSide({
   const getColorRight = isBackFace
     ? () => GameConfig.colors.p1
     : () => GameConfig.colors.p2;
-
-  const HALF_DEPTH = GameConfig.court.depth / 2;
-  const HALF_WIDTH = GameConfig.court.width / 2;
 
   return (
     <group
