@@ -321,6 +321,8 @@
     "profile": {
       "subtitle": "Friend",
       "subtitleStranger": "Player",
+      "bio": "Bio",
+      "noBio": "No bio added yet.",
       "matchHistory": "Match History",
       "matchHistoryEmpty": "This user has no match history yet",
       "matchHistoryLocked": "Add as a friend to view match history",

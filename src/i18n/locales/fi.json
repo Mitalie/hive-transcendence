@@ -315,6 +315,8 @@
     "profile": {
       "subtitle": "Kaveri",
       "subtitleStranger": "Pelaaja",
+      "bio": "Esittely",
+      "noBio": "Ei esittelyä lisätty.",
       "matchHistory": "Otteluhistoria",
       "matchHistoryEmpty": "Tällä käyttäjällä ei ole vielä otteluhistoriaa",
       "matchHistoryLocked": "Lisää kaveriksi nähdäksesi otteluhistorian",

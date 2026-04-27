@@ -315,6 +315,8 @@
     "profile": {
       "subtitle": "好友",
       "subtitleStranger": "玩家",
+      "bio": "简介",
+      "noBio": "暂无简介。",
       "matchHistory": "对战历史",
       "matchHistoryEmpty": "该用户目前还没有比赛记录",
       "matchHistoryLocked": "添加好友后可查看对战历史",
