@@ -8,6 +8,7 @@ import {
   completeRegistrationProfileAction,
   checkUsernameAvailableAction,
 } from "@/actions/registration";
+import { useRouter } from "next/navigation";
 
 type AvatarChoice = "default" | "github" | "upload";
 
@@ -23,6 +24,7 @@ export default function ProfileSetupPage() {
     null,
   );
   const [checkingUsername, setCheckingUsername] = useState(false);
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const { t } = useTranslation();
@@ -102,7 +104,7 @@ export default function ProfileSetupPage() {
       }
 
       updateSession();
-      window.location.href = "/";
+      router.push("/");
     } catch (err: unknown) {
       if (err instanceof Error && err.message.includes("Unique constraint")) {
         setError(t("profile.usernameTaken"));

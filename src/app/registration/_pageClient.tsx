@@ -6,12 +6,14 @@ import Button from "@/components/Button";
 import { signIn } from "next-auth/react";
 import { useTranslation } from "react-i18next";
 import { registerUserAction } from "@/actions/registration";
+import { useRouter } from "next/navigation";
 
 export default function RegistrationPageClient() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,11 +40,11 @@ export default function RegistrationPageClient() {
       }
 
       if (result.needsProfile === false) {
-        window.location.href = "/";
+        router.push("/");
         return;
       }
 
-      window.location.href = "/registration/profile";
+      router.push("/registration/profile");
       return;
     } catch (err: unknown) {
       if (err instanceof Error) {
