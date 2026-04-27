@@ -31,9 +31,7 @@ export function DeleteProfileButton() {
       return;
     }
 
-    await signOut({ redirect: false });
-    router.push("/");
-    router.refresh();
+    await signOut({ callbackUrl: "/" });
   };
 
   return (

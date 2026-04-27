@@ -95,12 +95,6 @@ export async function deleteProfileAction() {
     await prisma.user.delete({
       where: { email: session.user.email },
     });
-
-    revalidatePath("/");
-    revalidatePath("/settings");
-    revalidatePath("/profile");
-    revalidatePath("/friends");
-
     return { ok: true };
   } catch (error) {
     console.error("deleteProfileAction error:", error);
