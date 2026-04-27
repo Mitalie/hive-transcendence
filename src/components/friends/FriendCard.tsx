@@ -5,7 +5,7 @@ import PersonCard from "./PersonCard";
 type Props = {
   friendshipId: string;
   label: string;
-  avatarUrl?: string | null;
+  avatarUrl: string;
   isOnline?: boolean;
   onSelect: () => void;
   isSelected: boolean;

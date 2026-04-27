@@ -8,7 +8,7 @@ import PersonCard from "./PersonCard";
 type Props = {
   userId: string;
   label: string;
-  avatarUrl?: string | null;
+  avatarUrl: string;
   isSelected?: boolean;
   onSelect?: () => void;
   onSuccess?: () => void;

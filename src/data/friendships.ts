@@ -63,6 +63,7 @@ const userDisplayFields = {
   username: true,
   bio: true,
   lastActiveAt: true,
+  updatedAt: true,
 } as const;
 
 export async function getPendingFriendRequestsByUserId(userId: string) {
@@ -86,6 +87,8 @@ export async function getPendingFriendRequestsByUserId(userId: string) {
       ...request.requester,
       isOnline: isUserOnline(request.requester.lastActiveAt),
       lastActiveAt: undefined,
+      avatarVersion: request.requester.updatedAt.getTime(),
+      updatedAt: undefined,
     },
   }));
 }
@@ -111,6 +114,8 @@ export async function getSentFriendRequestsByUserId(userId: string) {
       ...request.addressee,
       isOnline: isUserOnline(request.addressee.lastActiveAt),
       lastActiveAt: undefined,
+      avatarVersion: request.addressee.updatedAt.getTime(),
+      updatedAt: undefined,
     },
   }));
 }
@@ -138,11 +143,15 @@ export async function getAcceptedFriendsByUserId(userId: string) {
       ...friendship.requester,
       isOnline: isUserOnline(friendship.requester.lastActiveAt),
       lastActiveAt: undefined,
+      avatarVersion: friendship.requester.updatedAt.getTime(),
+      updatedAt: undefined,
     },
     addressee: {
       ...friendship.addressee,
       isOnline: isUserOnline(friendship.addressee.lastActiveAt),
       lastActiveAt: undefined,
+      avatarVersion: friendship.addressee.updatedAt.getTime(),
+      updatedAt: undefined,
     },
   }));
 }

@@ -15,7 +15,7 @@ type Person = {
   friendshipId?: string;
   label: string;
   bio?: string | null;
-  avatarUrl?: string | null;
+  avatarUrl: string;
   isOnline?: boolean;
 };
 type ActiveTab = "friends" | "incoming" | "sent";
@@ -118,7 +118,7 @@ export function FriendsClient({
     setSearchResults(
       results.map((u) => ({
         ...u,
-        avatarUrl: `/api/avatar/${u.id}`,
+        avatarUrl: `/api/avatar/${u.id}?v=${u.avatarVersion}`,
         isOnline: false,
       })),
     );
@@ -426,7 +426,7 @@ export function FriendsClient({
                       key={u.id}
                       userId={u.id}
                       label={u.label}
-                      avatarUrl={`/api/avatar/${u.id}`}
+                      avatarUrl={u.avatarUrl}
                       isSelected={selectedId === u.id}
                       onSelect={() => selectFromSearch(u)}
                       onSuccess={() => {

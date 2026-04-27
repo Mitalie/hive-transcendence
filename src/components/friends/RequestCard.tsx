@@ -14,7 +14,7 @@ type RequestCardVariant = "incoming" | "sent";
 type Props = {
   friendshipId: string;
   label: string;
-  avatarUrl?: string | null;
+  avatarUrl: string;
   isOnline?: boolean;
   isSelected: boolean;
   variant: RequestCardVariant;

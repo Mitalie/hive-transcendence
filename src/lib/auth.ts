@@ -65,7 +65,7 @@ export const authOptions: NextAuthOptions = {
 
       if (session.user) {
         session.user.id = token.userId;
-        session.user.avatarVersion = user?.updatedAt.getTime();
+        session.user.avatarVersion = user.updatedAt.getTime();
       }
       return session;
     },
