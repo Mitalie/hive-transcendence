@@ -405,15 +405,11 @@ export function FriendsClient({
               </h2>
               {search.trim() === "" ? (
                 <p className="text-sm text-text/50">
-                  {t("friends.discover.searchHint", {
-                    defaultValue: "Search for people above to find them.",
-                  })}
+                  {t("friends.discover.searchHint")}
                 </p>
               ) : isSearching ? (
                 <p className="text-sm text-text/50">
-                  {t("friends.discover.searching", {
-                    defaultValue: "Searching...",
-                  })}
+                  {t("friends.discover.searching")}
                 </p>
               ) : searchResults.length === 0 ? (
                 <p className="text-sm text-text/50">
