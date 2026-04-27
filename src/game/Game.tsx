@@ -23,6 +23,7 @@ import GameSetup from "@/game/ui/GameSetup";
 import { loadSettingsPrefs, applySettingsToConfig } from "@/game/GamePrefs";
 import type { GameState } from "@/game/GameState";
 
+// Settings snapshot
 type ConfigSnapshot = {
   p1: string;
   p2: string;
@@ -84,6 +85,7 @@ function restoreSnapshot(s: ConfigSnapshot) {
   GameConfig.paddle.maxVelocity = s.paddleMaxVelocity;
   GameConfig.paddle.acceleration = s.paddleAcceleration;
 }
+
 
 export default function Game({
   isLoggedIn,
