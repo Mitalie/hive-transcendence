@@ -7,6 +7,7 @@ import { apiErrors } from "@/lib/api-errors";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { fileToStoredAvatar, urlToStoredAvatar } from "@/lib/avatar";
+import bcrypt from "bcrypt";
 
 export async function addPasswordAction(password: string) {
   const session = await getServerSession(authOptions);
@@ -105,4 +106,86 @@ export async function deleteProfileAction() {
     console.error("deleteProfileAction error:", error);
     return { ok: false, error: apiErrors.internalServerError };
   }
+}
+
+export async function updatePasswordAction(formData: FormData) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return { ok: false, error: apiErrors.unauthorized };
+  }
+
+  const currentPassword = String(formData.get("currentPassword") ?? "").trim();
+  const newPassword = String(formData.get("newPassword") ?? "").trim();
+  const confirmPassword = String(formData.get("confirmPassword") ?? "").trim();
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return { ok: false, error: apiErrors.missingFields };
+  }
+
+  if (newPassword !== confirmPassword) {
+    return { ok: false, error: "passwords_mismatch" };
+  }
+
+  if (newPassword.length < 6) {
+    return { ok: false, error: "password_too_short" };
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { password: true },
+    });
+
+    if (!user?.password) {
+      return { ok: false, error: apiErrors.unauthorized };
+    }
+
+    const isValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isValid) {
+      return { ok: false, error: "invalid_current_password" };
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 12);
+
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { password: hashed },
+    });
+
+    revalidatePath("/settings");
+
+    return { ok: true };
+  } catch {
+    return { ok: false, error: apiErrors.missingFields };
+  }
+}
+
+export async function deletePasswordAction() {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) {
+    return { ok: false, error: apiErrors.unauthorized };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      accounts: {
+        where: { provider: "github" },
+      },
+    },
+  });
+
+  if (!user?.accounts?.length) {
+    return { ok: false, error: apiErrors.unauthorized };
+  }
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { password: null },
+  });
+
+  revalidatePath("/settings");
+  return { ok: true };
 }

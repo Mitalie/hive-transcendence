@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { AddPasswordForm } from "@/components/AddPasswordForm";
 import { EditProfileForm } from "@/components/EditProfileForm";
 import { DeleteProfileButton } from "@/components/DeleteProfileButton";
+import { EditPasswordForm } from "@/components/EditPasswordForm";
+import { DeletePasswordButton } from "@/components//DeletePasswordButton";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -102,25 +104,28 @@ export function SettingsClient({ user, error }: SettingsClientProps) {
         </section>
 
         <section className="border border-purple-light rounded-2xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-purple-light">
-            <h2 className="text-sm font-semibold uppercase tracking-widest text-text/40">
-              {t("settings.security.title")}
-            </h2>
-          </div>
           <div className="px-5 py-4 flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-text/60">
                 {t("settings.security.passwordLogin")}
               </span>
-              <StatusBadge
-                enabled={user.hasPassword}
-                connectedLabel={t("settings.badge.connected")}
-                notSetLabel={t("settings.badge.notSet")}
-              />
+              <div className="flex items-center gap-2">
+                <StatusBadge
+                  enabled={user.hasPassword}
+                  connectedLabel={t("settings.badge.connected")}
+                  notSetLabel={t("settings.badge.notSet")}
+                />
+                {user.hasPassword && user.hasGithub && <DeletePasswordButton />}
+              </div>
             </div>
             {user.hasGithub && !user.hasPassword && (
               <div className="pt-1">
                 <AddPasswordForm />
+              </div>
+            )}
+            {user.hasPassword && (
+              <div className="pt-1">
+                <EditPasswordForm />
               </div>
             )}
           </div>

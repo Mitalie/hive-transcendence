@@ -183,7 +183,24 @@
     },
     "security": {
       "title": "Turvallisuus",
-      "passwordLogin": "Salasanakirjautuminen"
+      "passwordLogin": "Salasanakirjautuminen",
+      "changePassword": "Vaihda salasana",
+      "currentPassword": "Nykyinen salasana",
+      "newPassword": "Uusi salasana",
+      "confirmPassword": "Vahvista uusi salasana",
+      "savePassword": "Tallenna salasana",
+      "saving": "Tallennetaan…",
+      "passwordUpdated": "Salasana päivitetty onnistuneesti!",
+      "errorCurrentPassword": "Nykyinen salasana on virheellinen",
+      "errorMismatch": "Salasanat eivät täsmää",
+      "errorTooShort": "Salasanan on oltava vähintään 6 merkkiä pitkä",
+      "errorMissingFields": "Täytä kaikki kentät",
+      "errorGeneric": "Jotain meni pieleen, yritä uudelleen",
+      "cancel": "Peruuta",
+      "removePassword": "Poista salasanakirjautuminen",
+      "removePasswordConfirm": "Oletko varma?",
+      "confirmRemove": "Kyllä, poista",
+      "removing": "Poistetaan…"
     },
     "connectedAccounts": {
       "title": "Yhdistetyt tilit",

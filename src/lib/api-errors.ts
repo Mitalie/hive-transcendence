@@ -13,6 +13,9 @@ export const apiErrors = {
   fileTooLarge: "fileTooLarge",
   errorUnexpected: "errorUnexpected",
   emailTooLong: "emailTooLong",
+  invalid_current_password: "Current password is incorrect",
+  passwords_mismatch: "Passwords do not match",
+  password_too_short: "Password must be at least 6 characters",
 } as const;
 
 export type ApiErrorKey = keyof typeof apiErrors;

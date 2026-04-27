@@ -183,7 +183,24 @@
     },
     "security": {
       "title": "安全",
-      "passwordLogin": "密码登录"
+      "passwordLogin": "密码登录",
+      "changePassword": "修改密码",
+      "currentPassword": "当前密码",
+      "newPassword": "新密码",
+      "confirmPassword": "确认新密码",
+      "savePassword": "保存密码",
+      "saving": "保存中…",
+      "passwordUpdated": "密码已成功更新！",
+      "errorCurrentPassword": "当前密码不正确",
+      "errorMismatch": "两次输入的密码不一致",
+      "errorTooShort": "密码长度至少为 6 个字符",
+      "errorMissingFields": "请填写所有字段",
+      "errorGeneric": "出现错误，请重试",
+      "cancel": "取消",
+      "removePassword": "移除密码登录",
+      "removePasswordConfirm": "确定要移除吗？",
+      "confirmRemove": "确认移除",
+      "removing": "移除中…"
     },
     "connectedAccounts": {
       "title": "已连接账户",
