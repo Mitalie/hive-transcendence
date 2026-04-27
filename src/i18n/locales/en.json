@@ -327,6 +327,7 @@
       "empty": "No more users available to add right now.",
       "searchPlaceholder": "Search people",
       "searchHint": "Search for people above to find them.",
+      "searching": "Searching...",
       "unknownUser": "Unknown user",
       "noUsername": "No username",
       "addFriend": "Add friend",
