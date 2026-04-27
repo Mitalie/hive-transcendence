@@ -194,6 +194,7 @@
       "errorCurrentPassword": "Nykyinen salasana on virheellinen",
       "errorMismatch": "Salasanat eivät täsmää",
       "errorTooShort": "Salasanan on oltava vähintään 6 merkkiä pitkä",
+      "errorOldPwd": "Uuden salasanan on oltava erilainen kuin nykyinen",
       "errorMissingFields": "Täytä kaikki kentät",
       "errorGeneric": "Jotain meni pieleen, yritä uudelleen",
       "cancel": "Peruuta",

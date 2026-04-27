@@ -200,6 +200,7 @@
       "errorCurrentPassword": "Current password is incorrect",
       "errorMismatch": "Passwords do not match",
       "errorTooShort": "Password must be at least 6 characters",
+      "errorOldPwd": "New password has to be different than the current one",
       "errorMissingFields": "Please fill in all fields",
       "errorGeneric": "Something went wrong, please try again",
       "cancel": "Cancel",

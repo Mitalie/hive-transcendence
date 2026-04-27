@@ -194,6 +194,7 @@
       "errorCurrentPassword": "当前密码不正确",
       "errorMismatch": "两次输入的密码不一致",
       "errorTooShort": "密码长度至少为 6 个字符",
+      "errorOldPwd": "新密码必须与当前密码不同",
       "errorMissingFields": "请填写所有字段",
       "errorGeneric": "出现错误，请重试",
       "cancel": "取消",

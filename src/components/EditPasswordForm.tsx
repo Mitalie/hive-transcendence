@@ -55,6 +55,7 @@ export function EditPasswordForm() {
         passwords_mismatch: t("settings.security.errorMismatch"),
         password_too_short: t("settings.security.errorTooShort"),
         missingFields: t("settings.security.errorMissingFields"),
+        password_same_as_old: t("settings.security.errorOldPwd"),
       };
       setError(
         errorMap[result.error ?? ""] ?? t("settings.security.errorGeneric"),
@@ -120,7 +121,8 @@ export function EditPasswordForm() {
           autoComplete="new-password"
           className={`w-full px-4 py-2.5 rounded-lg text-sm text-text bg-button border placeholder:text-text/40 focus:outline-none focus:ring-2 transition-all ${
             error === t("settings.security.errorMismatch") ||
-            error === t("settings.security.errorTooShort")
+            error === t("settings.security.errorTooShort") ||
+            error === t("settings.security.errorOldPwd")
               ? "border-red-500/60 focus:ring-red-500/30"
               : "border-purple-light focus:ring-purple-light"
           }`}

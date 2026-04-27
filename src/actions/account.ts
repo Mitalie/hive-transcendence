@@ -146,6 +146,11 @@ export async function updatePasswordAction(formData: FormData) {
       return { ok: false, error: "invalid_current_password" };
     }
 
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      return { ok: false, error: "password_same_as_old" };
+    }
+
     const hashed = await bcrypt.hash(newPassword, 12);
 
     await prisma.user.update({
