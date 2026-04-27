@@ -19,9 +19,12 @@ import {
 import Button from "@/components/Button";
 import GameUI from "@/game/ui/GameUI";
 import GameRender from "@/game/3d/GameRender";
-import GameSetup from "@/game/ui/GameSetup";
 import { loadSettingsPrefs, applySettingsToConfig } from "@/game/GamePrefs";
 import type { GameState } from "@/game/GameState";
+
+import dynamic from "next/dynamic";
+
+const GameSetup = dynamic(() => import("@/game/ui/GameSetup"), { ssr: false });
 
 // Settings snapshot
 type ConfigSnapshot = {
