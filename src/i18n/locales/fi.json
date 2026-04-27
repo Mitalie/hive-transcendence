@@ -303,6 +303,7 @@
       "empty": "Ei käyttäjiä lisättäväksi juuri nyt.",
       "searchPlaceholder": "Etsi henkilö",
       "searchHint": "Etsi henkilö yllä olevasta hakukentästä.",
+      "searching": "Hakeminen...",
       "unknownUser": "Tuntematon käyttäjä",
       "noUsername": "Ei käyttäjänimeä",
       "addFriend": "Lisää kaveriksi",
