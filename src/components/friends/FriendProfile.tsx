@@ -27,7 +27,7 @@ type Props = {
     friendshipId?: string;
     label: string;
     bio?: string | null;
-    avatarUrl?: string | null;
+    avatarUrl: string;
   };
   isFriend?: boolean;
   onClose: () => void;

@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-type UserResult = { id: string; label: string };
+type UserResult = { id: string; label: string; avatarVersion: number };
 
 export async function searchUsersForFriendRequest(
   keyword: string,
@@ -38,7 +38,7 @@ export async function searchUsersForFriendRequest(
         { displayName: { startsWith: trimmed } },
       ],
     },
-    select: { id: true, displayName: true, bio: true },
+    select: { id: true, displayName: true, bio: true, updatedAt: true },
     take: 20,
   });
 
@@ -46,5 +46,6 @@ export async function searchUsersForFriendRequest(
     id: u.id,
     label: u.displayName ?? "Unknown user",
     bio: u.bio,
+    avatarVersion: u.updatedAt.getTime(),
   }));
 }

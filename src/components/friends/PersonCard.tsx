@@ -4,7 +4,7 @@ import UserAvatar from "./UserAvatar";
 
 type Props = {
   label: string;
-  avatarUrl?: string | null;
+  avatarUrl: string;
   sublabel?: string;
   isSelected?: boolean;
   online?: boolean;

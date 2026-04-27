@@ -14,8 +14,14 @@ function resolveLabel(u: { displayName: string | null }): string {
   return u.displayName ?? "Unknown user";
 }
 
-function avatarUrl(userId: string): string {
-  return `/api/avatar/${userId}`;
+function avatarUrl({
+  id,
+  avatarVersion,
+}: {
+  id: string;
+  avatarVersion: number;
+}): string {
+  return `/api/avatar/${id}?v=${avatarVersion}`;
 }
 
 // ---------- Page ----------
@@ -41,7 +47,7 @@ export default async function FriendsPage() {
         friendshipId: f.id,
         label: resolveLabel(f.requester),
         bio: f.requester.bio,
-        avatarUrl: avatarUrl(f.requester.id),
+        avatarUrl: avatarUrl(f.requester),
         isOnline: f.requester.isOnline,
       }))}
       sentRequests={sentRequests.map((f) => ({
@@ -49,7 +55,7 @@ export default async function FriendsPage() {
         friendshipId: f.id,
         label: resolveLabel(f.addressee),
         bio: f.addressee.bio,
-        avatarUrl: avatarUrl(f.addressee.id),
+        avatarUrl: avatarUrl(f.addressee),
         isOnline: f.addressee.isOnline,
       }))}
       friends={friends.map((f) => {
@@ -60,7 +66,7 @@ export default async function FriendsPage() {
           friendshipId: f.id,
           label: resolveLabel(friend),
           bio: friend.bio,
-          avatarUrl: avatarUrl(friend.id),
+          avatarUrl: avatarUrl(friend),
           isOnline: friend.isOnline,
         };
       })}

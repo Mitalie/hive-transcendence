@@ -4,7 +4,7 @@ import Image from "next/image";
 
 type Props = {
   label: string;
-  avatarUrl?: string | null;
+  avatarUrl: string;
   size?: "sm" | "md" | "lg";
 };
 
@@ -19,7 +19,7 @@ export default function UserAvatar({ label, avatarUrl, size = "md" }: Props) {
 
   return (
     <Image
-      src={avatarUrl ?? "/api/avatar/default"}
+      src={avatarUrl}
       alt={label}
       width={pixelSizes[size]}
       height={pixelSizes[size]}
