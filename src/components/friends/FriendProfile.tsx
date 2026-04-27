@@ -55,8 +55,8 @@ function MatchRow({ match }: { match: MatchHistoryItem }) {
   };
 
   const resultLabels: Record<MatchResult, string> = {
-    win: t("friends.profile.stats.win", { defaultValue: "WIN" }),
-    loss: t("friends.profile.stats.loss", { defaultValue: "LOSS" }),
+    win: t("friends.profile.stats.win"),
+    loss: t("friends.profile.stats.loss"),
   };
 
   return (
@@ -135,15 +135,15 @@ export default function FriendProfile({
 
   const statCards = [
     {
-      label: t("friends.profile.stats.games", { defaultValue: "Games" }),
+      label: t("friends.profile.stats.games"),
       value: stats ? String(stats.games) : "—",
     },
     {
-      label: t("friends.profile.stats.wins", { defaultValue: "Wins" }),
+      label: t("friends.profile.stats.wins"),
       value: stats ? String(stats.wins) : "—",
     },
     {
-      label: t("friends.profile.stats.winRate", { defaultValue: "Win rate" }),
+      label: t("friends.profile.stats.winRate"),
       value: stats ? stats.winRate : "—",
     },
   ];
@@ -164,20 +164,17 @@ export default function FriendProfile({
             </h2>
             <p className="text-sm text-text/40 leading-tight">
               {isFriend
-                ? t("friends.profile.subtitle", { defaultValue: "Friend" })
-                : t("friends.profile.subtitleStranger", {
-                    defaultValue: "Player",
-                  })}
+                ? t("friends.profile.subtitle")
+                : t("friends.profile.subtitleStranger")}
             </p>
           </div>
         </div>
         <div className="rounded-xl bg-button p-4 min-w-0 overflow-hidden">
           <p className="text-xs font-semibold uppercase tracking-widest text-text/40 mb-1">
-            {t("friends.profile.bio", { defaultValue: "Bio" })}
+            {t("friends.profile.bio")}
           </p>
           <p className="text-sm text-text/70 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
-            {friend.bio ||
-              t("friends.profile.noBio", { defaultValue: "No bio yet" })}
+            {friend.bio || t("friends.profile.noBio")}
           </p>
         </div>
         <button
@@ -200,16 +197,14 @@ export default function FriendProfile({
       {/* Match history — conditional */}
       <div className="flex flex-col gap-3 flex-1">
         <h3 className="text-sm font-semibold uppercase tracking-widest text-text/40">
-          {t("friends.profile.matchHistory", { defaultValue: "Match History" })}
+          {t("friends.profile.matchHistory")}
         </h3>
 
         {isFriend ? (
           <div className="rounded-xl border border-purple-light border-dashed p-8 flex items-center justify-center flex-1">
             {matchHistory.length === 0 ? (
               <p className="text-sm text-text/40 text-center">
-                {t("friends.profile.matchHistoryEmpty", {
-                  defaultValue: "This user has no match history yet",
-                })}
+                {t("friends.profile.matchHistoryEmpty")}
               </p>
             ) : (
               <div className="flex flex-col gap-2 flex-1 w-full h-full">
@@ -226,9 +221,7 @@ export default function FriendProfile({
               <LockIcon className="w-7 h-7 text-purple-light" />
             </div>
             <p className="text-sm text-text/40 text-center">
-              {t("friends.profile.matchHistoryLocked", {
-                defaultValue: "Add as a friend to view match history",
-              })}
+              {t("friends.profile.matchHistoryLocked")}
             </p>
           </div>
         )}
@@ -250,20 +243,17 @@ export default function FriendProfile({
                 disabled={removePending}
                 className="shrink-0 rounded-lg px-4 h-9 text-sm font-semibold text-white bg-red-light hover:opacity-90 transition-opacity disabled:opacity-50"
               >
-                {t("friends.profile.removeConfirm", { defaultValue: "Remove" })}
+                {t("friends.profile.removeConfirm")}
               </button>
               <p className="flex-1 text-sm text-text/60 truncate">
-                {t("friends.profile.removeConfirmText", {
-                  defaultValue: "Remove {{name}} from friends?",
-                  name: friend.label,
-                })}
+                {t("friends.profile.removeConfirmText", { name: friend.label })}
               </p>
               <button
                 type="button"
                 onClick={() => setConfirmRemove(false)}
                 className="shrink-0 rounded-lg px-4 h-9 text-sm font-semibold text-text border border-purple-light hover:bg-purple-light/20 transition-colors"
               >
-                {t("friends.profile.removeCancel", { defaultValue: "Cancel" })}
+                {t("friends.profile.removeCancel")}
               </button>
             </div>
           ) : (

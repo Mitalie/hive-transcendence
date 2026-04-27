@@ -18,6 +18,7 @@ export function createI18n(lng: string): I18nType {
     fallbackLng: "en",
     interpolation: { escapeValue: false },
     react: { useSuspense: false },
+    debug: process.env.NODE_ENV === "development",
   });
   return instance;
 }
