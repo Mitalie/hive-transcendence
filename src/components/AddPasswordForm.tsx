@@ -4,6 +4,7 @@ import { useState } from "react";
 import Button from "./Button";
 import { useTranslation } from "react-i18next";
 import { addPasswordAction } from "@/actions/account";
+import { useRouter } from "next/navigation";
 
 export function AddPasswordForm() {
   const [password, setPassword] = useState("");
@@ -11,6 +12,7 @@ export function AddPasswordForm() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +26,7 @@ export function AddPasswordForm() {
       setError(t(`apiErrors.${key}`, t("addPassword.errorFallback")));
     } else {
       setSuccess(true);
+      router.refresh();
     }
 
     setLoading(false);

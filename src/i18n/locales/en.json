@@ -189,7 +189,25 @@
     },
     "security": {
       "title": "Security",
-      "passwordLogin": "Password login"
+      "passwordLogin": "Password login",
+      "changePassword": "Change password",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "savePassword": "Save password",
+      "saving": "Saving…",
+      "passwordUpdated": "Password updated successfully!",
+      "errorCurrentPassword": "Current password is incorrect",
+      "errorMismatch": "Passwords do not match",
+      "errorTooShort": "Password must be at least 6 characters",
+      "errorOldPwd": "New password has to be different than the current one",
+      "errorMissingFields": "Please fill in all fields",
+      "errorGeneric": "Something went wrong, please try again",
+      "cancel": "Cancel",
+      "removePassword": "Remove password login",
+      "removePasswordConfirm": "Are you sure?",
+      "confirmRemove": "Yes, remove",
+      "removing": "Removing…"
     },
     "connectedAccounts": {
       "title": "Connected Accounts",
