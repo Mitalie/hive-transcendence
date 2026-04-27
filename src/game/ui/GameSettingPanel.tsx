@@ -14,6 +14,7 @@ type Props = {
   gameMode?: "classic" | "advanced";
 };
 
+// Evaluated at module load to capture original factory configurations before any cookies are applied
 const DEFAULT_COLORS = {
   p1: GameConfig.colors.p1,
   p2: GameConfig.colors.p2,
@@ -21,7 +22,7 @@ const DEFAULT_COLORS = {
   netColor: GameConfig.arena.netColor,
   wallColor: GameConfig.arena.glassColor,
   ballColor: GameConfig.ballVisuals.color,
-};
+} as const;
 
 const BASE_BALL_VX = 12;
 const BASE_BALL_VZ = 10;
@@ -235,10 +236,13 @@ export default function GameSettingPanel({
     handleWallColor(DEFAULT_COLORS.wallColor);
     handleBallColor(DEFAULT_COLORS.ballColor);
     handleBallSpeed(5);
-    handleGravity(5);
-    handleBounce(7);
-    handleSpin(5);
     handlePaddleSpeed(5);
+
+    if (gameMode === "advanced") {
+      handleGravity(5);
+      handleBounce(7);
+      handleSpin(5);
+    }
   }, [
     handleP1Color,
     handleP2Color,
@@ -247,10 +251,11 @@ export default function GameSettingPanel({
     handleWallColor,
     handleBallColor,
     handleBallSpeed,
+    handlePaddleSpeed,
     handleGravity,
     handleBounce,
     handleSpin,
-    handlePaddleSpeed,
+    gameMode,
   ]);
 
   return (

@@ -71,6 +71,8 @@ export const GameConfig = {
 
   physics: {
     maxDelta: 0.1,
+    subStepHz: 120,
+    escapeVelocityBuffer: 5.0,
     collisionNudge: 0.01,
     paddleVelocityTransfer: 0.5,
     spinDecayOnHit: 0.5,
@@ -90,6 +92,7 @@ export const GameConfig = {
     serveHeight: 2.5,
     paddleHitForceY: 6,
     bounceFriction: 0.8,
+    wallBounceFriction: 1.0,
   },
 
   paddle: {
@@ -122,6 +125,13 @@ export const GameConfig = {
   ai: {
     lobBackpedalOffset: 2,
     deadzone: { z: 0.3, x: 0.2 },
+    strikePhase: {
+      timeToStrikeThreshold: 0.25,
+      timeToStrafeThreshold: 0.1,
+      safeEdgeFraction: 0.8,
+      curveballStrafeAmplitude: 3.0,
+      smasherForwardOffset: 2.0,
+    },
     difficulties: {
       easy: {
         reactionDelayMs: 600,

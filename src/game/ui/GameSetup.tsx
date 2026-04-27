@@ -156,6 +156,7 @@ export default function GameSetup({
               </p>
               <input
                 type="text"
+                maxLength={20}
                 value={guestName}
                 onChange={(e) => setGuestName(e.target.value)}
                 placeholder={t("game.setup.player2Placeholder")}

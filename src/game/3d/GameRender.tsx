@@ -3,7 +3,6 @@
 import { useRef, useEffect, useMemo, RefObject, memo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import { GameConfig } from "@/game/GameConfig";
 import { GameMode } from "@/game/GameState";
@@ -52,25 +51,18 @@ export default memo(function GameRender({
   p1Score: number;
   p2Score: number;
 }) {
-  const orbitRef = useRef<OrbitControlsImpl>(null);
+  const difficultyKey = mode.opponent === "human" ? "medium" : mode.opponent;
 
-  // Determine difficulty multiplier for visual scaling
   const paddleScale = useMemo(() => {
-    // If opponent is a human, we use medium (1.0) modifiers.
-    // Otherwise, we use the selected AI difficulty.
-    const difficultyKey = mode.opponent === "human" ? "medium" : mode.opponent;
     return GameConfig.difficultyModifiers[difficultyKey].paddleSizeMultiplier;
-  }, [mode.opponent]);
+  }, [difficultyKey]);
 
   const [engine, aiOpponent] = useMemo(() => {
-    // FIX 1: Pass the difficulty to the engine so the physics hitboxes scale
-    const difficultyKey = mode.opponent === "human" ? "medium" : mode.opponent;
     const engine = new PongEngine(onScore, mode.type, difficultyKey);
-
     const aiOpponent =
       mode.opponent === "human" ? null : new AIOpponent(engine, mode.opponent);
     return [engine, aiOpponent];
-  }, [onScore, mode]);
+  }, [onScore, mode.type, mode.opponent, difficultyKey]);
 
   const keys = useRef<Record<string, boolean>>({});
 
@@ -121,7 +113,6 @@ export default memo(function GameRender({
         <ResponsiveCamera />
 
         <OrbitControls
-          ref={orbitRef}
           makeDefault
           enablePan={GameConfig.camera.controls.enablePan}
           maxPolarAngle={GameConfig.camera.controls.maxPolarAngle}
@@ -176,7 +167,6 @@ export default memo(function GameRender({
 
         <Ball ballData={engine.ball} />
 
-        {/* FIX 2: Pass the paddleScale to the 3D Paddle components */}
         <Paddle
           paddleData={engine.p1}
           initialX={GameConfig.player1.xPos}

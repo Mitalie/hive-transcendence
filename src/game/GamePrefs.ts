@@ -1,3 +1,14 @@
+/**
+ * GamePrefs.ts — browser cookie persistence for game preferences.
+ *
+ * Two separate cookies per logged-in user:
+ * gameSetup_{name}    – setup screen choices (mode, opponent, difficulty, winScore)
+ * gameSettings_{name} – GameConfig visual + physics values (colors, sliders)
+ *
+ * Written only when user explicitly confirms (Start Play / Apply).
+ * Read on Game component mount to restore the previous session's configuration.
+ */
+
 import { GameConfig } from "@/game/GameConfig";
 
 function setCookie(name: string, value: string) {
